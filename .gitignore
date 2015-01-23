@@ -1,0 +1,9 @@
+application/config/data___base.php
+application/config/con___fig.php
+*/config/development
+*/logs/log-*.php
+*/logs/!index.html
+*/cache/*
+*/cache/!index.html
+*.orig
+/nbproject/private/
