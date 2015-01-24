@@ -7,3 +7,5 @@ application/config/config.php
 */cache/!index.html
 *.orig
 /nbproject/private/
+
+application/config/database.php
