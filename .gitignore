@@ -1,5 +1,5 @@
-application/config/data___base.php
-application/config/con___fig.php
+application/config/database.php
+application/config/config.php
 */config/development
 */logs/log-*.php
 */logs/!index.html
