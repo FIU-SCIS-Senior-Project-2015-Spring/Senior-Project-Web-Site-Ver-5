@@ -72,6 +72,8 @@ $route['(?i)(admin)/activate_deactivate_users'] = 'admincontroller/activate_deac
 
 $route['(?i)(user)/(:any)'] = 'usercontroller/profile/$2';
 
+// added on SPW v5
+$route['(?i)(vm-request)'] = 'projectcontroller/vm_request';
 
 $route['(?i)(past-projects)'] = 'projectcontroller/past_projects';
 $route['(?i)(project)/(create)'] = 'projectcontroller/create_new_project';
