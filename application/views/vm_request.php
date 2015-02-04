@@ -7,7 +7,7 @@
     if (isUserLoggedIn($this))
     {
         if (!isProfessor($this))
-           echo("<h4> NOTE: Virtual machine request must be done by team, no individual requests </h4>");
+           echo("<h4> NOTE: Virtual machine request must be done by team, no individual requests allow </h4>");
     }
 ?>
 
