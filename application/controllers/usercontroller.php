@@ -915,7 +915,7 @@ class UserController extends CI_Controller
         }
         else
         {
-            return $this->spw_user_model->is_spw_registered_by_id($userId);
+            return $this->spw_user_model->is_manually_created($userId);
         }
     }
 }

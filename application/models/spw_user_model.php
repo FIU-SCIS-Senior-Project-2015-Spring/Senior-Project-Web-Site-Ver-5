@@ -370,6 +370,23 @@ class SPW_User_Model extends CI_Model
             return false;
         }
     }
+    
+    public function is_manually_created($spw_id)
+    {
+        $query = $this->db
+                ->where('id',$spw_id)
+                ->where('hash_pwd !=','')
+                ->get('spw_user');
+        
+        if($query->num_rows() > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
     public function create_new_spw_user($email_address, $password ,$role)
     {
