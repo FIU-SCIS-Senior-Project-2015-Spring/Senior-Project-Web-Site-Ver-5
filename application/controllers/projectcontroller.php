@@ -13,14 +13,14 @@ class ProjectController extends CI_Controller
         load_project_summary_models($this);
         $this->load->model('SPW_Project_Details_View_Model');
         $this->load->model('spw_notification_model');
-  
+        $this->load->model('spw_vm_request_model');
     }
     
     /*added on SPW v. 5 */
     public function vm_request()
     {
-        $data['title'] = 'VM - Request';
-        $this->load->view('vm_request', $data);
+            $data['title'] = 'VM - Request';
+            $this->load->view('vm_request', $data);
     }
 
     public function past_projects()
