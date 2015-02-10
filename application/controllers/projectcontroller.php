@@ -19,8 +19,29 @@ class ProjectController extends CI_Controller
     /*added on SPW v. 5 */
     public function vm_request()
     {
+        $session_data = $this->session->userdata('logged_in');
+        /* gets usr id */
+        $user_id = $session_data['id'];
+        $input = file_get_contents('php://input');
+        
+        if($input){
+            $formInput = json_decode($input);
+            /* inserts vm request on DB */
+            $success = $this->spw_vm_request_model->insertVmRequests($formInput,$user_id);
+            /* hardcoding path */
+            $projectid = $this->spw_vm_request_model->getProjectId($user_id);
+            $requetUrl = base_url()."vm-request?projectid=".$projectid;
+            $email = "ypera006@fiu.edu";
+            $message = "Click <a href=\"$requetUrl\">here</a> to see request";
+            $subject = "A new VM request is awaiting acceptance";
+//            send_email($this, $email, $subject, $message); /*testing email*/
+            echo json_encode(array("success"=>$success,"url"=>$requetUrl));
+        }
+        else{ /* returns project requests */
             $data['title'] = 'VM - Request';
+            $data['requests'] = $this->spw_vm_request_model->getUserRequests($user_id);
             $this->load->view('vm_request', $data);
+        }
     }
 
     public function past_projects()

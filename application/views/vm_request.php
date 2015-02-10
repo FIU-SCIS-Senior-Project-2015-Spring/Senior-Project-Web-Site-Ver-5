@@ -100,6 +100,7 @@
         <?php endforeach;?>
     </tbody>
 </table>
+
 <script>
 $('#addRequest').click(function(){
     console.log("Clicked add request");
@@ -128,6 +129,7 @@ function uploadMachines(machineList){
         }
     });
 }
+
 function getTableContent() {
     var data = [];
     var table = $('#machines_table tbody tr');
@@ -148,7 +150,5 @@ function getTableContent() {
     return data;
 }
 </script>
-
-
 
 <?php $this->load->view("template_footer"); ?>
