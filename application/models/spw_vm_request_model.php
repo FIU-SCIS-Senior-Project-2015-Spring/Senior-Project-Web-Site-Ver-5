@@ -8,6 +8,59 @@ class SPW_vm_request_Model extends CI_Model
         parent::__construct();
     }
     
+    /* Helper function, returns all requests made for a project, they 
+     * could be APPROVED, DENIED, PENDING */
+    private function getUserRequestsFromProject($project_id){
+        
+        $q = $this->db->query("SELECT OS, RAM, storage, numb_vm, status "
+                            . "FROM spw_vm_request "
+                            . "where project_id = $project_id");
+        $requests = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($requests,$row);
+        
+        return $requests;
+    }
+    
+    /* Returns the project requests */
+    public function getUserRequests($user_id){
+        /* base on user id, returns the project id associated to the user */
+        $project_id = $this->getProjectId($user_id);
+        /* calls helper method and returns the requests made for a project */
+        return $this->getUserRequestsFromProject($project_id);
+    }
+    
+    /* Inserts vm requests  */
+    public function insertVmRequests($requests,$user_id){
+        
+        $project_id = $this->getProjectId($user_id);
+        /* for each request insert its settings */
+        foreach($requests as $request){
+            $os = $request->os;
+            $ram = $request->ram;
+            $hdd = $request->hdd;
+            $qty = $request->qty;
+            $query = "insert into spw_vm_request (project_id, OS, RAM, storage, numb_vm, status) "
+                    . "values ($project_id,'$os',$ram,$hdd,$qty,'PENDING')";
+            $q = $this->db->query($query);
+            if(!$q) return false;
+        }
+        return true;
+    }
+    
+    /* Returns the project id where a student belongs */
+    public function getProjectId($user_id){
+        
+        $q = $this->db->query("SELECT project "
+                            . "FROM spw_user "
+                            . "where id = '$user_id'");
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->project;
+        return null;
+    }
     
     
 }
