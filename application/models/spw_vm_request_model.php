@@ -1,3 +1,4 @@
+
 <?php
 
 class SPW_vm_request_Model extends CI_Model
@@ -10,7 +11,7 @@ class SPW_vm_request_Model extends CI_Model
     
     /* Helper function, returns all requests made for a project, they 
      * could be APPROVED, DENIED, PENDING */
-    private function getUserRequestsFromProject($project_id){
+    public function getUserRequestsFromProject($project_id){
         
         $q = $this->db->query("SELECT OS, RAM, storage, numb_vm, status "
                             . "FROM spw_vm_request "
