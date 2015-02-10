@@ -23,6 +23,7 @@ class ProjectController extends CI_Controller
         /* gets usr id */
         $user_id = $session_data['id'];
         $input = file_get_contents('php://input');
+        $inputProjectId = $this->input->get('projectid', TRUE);
         
         if($input){
             $formInput = json_decode($input);
@@ -36,6 +37,11 @@ class ProjectController extends CI_Controller
             $subject = "A new VM request is awaiting acceptance";
 //            send_email($this, $email, $subject, $message); /*testing email*/
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
+        }
+        else if(/*isProfessor($this) && */$inputProjectId){
+            $data['title'] = 'VM - Request';
+            $data['requests'] = $this->spw_vm_request_model->getUserRequestsFromProject($inputProjectId);
+            $this->load->view('vm_requests', $data);
         }
         else{ /* returns project requests */
             $data['title'] = 'VM - Request';
