@@ -63,6 +63,21 @@ class SPW_vm_request_Model extends CI_Model
         return null;
     }
     
+    /* returns all pending requests made for a project, they 
+     * include id project */
+    public function getPendingRequestsFromProject($project_id){
+        
+        $q = $this->db->query("SELECT id,OS, RAM, storage, numb_vm, status "
+                            . "FROM spw_vm_request "
+                            . "where status = 'PENDING' AND project_id = $project_id");
+        $requests = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($requests,$row);
+        
+        return $requests;
+    }
     
 }
 
