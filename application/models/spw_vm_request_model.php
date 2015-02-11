@@ -9,7 +9,7 @@ class SPW_vm_request_Model extends CI_Model
         parent::__construct();
     }
     
-    /* Helper function, returns all requests made for a project, they 
+    /* function returns all requests made for a project, they 
      * could be APPROVED, DENIED, PENDING */
     public function getUserRequestsFromProject($project_id){
         
@@ -77,6 +77,26 @@ class SPW_vm_request_Model extends CI_Model
                 array_push($requests,$row);
         
         return $requests;
+    }
+    
+    /* updates vm requests by project */
+    public function updateRequestsFromProject($requests){
+        /* for each request update its settings */
+        foreach($requests as $request){
+            $key = $request->key;
+            $os = $request->os;
+            $ram = $request->ram;
+            $hdd = $request->hdd;
+            $qty = $request->qty;
+            $status = $request->status;
+            
+            $query = "update spw_vm_request"
+                    . "set OS='$os',RAM=$ram,storage=$hdd,numb_vm=$qty,status=$status"
+                    . "where id = $key";
+            $q = $this->db->query($query);
+            if(!$q) return false;
+        }
+        return true;
     }
     
 }
