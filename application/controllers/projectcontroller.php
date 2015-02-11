@@ -38,9 +38,9 @@ class ProjectController extends CI_Controller
 //            send_email($this, $email, $subject, $message); /*testing email*/
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
         }
-        else if(/*isProfessor($this) && */$inputProjectId){
+        else if(/*isUserHeadProfessor($user) && */$inputProjectId){
             $data['title'] = 'VM - Request';
-            $data['requests'] = $this->spw_vm_request_model->getUserRequestsFromProject($inputProjectId);
+            $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
             $this->load->view('vm_requests', $data);
         }
         else{ /* returns project requests */
