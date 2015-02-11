@@ -110,6 +110,8 @@
         )) ?>
 
         
+        <!--added on SPW v5-->
+        <button id="Requests" type="button" class="btn btn-default pull-right">Create VM-Request</button>
 
         <?php $this->load->view('subviews/user_summaries_full_list', array(
             'listTitle' => 'Team Members:',
