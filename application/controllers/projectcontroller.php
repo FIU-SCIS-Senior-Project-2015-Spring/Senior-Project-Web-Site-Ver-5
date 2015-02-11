@@ -25,7 +25,7 @@ class ProjectController extends CI_Controller
         $input = file_get_contents('php://input');
         $inputProjectId = $this->input->get('projectid', TRUE);
         
-        if($input){
+        if($input && $this->spw_user_model->isUserAStudent(getCurrentUserId($this))){
             $formInput = json_decode($input);
             /* inserts vm request on DB */
             $success = $this->spw_vm_request_model->insertVmRequests($formInput,$user_id);
@@ -37,11 +37,17 @@ class ProjectController extends CI_Controller
             $subject = "A new VM request is awaiting acceptance";
 //            send_email($this, $email, $subject, $message); /*testing email*/
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
+            
         }
-        else if(/*isUserHeadProfessor($user) && */$inputProjectId){
-            $data['title'] = 'VM - Request';
+        else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $inputProjectId){
+            
+            $data['title'] = 'VM - Requests';
             $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
             $this->load->view('vm_requests', $data);
+        }
+        else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
+            $inputForm = json_decode($input);
+            $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
         }
         else{ /* returns project requests */
             $data['title'] = 'VM - Request';
