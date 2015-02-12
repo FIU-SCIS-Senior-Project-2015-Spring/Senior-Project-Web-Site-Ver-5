@@ -51,6 +51,13 @@ class SPW_vm_request_Model extends CI_Model
         return true;
     }
     
+    /*checks if student is in project*/
+    public function isStudentInProject($user_id,$project_id){
+        $query = "select id from spw_user where id='$user_id' and project='$project_id'";
+        $q = $this->db->query($query);
+        return $q->num_rows() > 0;
+    }
+    
     /* Returns the project id where a student belongs */
     public function getProjectId($user_id){
         
@@ -90,8 +97,8 @@ class SPW_vm_request_Model extends CI_Model
             $qty = $request->qty;
             $status = $request->status;
             
-            $query = "update spw_vm_request"
-                    . "set OS='$os',RAM=$ram,storage=$hdd,numb_vm=$qty,status=$status"
+            $query = "update spw_vm_request "
+                    . "set OS='$os',RAM=$ram,storage=$hdd,numb_vm=$qty,status='$status' "
                     . "where id = $key";
             $q = $this->db->query($query);
             if(!$q) return false;
