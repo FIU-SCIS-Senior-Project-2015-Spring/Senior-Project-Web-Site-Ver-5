@@ -26,11 +26,12 @@ class ProjectController extends CI_Controller
         $inputProjectId = $this->input->get('projectid', TRUE);
         
         if($input && $this->spw_user_model->isUserAStudent(getCurrentUserId($this))){
+            
             $formInput = json_decode($input);
             /* inserts vm request on DB */
             $success = $this->spw_vm_request_model->insertVmRequests($formInput,$user_id);
-            /* hardcoding path */
             $projectid = $this->spw_vm_request_model->getProjectId($user_id);
+            /*message*/
             $requetUrl = base_url()."vm-request?projectid=".$projectid;
             $email = "ypera006@fiu.edu";
             $message = "Click <a href=\"$requetUrl\">here</a> to see request";
@@ -38,22 +39,27 @@ class ProjectController extends CI_Controller
 //            send_email($this, $email, $subject, $message); /*testing email*/
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
             
-        }
+        }/*user is head professor and updates vm requests for a project*/
+        else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
+            
+            $inputForm = json_decode($input);
+            $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
+            echo json_encode(array("success"=>$success));
+            
+        }/*user is head professor and has vm request for a project*/
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $inputProjectId){
             
             $data['title'] = 'VM - Requests';
             $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
             $this->load->view('vm_requests', $data);
-        }
-        else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
-            $inputForm = json_decode($input);
-            $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
+            
         }
         else{ /* returns project requests */
             $data['title'] = 'VM - Request';
             $data['requests'] = $this->spw_vm_request_model->getUserRequests($user_id);
             $this->load->view('vm_request', $data);
         }
+        
     }
 
     public function past_projects()
@@ -255,12 +261,19 @@ class ProjectController extends CI_Controller
                             $data['displayJoin'] = FALSE;                            
                         }                        
         } 
+        /*added in SPW v5*/
+        $session_data = $this->session->userdata('logged_in');
+        $user_id = $session_data['id'];
+        $project_id = $project_details->project->id;
+        $userInProject = $this->spw_vm_request_model->isStudentInProject($user_id,$project_id);
+        $isGoodDate = true; 
+        $data['request_machine'] = $userInProject && $isGoodDate;
         
         $data['projectDetails'] = $project_details;
         $data['title'] = 'Project Details';
         $data['isUserProfessor'] = $isUserProfessor;
         $data['isUserHeadProfessor'] = $isUserHeadProfessor;
-        
+        $data['projectNo'] = $project_details->project->id;
         $this->load->view($resulting_view_name, $data);
     }
 
