@@ -19,7 +19,7 @@
         <?php foreach($requests as $request):?>
         <tr>
             <td>
-                <select name="key" style="width: auto">
+                <select name="key" style="width: 80px">
                 <?php 
                    echo '<option>'.$request->id.'</option>'
                 ?>
@@ -35,10 +35,10 @@
                     );
                         
                         foreach($oses as $os){
-                            if($request->OS == $os)
-                                echo'<option value ='.$os.' selected="selected">'.$os.'</option>';
+                            if($request->OS === $os)
+                                echo'<option selected="selected">'.$os.'</option>';
                             else{
-                             echo'<option value="'.$os.'">'.$os.'</option>';
+                             echo'<option>'.$os.'</option>';
                             }
                         }
                 ?>
@@ -143,8 +143,10 @@
   <label for="usr">email address:</label>
   <input type="text" class="form-control" id="usr">
 </div>-->
-<label for="usr">email address:</label>
-<input  type="text" class="form-control"/>
+<?php 
+    echo '<label for="usr">email address:</label>';
+    echo '<input  type="text" id="emailInput" class="form-control"/>';
+?>
 <button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
 
 <script>
@@ -153,18 +155,30 @@ $('#submitRequests').click(function(){
     var data = getTableContent();
     console.log("machines: ");
     console.log(data);
-    uploadMachines(data);
+    var email = $("#emailInput").val();
+    if(isEmail(email)){
+        uploadMachines(data);
+    }
+    else 
+        alert("Incorrect email");
 });
 
 function uploadMachines(machineList){
     $.ajax({
         type: "POST",
-        url: "./vm-request?projectid=82",
+        url: "./vm-request",
         data: JSON.stringify(machineList),
         dataType: "json",
         success: function(response){
             console.log("response");
             console.log(response);
+            if(response.success){
+                //do page reload when success
+                location.reload();
+            }else{
+                //show meassage when not success
+                alert("Upload Failed");
+            }
         }
     });
 }
@@ -191,6 +205,11 @@ function getTableContent() {
         data.push(obj);
     }
     return data;
+}
+
+function isEmail(email) {
+  var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+  return regex.test(email);
 }
 </script>
 
