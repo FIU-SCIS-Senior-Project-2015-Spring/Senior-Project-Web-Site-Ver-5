@@ -1,3 +1,4 @@
+
 <?php
 
 class SPW_vm_request_Model extends CI_Model
@@ -8,9 +9,9 @@ class SPW_vm_request_Model extends CI_Model
         parent::__construct();
     }
     
-    /* Helper function, returns all requests made for a project, they 
+    /* function returns all requests made for a project, they 
      * could be APPROVED, DENIED, PENDING */
-    private function getUserRequestsFromProject($project_id){
+    public function getUserRequestsFromProject($project_id){
         
         $q = $this->db->query("SELECT OS, RAM, storage, numb_vm, status "
                             . "FROM spw_vm_request "
@@ -50,6 +51,13 @@ class SPW_vm_request_Model extends CI_Model
         return true;
     }
     
+    /*checks if student is in project*/
+    public function isStudentInProject($user_id,$project_id){
+        $query = "select id from spw_user where id='$user_id' and project='$project_id'";
+        $q = $this->db->query($query);
+        return $q->num_rows() > 0;
+    }
+    
     /* Returns the project id where a student belongs */
     public function getProjectId($user_id){
         
@@ -62,6 +70,41 @@ class SPW_vm_request_Model extends CI_Model
         return null;
     }
     
+    /* returns all pending requests made for a project, they 
+     * include id project */
+    public function getPendingRequestsFromProject($project_id){
+        
+        $q = $this->db->query("SELECT id,OS, RAM, storage, numb_vm, status "
+                            . "FROM spw_vm_request "
+                            . "where status = 'PENDING' AND project_id = $project_id");
+        $requests = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($requests,$row);
+        
+        return $requests;
+    }
+    
+    /* updates vm requests by project */
+    public function updateRequestsFromProject($requests){
+        /* for each request update its settings */
+        foreach($requests as $request){
+            $key = $request->key;
+            $os = $request->os;
+            $ram = $request->ram;
+            $hdd = $request->hdd;
+            $qty = $request->qty;
+            $status = $request->status;
+            
+            $query = "update spw_vm_request "
+                    . "set OS='$os',RAM=$ram,storage=$hdd,numb_vm=$qty,status='$status' "
+                    . "where id = $key";
+            $q = $this->db->query($query);
+            if(!$q) return false;
+        }
+        return true;
+    }
     
 }
 

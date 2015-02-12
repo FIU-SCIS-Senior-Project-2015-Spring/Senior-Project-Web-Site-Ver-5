@@ -77,6 +77,7 @@
 <br>
 <button id="addRequest" type="button" class="btn btn-default">Add Another Request</button>
 <button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
+
 <h4>Previous Requests</h4>
 <table class="auto table">
     <thead>
@@ -126,6 +127,13 @@ function uploadMachines(machineList){
         success: function(response){
             console.log("response");
             console.log(response);
+            if(response.success){
+                //do page reload when success
+                location.reload();
+            }else{
+                //show meassage when not success
+                alert("Upload Failed");
+            }
         }
     });
 }
