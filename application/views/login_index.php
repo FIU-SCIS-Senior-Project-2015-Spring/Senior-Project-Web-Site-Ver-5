@@ -119,6 +119,53 @@ if (strlen($fullErrorText) > 0) {
             ));
             ?>
             <?php echo form_close() ?>
+            <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+  Forgot password?
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" id="myModalLabel">Request Password Change</h3>
+      </div>
+      <div class="modal-body">
+        <?php echo form_open('admin/bypass_activation', array('class' => 'form-signin')) ?>
+
+            <h4>Insert your email</h4>
+
+            <?php
+
+            echo form_input(array(
+                'id' => 'email_address',
+                'name' => 'email_address',
+                'type' => 'email',
+                'class' => 'input-block-level input-large',
+                'placeholder' => 'Email address',
+                'required' => '',
+                'title' => 'Email address'
+            ));
+
+            echo form_submit(array(
+                'id' => 'accounts',
+                'name' => 'accounts',
+                'type' => 'Submit',
+                'class' => 'btn btn-large btn-primary',
+                'value' => 'Send'
+            ));
+            ?>
+            <?php echo form_close() ?>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
         </div>
 
         <!-- bottom text<-->
