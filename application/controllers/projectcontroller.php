@@ -267,13 +267,18 @@ class ProjectController extends CI_Controller
                             $data['displayJoin'] = FALSE;                            
                         }                        
         } 
-        /*added in SPW v5*/
+        /*added in SPW v5
+         * Shows Create VM-Request button in MyProject page
+         * after choose a project deadline is over
+         */
         $session_data = $this->session->userdata('logged_in');
         $user_id = $session_data['id'];
         $project_id = $project_details->project->id;
         $userInProject = $this->spw_vm_request_model->isStudentInProject($user_id,$project_id);
-        $isGoodDate = true; 
-        $data['request_machine'] = $userInProject && $isGoodDate;
+        $currDate = $tempTerm->currentDateUnderDeadline();
+        /*$isGoodDate = true; */
+        $data['request_machine'] = $userInProject && !$currDate;//$isGoodDate;
+        /*added in SPW v5 end*/
         
         $data['projectDetails'] = $project_details;
         $data['title'] = 'Project Details';
