@@ -47,15 +47,19 @@
     ?>
 
     <?php
-        /*echo form_password(array(
+    //If the head professor is impersonating the user, don't ask for current password.
+    $session_data = $this->session->userdata( 'logged_in' );
+    if( !isset( $session_data[ "head_professor" ] ) ) {
+        
+        echo form_password(array(
                         'id' => 'current-password',
                         'name' => 'current-password',
                         'class' => 'input-block-level input-large',
                         'placeholder' => 'Current Password',
                         'required' => '',
                         'title' => 'Current Password'
-                    ));*/
-
+                    ));
+    }
 
         echo form_password(array(
                         'id' => 'password_1',

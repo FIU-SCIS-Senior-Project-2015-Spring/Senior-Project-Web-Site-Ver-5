@@ -589,6 +589,14 @@ class UserController extends CI_Controller
                 $this->form_validation->set_rules('password_1', 'New Password','required|min_length[6]'); 
                 //$this->form_validation->set_rules('current-password', 'Current Password', 'callback_validateCurrentUserPassword');
 
+                $session_data = $this->session->userdata( 'logged_in' );
+                if( !isset( $session_data[ "head_professor" ] ) )
+                {
+                    $currentPassword = $this->input->post('current-password');
+                    $this->form_validation->set_rules('current-password', 'Current Password','required');
+                    $this->form_validation->set_rules('current-password', 'Current Password', 'callback_validateCurrentUserPassword');
+                }
+                
                 if ($this->form_validation->run() == FALSE)
                 {
                     $this->load->view('user_change_password');
@@ -915,7 +923,7 @@ class UserController extends CI_Controller
         }
         else
         {
-            return $this->spw_user_model->is_spw_registered_by_id($userId);
+            return $this->spw_user_model->is_manually_created($userId);
         }
     }
 }
