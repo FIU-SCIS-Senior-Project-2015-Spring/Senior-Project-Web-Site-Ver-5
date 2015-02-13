@@ -167,18 +167,18 @@ $('#submitRequests').click(function(){
         alert("Incorrect email");
 });
 
-//function uploadEmail(email){
-//    $ajax({
-//        type: "POST",
-//        url: "./vm-request",
-//        data: JSON.stringify(email),
-//        dataType: "json",
-//        success: function(response){
-//            console.log("response");
-//            console.log(response);
-//        }
-//    });
-//}
+function uploadEmail(email){
+    $ajax({
+        type: "POST",
+        url: "./vm-request",
+        data: JSON.stringify(email),
+        dataType: "json",
+        success: function(response){
+            console.log("response");
+            console.log(response);
+        }
+    });
+}
 
 function uploadMachines(machineList){
     $.ajax({
@@ -224,15 +224,15 @@ function getTableContent() {
     return data;
 }
 
-//function getEmail(){
-//    var data = [];
-//    var email  = $("#emailInput").val();
-//    var obj ={
-//        "email":email
-//    };
-//    data.push(obj);
-//    return data;
-//}
+function getEmail(){
+    var data = [];
+    var email  = $("#emailInput").val();
+    var obj ={
+        "email":email
+    };
+    data.push(obj);
+    return data;
+}
 
 function isEmail(email) {
   var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
