@@ -9,7 +9,7 @@
 ?>
 <br>
 <br>
-
+<?php echo form_open('vm_request'); ?>
 <div id="machines">
 <div class="machine col-md-12">
     <table class="auto" id="machines_table" >
@@ -158,5 +158,5 @@ function getTableContent() {
     return data;
 }
 </script>
-
+<?php echo form_close(); ?>
 <?php $this->load->view("template_footer"); ?>
