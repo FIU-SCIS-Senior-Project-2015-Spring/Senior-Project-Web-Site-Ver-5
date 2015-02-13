@@ -1,18 +1,9 @@
-
 <?php $this->load->view("template_header"); ?>
-
+<!--
+<td><input type="text" value="<?php echo $request->OS;?>"/></td>
 <h2> Virtual Machine Resources page under development </h2>
-<br>
-<?php
-    if (!isProfessor($this))
-       echo("<h4> NOTE: Virtual machine request must be done by team, no individual requests allow </h4>");
-?>
-<br>
-<br>
-
-<div id="machines">
-<div class="machine col-md-12">
-    <table class="auto" id="machines_table" >
+-->
+<table class="auto" >
     <thead>
       <tr>
          <th>Operating System</th>
@@ -25,7 +16,7 @@
     <tbody>
         <tr>
             <td>
-                <select name="os">
+                <select name="role">
                         <?php 
                             $oses = array(
                                 "Windows Server 2008",
@@ -38,7 +29,7 @@
                 </select>
             </td>
             <td>
-                <select name="ram" 
+                <select name="role" 
                         <option>2</option>
                         <option>4</option>
                         <option>8</option>
@@ -47,7 +38,7 @@
                 </select>
             </td>
            <td>
-                <select name="hdd">
+                <select name="role">
                         <option>8</option>
                         <option>12</option>
                         <option>16</option>
@@ -57,7 +48,7 @@
                 </select>
            </td>
            <td>
-               <select name="qty">
+               <select name="role">
                         <option>1</option>
                         <option>2</option>
                         <option>3</option>
@@ -72,11 +63,6 @@
         </tr>
     </tbody>
 </table>
-</div>
-</div>
-<br>
-<button id="addRequest" type="button" class="btn btn-default">Add Another Request</button>
-<button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
 <h4>Previous Requests</h4>
 <table class="auto table">
     <thead>
@@ -100,55 +86,5 @@
         <?php endforeach;?>
     </tbody>
 </table>
-
-<script>
-$('#addRequest').click(function(){
-    console.log("Clicked add request");
-    var machines = $("#machines");
-    var lastMachine = $("#machines .machine:last-child");
-    machines.append($('<br>'));
-    machines.append(lastMachine.clone());
-});
-
-$('#submitRequests').click(function(){
-    console.log("Clicked submit");
-    var data = getTableContent();
-    console.log("machines: ");
-    console.log(data);
-    uploadMachines(data);
-});
-function uploadMachines(machineList){
-    $.ajax({
-        type: "POST",
-        url: "./vm-request",
-        data: JSON.stringify(machineList),
-        dataType: "json",
-        success: function(response){
-            console.log("response");
-            console.log(response);
-        }
-    });
-}
-
-function getTableContent() {
-    var data = [];
-    var table = $('#machines_table tbody tr');
-    for(var i = 0 ; i< table.length;i++){
-        var row = table.eq(i);
-        var os = row.find('[name="os"]').val();
-        var ram = row.find('[name="ram"]').val();
-        var hdd = row.find('[name="hdd"]').val();
-        var qty = row.find('[name="qty"]').val();
-        var obj = {
-            "os":os,
-            "ram":ram,
-            "hdd":hdd,
-            "qty":qty
-        };
-        data.push(obj);
-    }
-    return data;
-}
-</script>
-
 <?php $this->load->view("template_footer"); ?>
+

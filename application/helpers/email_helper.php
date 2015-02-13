@@ -20,6 +20,7 @@ if ( !function_exists('send_email'))
         {
             //setErrorFlashMessage($sender_controller, 'error sending email');
             print_r('error sending email');
+            var_dump($sender_controller->email);
         }
     }
 }
