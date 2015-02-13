@@ -2,6 +2,8 @@
 
 <h1> VMs requests </h1>
 
+<?php echo form_open('vm_requests'); ?>
+
 <div id="machines">
 <div class="machine col-md-12">
 <table class="auto table" id="machines_table">
@@ -45,7 +47,7 @@
                 </select>
             </td>
             <td>
-                <select name="ram" style="width: auto">
+                <select name="ram" style="width: 80px">
                 <?php 
                     $rams = array(
                         2,
@@ -57,16 +59,16 @@
                     
                         foreach($rams as $ram){
                             if($request->RAM == $ram)
-                                echo'<option value ='.$ram.' selected="selected">'.$ram.'</option>';
+                                echo'<option selected="selected">'.$ram.'</option>';
                             else{
-                             echo'<option value="'.$ram.'">'.$ram.'</option>';
+                             echo'<option>'.$ram.'</option>';
                             }
                         }
                 ?>    
                 </select>
             </td>
             <td>
-                <select name="hdd" style="width: auto">
+                <select name="hdd" style="width: 80px">
                 <?php
                         $hdds = array(
                             8,
@@ -79,18 +81,18 @@
                         
                             foreach($hdds as $hdd){
                                 if($request->storage == $hdd)
-                                    echo'<option value ='.$hdd.' selected="selected">'.$hdd.'</option>';
+                                    echo'<option selected="selected">'.$hdd.'</option>';
                                 else{
-                                 echo'<option value="'.$hdd.'">'.$hdd.'</option>';
+                                 echo'<option>'.$hdd.'</option>';
                                 }
                             }
                   ?>
                 </select>
             </td>
             <td>
-                <select name="qty" style="width: auto">
+                <select name="qty" style="width: 80px">
                     <?php
-                        $vms = array(
+                        $gtys = array(
                             1,
                             2,
                             3,
@@ -102,11 +104,11 @@
                             9
                         );
                         
-                            foreach($vms as $vm){
-                                if($request->gty == $vm)
-                                    echo'<option value ='.$vm.' selected="selected">'.$vm.'</option>';
+                            foreach($gtys as $qty){
+                                if($request->numb_vm == $qty)
+                                    echo'<option selected="selected">'.$qty.'</option>';
                                 else{
-                                 echo'<option value="'.$vm.'">'.$vm.'</option>';
+                                 echo'<option>'.$qty.'</option>';
                                 }
                             }
                     ?>
@@ -137,19 +139,22 @@
 </table>
 </div>
 <label for="usr">email address:</label>
-<input  type="text" id="emailInput" class="form-control"/>
+
+<?php
+    echo form_input(array(
+        'id' => 'email_address',
+        'name' => 'email_address',
+        'type' => 'email',
+        'placeholder' => 'email@example.com',
+        'value' => set_value('email_address'),
+        'title' => 'Email address'
+    ));
+?>
+
+<!--<input  type="text" id="email_address" class="form-control"/>-->
 <button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
 </div>
 <br>
-
-<!--
-<?php echo form_open('validate_email'); ?>
-<?php 
-    echo form_input('email',$john_email); ?> <?php echo form_error('demail'); 
-//    $john_email='onClick="email()"';
-?>
-<?php echo form_close(); ?>
--->
 
 <script>
 $('#submitRequests').click(function(){
@@ -158,27 +163,27 @@ $('#submitRequests').click(function(){
 //    var email = getEmail(); //$("#emailInput").val();
     console.log("machines: ");
     console.log(data);
-    var john_email = $("#emailInput").val();
+    var john_email = $("#email_address").val();
     if(isEmail(john_email)){
         uploadMachines(data);
-        //uploadEmail(email);
+//        //uploadEmail(email);
     }
     else 
         alert("Incorrect email");
 });
 
-function uploadEmail(email){
-    $ajax({
-        type: "POST",
-        url: "./vm-request",
-        data: JSON.stringify(email),
-        dataType: "json",
-        success: function(response){
-            console.log("response");
-            console.log(response);
-        }
-    });
-}
+//function uploadEmail(email){
+//    $ajax({
+//        type: "POST",
+//        url: "./vm-request",
+//        data: JSON.stringify(email),
+//        dataType: "json",
+//        success: function(response){
+//            console.log("response");
+//            console.log(response);
+//        }
+//    });
+//}
 
 function uploadMachines(machineList){
     $.ajax({
@@ -224,21 +229,24 @@ function getTableContent() {
     return data;
 }
 
-function getEmail(){
-    var data = [];
-    var email  = $("#emailInput").val();
-    var obj ={
-        "email":email
-    };
-    data.push(obj);
-    return data;
-}
+//function getEmail(){
+//    var data = [];
+//    var email  = $("#emailInput").val();
+//    var obj ={
+//        "email":email
+//    };
+//    data.push(obj);
+//    return data;
+//}
 
 function isEmail(email) {
   var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
   return regex.test(email);
 }
 </script>
+<?php echo form_close(); ?>
+
+
 
 <?php $this->load->view("template_footer"); ?>
 
@@ -262,4 +270,16 @@ function isEmail(email) {
     $html = generateSelect('os', $oses, $request->OS); /*call statement*/
 }
 ?>
+
+    echo("<div>");
+    
+    echo form_label('email address: ');
+     echo form_submit(array(
+                         'id' => 'submitRequests',
+                         'type' => 'Submit',
+                         'class' => 'btn btn-info',
+                         'value' => 'submit',
+                         'class' => 'btn btn-default pull-right'
+                         ));
+  echo("</div>");
 -->
