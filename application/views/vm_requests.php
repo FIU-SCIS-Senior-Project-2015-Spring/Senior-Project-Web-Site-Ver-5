@@ -136,32 +136,49 @@
     </tbody>
 </table>
 </div>
+<label for="usr">email address:</label>
+<input  type="text" id="emailInput" class="form-control"/>
+<button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
 </div>
 <br>
-<!--<button type="button" class="btn btn-primary pull-right">Submit </button>
-<div class="form-group">
-  <label for="usr">email address:</label>
-  <input type="text" class="form-control" id="usr">
-</div>-->
+
+<!--
+<?php echo form_open('validate_email'); ?>
 <?php 
-    echo '<label for="usr">email address:</label>';
-    echo '<input  type="text" id="emailInput" class="form-control"/>';
+    echo form_input('email',$john_email); ?> <?php echo form_error('demail'); 
+//    $john_email='onClick="email()"';
 ?>
-<button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
+<?php echo form_close(); ?>
+-->
 
 <script>
 $('#submitRequests').click(function(){
     console.log("Clicked submit");
     var data = getTableContent();
+//    var email = getEmail(); //$("#emailInput").val();
     console.log("machines: ");
     console.log(data);
-    var email = $("#emailInput").val();
-    if(isEmail(email)){
+    var john_email = $("#emailInput").val();
+    if(isEmail(john_email)){
         uploadMachines(data);
+        //uploadEmail(email);
     }
     else 
         alert("Incorrect email");
 });
+
+//function uploadEmail(email){
+//    $ajax({
+//        type: "POST",
+//        url: "./vm-request",
+//        data: JSON.stringify(email),
+//        dataType: "json",
+//        success: function(response){
+//            console.log("response");
+//            console.log(response);
+//        }
+//    });
+//}
 
 function uploadMachines(machineList){
     $.ajax({
@@ -206,6 +223,16 @@ function getTableContent() {
     }
     return data;
 }
+
+//function getEmail(){
+//    var data = [];
+//    var email  = $("#emailInput").val();
+//    var obj ={
+//        "email":email
+//    };
+//    data.push(obj);
+//    return data;
+//}
 
 function isEmail(email) {
   var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
