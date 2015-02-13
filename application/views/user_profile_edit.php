@@ -100,7 +100,7 @@
             ?>
 
             <?php if (isset($canChangePassword) && $canChangePassword && 
-                    (strcmp($userDetails->user->role ,"PROFESSOR") == 0 || strcmp($userDetails->user->role ,"HEAD") == 0)) { ?>
+                    (strcmp($userDetails->user->role ,"PROFESSOR") == 0 || strcmp($userDetails->user->role ,"HEAD") == 0 || strcmp($userDetails->user->role ,"STUDENT") == 0)) { ?>
                 <p>
                     <?php echo anchor('change-password', 'Click to change password') ?>
                 </p>
