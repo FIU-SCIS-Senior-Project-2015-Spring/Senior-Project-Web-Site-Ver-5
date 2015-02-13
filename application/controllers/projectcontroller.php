@@ -19,7 +19,6 @@ class ProjectController extends CI_Controller
     /*added on SPW v. 5 */
     public function vm_request()
     {
-        $this->load->library('form_validation');
         $session_data = $this->session->userdata('logged_in');
         /* gets usr id */
         $user_id = $session_data['id'];
@@ -42,7 +41,7 @@ class ProjectController extends CI_Controller
             
         }/*user is head professor and updates vm requests for a project*/
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
-
+           
             $inputForm = json_decode($input);
             $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
             echo json_encode(array("success"=>$success));
@@ -51,12 +50,7 @@ class ProjectController extends CI_Controller
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $inputProjectId){
             
             $data['title'] = 'VM - Requests';
-            $data['john_email'] = NULL;
             $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
-            
-            $this->form_validation->set_error_delimiters('<div class="error">', '</div>');
-            $this->form_validation->set_rules('demail', 'john_email', 'required|valid_email');
-            
             $this->load->view('vm_requests', $data);
             
         }
