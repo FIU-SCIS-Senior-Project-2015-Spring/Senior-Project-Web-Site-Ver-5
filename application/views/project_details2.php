@@ -116,7 +116,7 @@
                 echo '<a id="submitRequests" 
                 type="button" 
                 class="btn btn-default pull-right"
-                href="'.base_url('/projectcontroller/vm_request').'">
+                href="'.base_url('./vm-request').'">
                     Create VM-Request
                 </a>';
             }

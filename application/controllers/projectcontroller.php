@@ -19,7 +19,6 @@ class ProjectController extends CI_Controller
     /*added on SPW v. 5 */
     public function vm_request()
     {
-        $this->load->library('form_validation');
         $session_data = $this->session->userdata('logged_in');
         /* gets usr id */
         $user_id = $session_data['id'];
@@ -33,16 +32,17 @@ class ProjectController extends CI_Controller
             $success = $this->spw_vm_request_model->insertVmRequests($formInput,$user_id);
             $projectid = $this->spw_vm_request_model->getProjectId($user_id);
             /*message*/
-            $requetUrl = base_url()."vm-request?projectid=".$projectid;
-            $email = "ypera006@fiu.edu";
-            $message = "Click <a href=\"$requetUrl\">here</a> to see request";
-            $subject = "A new VM request is awaiting acceptance";
-//            send_email($this, $email, $subject, $message); /*testing email*/
+            $requetUrl = base_url().'vm-request?projectid='.$projectid;
+            $email = 'ypera006@fiu.edu';
+            $message = "Click <a href=/'$requetUrl/'>here</a> to see request";
+            $subject = 'A new VM request is awaiting acceptance';
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
+            //send_email($this, $email, $subject, $message); /*testing email*/
             
         }/*user is head professor and updates vm requests for a project*/
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
-
+           
+//            $emailAddress = $this->input->post('email_address');
             $inputForm = json_decode($input);
             $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
             echo json_encode(array("success"=>$success));
@@ -51,12 +51,7 @@ class ProjectController extends CI_Controller
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $inputProjectId){
             
             $data['title'] = 'VM - Requests';
-            $data['john_email'] = NULL;
             $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
-            
-            $this->form_validation->set_error_delimiters('<div class="error">', '</div>');
-            $this->form_validation->set_rules('demail', 'john_email', 'required|valid_email');
-            
             $this->load->view('vm_requests', $data);
             
         }
