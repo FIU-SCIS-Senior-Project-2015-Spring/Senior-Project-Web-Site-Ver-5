@@ -133,7 +133,7 @@ if (strlen($fullErrorText) > 0) {
         <h3 class="modal-title" id="myModalLabel">Request Password Change</h3>
       </div>
       <div class="modal-body">
-        <?php echo form_open('admin/bypass_activation', array('class' => 'form-signin')) ?>
+        <?php echo form_open('admin/forgot_password', array('class' => 'form-signin')) ?>
 
             <h4>Insert your email</h4>
 
