@@ -277,7 +277,7 @@ class SPW_Notification_Model extends CI_Model
                         <body>
                             <h2>Project Deleted!! </h2>
                             <p>  Project "' . $project_title .'" has been deleted by ' . $professor_fullname . '.</p>
-                            <p><a href="http://spws.cis.fiu.edu/senior-project-website-v4">SeniorProjectWebsite</a></p>
+                            <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
                         </body>
                     </html>';
 
@@ -329,7 +329,7 @@ class SPW_Notification_Model extends CI_Model
                         <body>
                             <h2>Project Rejected!! </h2>
                             <p>  Project "' . $project_title .'" has been rejected by ' . $professor_fullname . '.</p>
-                            <p><a href="http://spws.cis.fiu.edu/senior-project-website-v4">SeniorProjectWebsite</a></p>
+                            <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
                         </body>
                     </html>';
 
@@ -369,7 +369,7 @@ class SPW_Notification_Model extends CI_Model
                         <body>
                             <h2>Project Approved!! </h2>
                             <p>  Project "' . $project_title .'" has been approved by ' . $fullname . '.</p>
-                            <p><a href="http://spws.cis.fiu.edu/senior-project-website-v4">SeniorProjectWebsite</a></p>
+                            <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
                         </body>
                     </html>';
 
@@ -400,7 +400,7 @@ class SPW_Notification_Model extends CI_Model
                                     <body>
                                         <h2>New project proposed!! </h2>
                                         <p> Project "' . $project_title . '" is waiting for your approval.</p>
-                                        <p><a href="http://spws.cis.fiu.edu/senior-project-website-v4">SeniorProjectWebsite</a></p>
+                                        <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
                                     </body>
                                 </html>';
 

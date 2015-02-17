@@ -194,7 +194,7 @@ class AdminController extends CI_Controller {
 	  $message = $row[ 'intro' ];
 	}
 
-		$message = $message . '<br><a href="http://spws.cis.fiu.edu/senior-project-website-v4/admin/email_activation/' . $this->reversible_encryption( $user_id ) . '"> http://spws.cis.fiu.edu/senior-project-website-v4/admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>';    	
+		$message = $message . '<br><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5/admin/email_activation/' . $this->reversible_encryption( $user_id ) . '"> http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5/admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>';    	
                 send_email($this, $this->input->post('email_address'), 'Senior Project Website Account', $message );
                 
                 $msg = 'Successfully created a user with the email: ' . $this->input->post('email_address') . '. 
@@ -346,7 +346,7 @@ class AdminController extends CI_Controller {
         <p>We have created an account for you to access it.</p>
           <p> Please log in with your email address and this temporary password: ' .  $password . '</p>
           <p>Once you login, update your profile and refer to the User Guide on the "About" page for help.</p>
-            <p><a href="http://spws.cis.fiu.edu/senior-project-website-v4">Senior Project Website</a></p>
+            <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">Senior Project Website</a></p>
             </body>
             </html>';
             
@@ -488,7 +488,7 @@ class AdminController extends CI_Controller {
                                 <p>We have created an account for you to access it.</p>
                                 <p> Please log in with your email address and this temporary password:' . $this->input->post('password_1') . ' </p>
                                     <p>Once you login, please update your profile and refer to the User Guide on the About page for help.</p>
-                                <p><a href="http://spws.cis.fiu.edu/senior-project-website-v4">SeniorProjectWebsite</a></p>
+                                <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
                             </body>
                             </html>';
 
