@@ -1,9 +1,6 @@
 <?php $this->load->view("template_header"); ?>
 
 <h1> VMs requests </h1>
-
-<?php echo form_open('vm_requests'); ?>
-
 <div id="machines">
 <div class="machine col-md-12">
 <table class="auto table" id="machines_table">
@@ -54,7 +51,8 @@
                         4,
                         8,
                         12,
-                        16
+                        16,
+                        32
                     );
                     
                         foreach($rams as $ram){
@@ -76,7 +74,8 @@
                             16,
                             20,
                             24,
-                            30
+                            30,
+                            50
                         );
                         
                             foreach($hdds as $hdd){
@@ -139,18 +138,17 @@
 </table>
 </div>
 <label for="usr">email address:</label>
-
 <?php
     echo form_input(array(
-        'id' => 'email_address',
-        'name' => 'email_address',
-        'type' => 'email',
-        'placeholder' => 'email@example.com',
-        'value' => set_value('email_address'),
-        'title' => 'Email address'
-    ));
+                        'id' => 'email_address',
+                        'name' => 'email_address',
+                        'type' => 'email',
+                        'placeholder' => 'email@example.com',
+                        'value' => set_value('email_address'),
+                        'required' => '',
+                        'title' => 'Email address'
+                        ));
 ?>
-
 <!--<input  type="text" id="email_address" class="form-control"/>-->
 <button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
 </div>
@@ -160,35 +158,20 @@
 $('#submitRequests').click(function(){
     console.log("Clicked submit");
     var data = getTableContent();
-//    var email = getEmail(); //$("#emailInput").val();
     console.log("machines: ");
     console.log(data);
     var john_email = $("#email_address").val();
     if(isEmail(john_email)){
-        uploadMachines(data);
-//        //uploadEmail(email);
+        uploadMachines(data,john_email);
     }
     else 
         alert("Incorrect email");
 });
 
-//function uploadEmail(email){
-//    $ajax({
-//        type: "POST",
-//        url: "./vm-request",
-//        data: JSON.stringify(email),
-//        dataType: "json",
-//        success: function(response){
-//            console.log("response");
-//            console.log(response);
-//        }
-//    });
-//}
-
-function uploadMachines(machineList){
+function uploadMachines(machineList,email){
     $.ajax({
         type: "POST",
-        url: "./vm-request",
+        url: "./vm-request?email_address="+email,
         data: JSON.stringify(machineList),
         dataType: "json",
         success: function(response){
@@ -229,25 +212,11 @@ function getTableContent() {
     return data;
 }
 
-//function getEmail(){
-//    var data = [];
-//    var email  = $("#emailInput").val();
-//    var obj ={
-//        "email":email
-//    };
-//    data.push(obj);
-//    return data;
-//}
-
 function isEmail(email) {
   var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
   return regex.test(email);
 }
 </script>
-<?php echo form_close(); ?>
-
-
-
 <?php $this->load->view("template_footer"); ?>
 
 
@@ -270,16 +239,4 @@ function isEmail(email) {
     $html = generateSelect('os', $oses, $request->OS); /*call statement*/
 }
 ?>
-
-    echo("<div>");
-    
-    echo form_label('email address: ');
-     echo form_submit(array(
-                         'id' => 'submitRequests',
-                         'type' => 'Submit',
-                         'class' => 'btn btn-info',
-                         'value' => 'submit',
-                         'class' => 'btn btn-default pull-right'
-                         ));
-  echo("</div>");
 -->
