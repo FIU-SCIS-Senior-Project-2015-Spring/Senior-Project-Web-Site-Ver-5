@@ -106,10 +106,10 @@ class SPW_vm_request_Model extends CI_Model
         return true;
     }
     
-    /* */
-    public function getProjectMembers($project_id){
-        $query = "SELECT 'first_name', 'last_name', email, role " 
-                ."FROM 'spw_user' " 
+    /* returns all active students from a project */
+    public function getStudentProjectMembers($project_id){
+        $query = "SELECT first_name, last_name, email, role " 
+                ."FROM spw_user " 
                 ."WHERE project = $project_id AND status = 'active' ";
         
         $q = $this->db->query($query);
@@ -123,5 +123,21 @@ class SPW_vm_request_Model extends CI_Model
         return $project_members;
     }
     
+    /* return the project title*/
+    public function getProjectTitle($project_id){
+        
+        $query = "SELECT title "
+               . "FROM spw_project "
+               . "WHERE id= $project_id ";
+        
+        $q = $this->db->query($query);
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->title;
+        return NULL;
+    }
+    
+   
 }
 
