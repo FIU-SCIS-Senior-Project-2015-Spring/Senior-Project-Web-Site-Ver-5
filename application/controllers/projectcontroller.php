@@ -16,7 +16,7 @@ class ProjectController extends CI_Controller
         $this->load->model('spw_vm_request_model');
     }
     
-    /*added on SPW v. 5 */
+    /*added on SPW v. 5 for vm request management */
     public function vm_request()
     {
         $session_data = $this->session->userdata('logged_in');
@@ -25,6 +25,7 @@ class ProjectController extends CI_Controller
         $input = file_get_contents('php://input');
         $inputProjectId = $this->input->get('projectid', TRUE);
         
+        /*user is student and requested vm resources*/
         if($input && $this->spw_user_model->isUserAStudent(getCurrentUserId($this))){
             
             $formInput = json_decode($input);
@@ -39,19 +40,33 @@ class ProjectController extends CI_Controller
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
 //            send_email($this, $email, $subject, $message); /*testing email*/
             
-        }/*user is head professor and updates vm requests for a project*/
+        }/*user is professor and updates vm requests for a project*/
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
-            $emailAddress = $this->input->get('email_address');
             
             $inputForm = json_decode($input);
+            /*get project id*/
+            $project_id = $inputForm[0]->key;
+            $project_title = $this->spw_vm_request_model->getProjectTitle($project_id);
+            $students = $this->spw_vm_request_model->getStudentProjectMembers($project_id);
+            /* creates email message */
+            $msg_members = $this->buildMessageProjectMember($students);
+            $msg_vm_settings = $this->buildMessageVM_settings($inputForm);
+            $msg_vm_body = $project_title
+                          .$msg_members.''
+                          .'<br>'
+                          .$msg_vm_settings;
+//            send_email($this, $this->input->get('email_address'), 'Virtual Machine Requests', $msg_vm_create); /*testing email*/            
             $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
             echo json_encode(array("success"=>$success));
             
-        }/*user is head professor and has vm request for a project*/
+        }/*user is head professor and has vm request for a project to look at it*/
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $inputProjectId){
             
             $data['title'] = 'VM - Requests';
+            $data['project_title'] = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
             $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
+            /*sets default email for head professor*/
+            $data['email_address'] = 'beacon@cheese.com';
             $this->load->view('vm_requests', $data);
             
         }
@@ -61,6 +76,83 @@ class ProjectController extends CI_Controller
             $this->load->view('vm_request', $data);
         }
         
+    }
+    
+    /* added on SPW v. 5 helper method to build email message for project members */
+    private function buildMessageProjectMember($input){
+        
+        $message = '';
+        $headers = '<table class="auto>'
+                       . '   <thead>'
+                             . '<tr>'
+                                . '<th> Firstname </th>'
+                                . '<th> Lastname </th>'
+                                . '<th> email </th>'
+                                . '<th> Role </th>'
+                                . '</tr>'
+                              . '<tr>'
+                       . '   </thead>';
+        $body_1 = '   <tbody>';
+        $body_3 = '   </tbody>'
+                       . '</table>';
+        $body_2 = '';
+        foreach($input as $request){
+
+                    $body_2 .= '<tr>'
+                                . '<td>'.$request->firs_name.'</td>'
+                                . '<td>'.$request->last_name.'</td>'
+                                . '<td>'.$request->email.'</td>'
+                                . '<td>'.$request->role.'</td>'
+                            . '</tr>';
+                }
+                $message = $headers.''
+                          .$body_1.''
+                          .$body_2.''
+                          .$body_3 ;     
+        return $message;
+    }
+    
+    /* added on SPW v. 5 helper method to build email message for vm settings */
+    private function buildMessageVM_settings($inputForm){
+        
+        $message = '';
+        $headers = '<table class="auto>'
+                       . '   <thead>'
+                             . '<tr>'
+                                . '<th> OS </th>'
+                                . '<th> RAM </th>'
+                                . '<th> STORAGE </th>'
+                                . '<th> No. VMs </th>'
+                                . '</tr>'
+                              . '<tr>'
+                       . '   </thead>';
+        $body_1 = '   <tbody>';
+        $body_3 = '   </tbody>'
+                       . '</table>';
+        $body_2 = '';
+        foreach($inputForm as $request){
+            
+                $key = $request->key;
+                $os = $request->os;
+                $ram = $request->ram;
+                $hdd = $request->hdd;
+                $qty = $request->qty;
+                $status = $request->status;
+                
+                if($status == 'APPROVED'){
+                    $body_2 .= '<tr>'
+                                . '<td>'.$os.'</td>'
+                                . '<td>'.$ram.'</td>'
+                                . '<td>'.$hdd.'</td>'
+                                . '<td>'.$qty.'</td>'
+                            . '</tr>';
+                }
+                $message = $headers.''
+                          .$body_1.''
+                          .$body_2.''
+                          .$body_3 ;     
+            }
+        return $message;
     }
 
     public function past_projects()
