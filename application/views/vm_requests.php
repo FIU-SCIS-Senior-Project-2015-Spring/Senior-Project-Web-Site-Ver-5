@@ -1,6 +1,8 @@
 <?php $this->load->view("template_header"); ?>
 
-<h1> VMs requests </h1>
+<h1> VMs Requests </h1>
+<h3> <?php echo $project_title ?> </h3>
+<br>
 <div id="machines">
 <div class="machine col-md-12">
 <table class="auto table" id="machines_table">
@@ -138,18 +140,7 @@
 </table>
 </div>
 <label for="usr">email address:</label>
-<?php
-    echo form_input(array(
-                        'id' => 'email_address',
-                        'name' => 'email_address',
-                        'type' => 'email',
-                        'placeholder' => 'email@example.com',
-                        'value' => set_value('email_address'),
-                        'required' => '',
-                        'title' => 'Email address'
-                        ));
-?>
-<!--<input  type="text" id="email_address" class="form-control"/>-->
+<input  type="text" id="email_address" value=<?php echo $email_address ?> class="form-control"/>
 <button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
 </div>
 <br>
