@@ -46,17 +46,17 @@ class ProjectController extends CI_Controller
             $inputForm = json_decode($input);
             /*get project id*/
             $project_title = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
-            $students = $this->spw_vm_request_model->projectMemberMessage($inputProjectId);
+            $students = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
             /* creates email message */
-            $msg_members = $this->buildMessageProjectMember($students);
+            $msg_members = $this->projectMemberMessage($students);
             $msg_vm_settings = $this->buildMessageVM_settings($inputForm);
             $msg_vm_body = $project_title
-                          ."/n"
+                          ."\r\n"
                           .$msg_members
-                          ."/n"
+                          ."\r\n"
                           .$msg_vm_settings;
             
-            send_email($this, $this->input->get('email_address'), 'Virtual Machine Requests', $msg_vm_body); /*testing email*/            
+//            send_email($this, $this->input->get('email_address'), 'Virtual Machine Requests', $msg_vm_body); /*testing email*/            
             $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
             echo json_encode(array("success"=> $success));
             
@@ -81,11 +81,11 @@ class ProjectController extends CI_Controller
     }
     
     private function projectMemberMessage($input){
-        $msg = '';
+        $msg = "";
         foreach($input as $request){
-            $msg .= $request->first_name." ".$request->last_name."   ".$request->email."/n";
+            $msg .= "".$request->first_name." ".$request->last_name."   ".$request->email."\r\n";
         }
-        return msg;
+        return $msg;
     }
     
     /* added on SPW v. 5 helper method to build email message for project members */
