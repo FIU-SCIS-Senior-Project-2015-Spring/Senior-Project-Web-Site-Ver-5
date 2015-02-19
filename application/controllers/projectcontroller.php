@@ -56,7 +56,7 @@ class ProjectController extends CI_Controller
                           ."\r\n"
                           .$msg_vm_settings;
             
-//            send_email($this, $this->input->get('email_address'), 'Virtual Machine Requests', $msg_vm_body); /*testing email*/            
+            send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body); /*testing email*/            
             $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
             echo json_encode(array("success"=> $success));
             
@@ -130,14 +130,14 @@ class ProjectController extends CI_Controller
                     <html xmlns="http://www.w3.org/1999/xhtml">
                      <head>
                       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-                      <title>Demystifying Email Design</title>
+                      <title>Virtual Machine request</title>
                       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
                     </head>
                     </html>'
                     .'<table "style="width:80%">'
                        . '   <thead>'
                              . '<tr>'
-                                . '<th> OS </th>'
+                                . '<th> IMAGE </th>'
                                 . '<th> RAM </th>'
                                 . '<th> STORAGE </th>'
                                 . '<th> No. VMs </th>'
