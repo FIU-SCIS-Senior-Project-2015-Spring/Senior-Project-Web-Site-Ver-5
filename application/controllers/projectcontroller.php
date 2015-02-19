@@ -46,17 +46,16 @@ class ProjectController extends CI_Controller
             $inputForm = json_decode($input);
             /*get project id*/
             $project_title = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
-            $students = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
+            $students = $this->spw_vm_request_model->projectMemberMessage($inputProjectId);
             /* creates email message */
             $msg_members = $this->buildMessageProjectMember($students);
             $msg_vm_settings = $this->buildMessageVM_settings($inputForm);
-            $msg_vm_body = '<dev>'.
-                          $project_title
-                          .'<br>'
+            $msg_vm_body = $project_title
+                          ."/n"
                           .$msg_members
-                          .'<br>'
-                          .$msg_vm_settings
-                           .'</dev.';
+                          ."/n"
+                          .$msg_vm_settings;
+            
             send_email($this, $this->input->get('email_address'), 'Virtual Machine Requests', $msg_vm_body); /*testing email*/            
             $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
             echo json_encode(array("success"=> $success));
@@ -79,6 +78,14 @@ class ProjectController extends CI_Controller
             $this->load->view('vm_request', $data);
         }
         
+    }
+    
+    private function projectMemberMessage($input){
+        $msg = '';
+        foreach($input as $request){
+            $msg .= $request->first_name." ".$request->last_name."   ".$request->email."/n";
+        }
+        return msg;
     }
     
     /* added on SPW v. 5 helper method to build email message for project members */
@@ -119,17 +126,14 @@ class ProjectController extends CI_Controller
     private function buildMessageVM_settings($inputForm){
         
         $message = '';
-        $headers = '<head>
-                    <style>
-                    table, th, td {
-                        border: 1px solid black;
-                        border-collapse: collapse;
-                    }
-                    th, td {
-                        padding: 15px;
-                    }
-                    </style>
-                    </head>'
+        $headers = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+                    <html xmlns="http://www.w3.org/1999/xhtml">
+                     <head>
+                      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+                      <title>Demystifying Email Design</title>
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                    </head>
+                    </html>'
                     .'<table "style="width:80%">'
                        . '   <thead>'
                              . '<tr>'
