@@ -38,16 +38,15 @@ class ProjectController extends CI_Controller
             $message = "Click <a href=/'$requetUrl/'>here</a> to see request";
             $subject = 'A new VM request is awaiting acceptance';
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
-//            send_email($this, $email, $subject, $message); /*testing email*/
+            send_email($this, $email, $subject, $message); /*testing email*/
             
         }/*user is professor and updates vm requests for a project*/
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
             
             $inputForm = json_decode($input);
             /*get project id*/
-            $project_id = $inputForm[0]->key;
-            $project_title = $this->spw_vm_request_model->getProjectTitle($project_id);
-            $students = $this->spw_vm_request_model->getStudentProjectMembers($project_id);
+            $project_title = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
+            $students = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
             /* creates email message */
             $msg_members = $this->buildMessageProjectMember($students);
             $msg_vm_settings = $this->buildMessageVM_settings($inputForm);
@@ -55,15 +54,16 @@ class ProjectController extends CI_Controller
                           .$msg_members.''
                           .'<br>'
                           .$msg_vm_settings;
-//            send_email($this, $this->input->get('email_address'), 'Virtual Machine Requests', $msg_vm_create); /*testing email*/            
+            send_email($this, $this->input->get('email_address'), 'Virtual Machine Requests', $msg_vm_body); /*testing email*/            
             $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
-            echo json_encode(array("success"=>$success));
+            echo json_encode(array("success"=> $success));
             
         }/*user is head professor and has vm request for a project to look at it*/
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $inputProjectId){
             
             $data['title'] = 'VM - Requests';
             $data['project_title'] = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
+            $data['projectid'] = $inputProjectId;
             $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
             /*sets default email for head professor*/
             $data['email_address'] = 'beacon@cheese.com';
@@ -93,18 +93,18 @@ class ProjectController extends CI_Controller
                               . '<tr>'
                        . '   </thead>';
         $body_1 = '   <tbody>';
-        $body_3 = '   </tbody>'
-                       . '</table>';
         $body_2 = '';
         foreach($input as $request){
 
                     $body_2 .= '<tr>'
-                                . '<td>'.$request->firs_name.'</td>'
+                                . '<td>'.$request->first_name.'</td>'
                                 . '<td>'.$request->last_name.'</td>'
                                 . '<td>'.$request->email.'</td>'
                                 . '<td>'.$request->role.'</td>'
                             . '</tr>';
                 }
+        $body_3 = '   </tbody>'
+                       . '</table>';
                 $message = $headers.''
                           .$body_1.''
                           .$body_2.''
