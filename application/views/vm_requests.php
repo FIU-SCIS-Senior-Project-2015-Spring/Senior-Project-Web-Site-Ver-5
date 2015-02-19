@@ -160,9 +160,12 @@ $('#submitRequests').click(function(){
 });
 
 function uploadMachines(machineList,email){
+    var url = "./vm-request?email_address="+email+"&projectid="+<?php echo $projectid?>;
+    console.log(url);
+    console.log(JSON.stringify(machineList));
     $.ajax({
         type: "POST",
-        url: "./vm-request?email_address="+email,
+        url: url,
         data: JSON.stringify(machineList),
         dataType: "json",
         success: function(response){
