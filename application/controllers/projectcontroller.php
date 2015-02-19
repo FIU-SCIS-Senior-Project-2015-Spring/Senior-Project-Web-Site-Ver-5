@@ -50,12 +50,13 @@ class ProjectController extends CI_Controller
             /* creates email message */
             $msg_members = $this->buildMessageProjectMember($students);
             $msg_vm_settings = $this->buildMessageVM_settings($inputForm);
-            $msg_vm_body = 
+            $msg_vm_body = '<dev>'.
                           $project_title
                           .'<br>'
                           .$msg_members
                           .'<br>'
-                          .$msg_vm_settings;
+                          .$msg_vm_settings
+                           .'</dev.';
             send_email($this, $this->input->get('email_address'), 'Virtual Machine Requests', $msg_vm_body); /*testing email*/            
             $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
             echo json_encode(array("success"=> $success));
@@ -118,7 +119,18 @@ class ProjectController extends CI_Controller
     private function buildMessageVM_settings($inputForm){
         
         $message = '';
-        $headers = '<table border="1" style="width:100%">'
+        $headers = '<head>
+                    <style>
+                    table, th, td {
+                        border: 1px solid black;
+                        border-collapse: collapse;
+                    }
+                    th, td {
+                        padding: 15px;
+                    }
+                    </style>
+                    </head>'
+                    .'<table "style="width:80%">'
                        . '   <thead>'
                              . '<tr>'
                                 . '<th> OS </th>'
