@@ -50,8 +50,10 @@ class ProjectController extends CI_Controller
             /* creates email message */
             $msg_members = $this->buildMessageProjectMember($students);
             $msg_vm_settings = $this->buildMessageVM_settings($inputForm);
-            $msg_vm_body = $project_title
-                          .$msg_members.''
+            $msg_vm_body = 
+                          $project_title
+                          .'<br>'
+                          .$msg_members
                           .'<br>'
                           .$msg_vm_settings;
             send_email($this, $this->input->get('email_address'), 'Virtual Machine Requests', $msg_vm_body); /*testing email*/            
@@ -89,10 +91,11 @@ class ProjectController extends CI_Controller
                                 . '<th> Lastname </th>'
                                 . '<th> email </th>'
                                 . '<th> Role </th>'
-                                . '</tr>'
-                              . '<tr>'
+                             . '</tr>'
                        . '   </thead>';
         $body_1 = '   <tbody>';
+        $body_3 = '   </tbody>'
+               . '</table>';
         $body_2 = '';
         foreach($input as $request){
 
@@ -103,12 +106,11 @@ class ProjectController extends CI_Controller
                                 . '<td>'.$request->role.'</td>'
                             . '</tr>';
                 }
-        $body_3 = '   </tbody>'
-                       . '</table>';
-                $message = $headers.''
-                          .$body_1.''
-                          .$body_2.''
-                          .$body_3 ;     
+
+                $message = $headers
+                          .$body_1
+                          .$body_2
+                          .$body_3;     
         return $message;
     }
     
@@ -116,15 +118,14 @@ class ProjectController extends CI_Controller
     private function buildMessageVM_settings($inputForm){
         
         $message = '';
-        $headers = '<table class="auto>'
+        $headers = '<table border="1" style="width:100%">'
                        . '   <thead>'
                              . '<tr>'
                                 . '<th> OS </th>'
                                 . '<th> RAM </th>'
                                 . '<th> STORAGE </th>'
                                 . '<th> No. VMs </th>'
-                                . '</tr>'
-                              . '<tr>'
+                             . '</tr>'
                        . '   </thead>';
         $body_1 = '   <tbody>';
         $body_3 = '   </tbody>'
@@ -147,9 +148,9 @@ class ProjectController extends CI_Controller
                                 . '<td>'.$qty.'</td>'
                             . '</tr>';
                 }
-                $message = $headers.''
-                          .$body_1.''
-                          .$body_2.''
+                $message = $headers
+                          .$body_1
+                          .$body_2
                           .$body_3 ;     
             }
         return $message;
