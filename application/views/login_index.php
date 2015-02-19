@@ -118,14 +118,16 @@ if (strlen($fullErrorText) > 0) {
                 'value' => 'Log In'
             ));
             ?>
-            <?php echo form_close() ?>
+            
             <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-  Forgot password?
-</button>
-
+            <button type="button" class="btn btn-primary btn-large pull-right" data-toggle="modal" data-target="#myModal">
+            Forgot password?
+            </button>
+            
+            <?php echo form_close() ?>
+            
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal modal-narrow fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -161,7 +163,6 @@ if (strlen($fullErrorText) > 0) {
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>

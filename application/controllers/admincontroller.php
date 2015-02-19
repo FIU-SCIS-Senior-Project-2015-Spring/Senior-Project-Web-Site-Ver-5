@@ -383,11 +383,14 @@ class AdminController extends CI_Controller {
 			  $message ='<html>
         <head><title>Senior Project Website Account Password</title></head>
         <body>
-        <h2>Welcome to the Senior Project Website !!</h2>
+        <p>Hello,</p>
         
-        <p>We have created an account for you to access it.</p>
+        <p>Someone (hopefully you) has requested to change your password at the Senior Project Website. If you did not send this request, please ignore this message.</p>
+        
+        <p>To change your password, please visit the following page:</p>
+        
         <br><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5/admin/email_activation/' . $this->reversible_encryption( $user_id ) . '"> http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5/admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>
-            </body>
+        </body>
             </html>';
             
             send_email( $this, $this->input->post( 'email_address' ), 'Senior Project Website Account', $message );
