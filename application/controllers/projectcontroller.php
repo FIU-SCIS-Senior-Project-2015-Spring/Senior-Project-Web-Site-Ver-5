@@ -34,11 +34,11 @@ class ProjectController extends CI_Controller
             $projectid = $this->spw_vm_request_model->getProjectId($user_id);
             /*message*/
             $requetUrl = base_url().'vm-request?projectid='.$projectid;
-            $email = 'ypera006@fiu.edu';
+            $email = 'sadjadi@cs.fiu.edu';
             $message = "Click <a href=/'$requetUrl/'>here</a> to see request";
             $subject = 'A new VM request is awaiting acceptance';
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
-            send_email($this, $email, $subject, $message); /*testing email*/
+//            send_email($this, $email, $subject, $message); /*testing email*/
             
         }/*user is professor and updates vm requests for a project*/
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
@@ -49,14 +49,18 @@ class ProjectController extends CI_Controller
             $students = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
             /* creates email message */
             $msg_members = $this->projectMemberMessage($students);
-            $msg_vm_settings = $this->buildMessageVM_settings($inputForm);
-            $msg_vm_body = $project_title
-                          ."\r\n"
-                          .$msg_members
-                          ."\r\n"
-                          .$msg_vm_settings;
+            $msg_vm_settings = $this->vmSettingsMessage($inputForm);
+            $msg_vm_body = '<html>'
+                          . '<body>'
+                          . '<h2>'.$project_title.'</h2>'
+                          . '<br>'
+                          . $msg_members
+                          . '<br>'
+                          .$msg_vm_settings
+                          . '</body>'
+                          . '</html>';
             
-            send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body); /*testing email*/            
+//            send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body); /*testing email*/            
             $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
             echo json_encode(array("success"=> $success));
             
@@ -80,50 +84,17 @@ class ProjectController extends CI_Controller
         
     }
     
+    /* added on SPW v. 5 helper method to build email message for project members */
     private function projectMemberMessage($input){
-        $msg = "";
+        $msg = '';
         foreach($input as $request){
-            $msg .= "".$request->first_name." ".$request->last_name."   ".$request->email."\r\n";
+            $msg .= '<p>'.$request->first_name.' '.$request->last_name.'   '.$request->email.'</p><br>';
         }
         return $msg;
     }
     
-    /* added on SPW v. 5 helper method to build email message for project members */
-    private function buildMessageProjectMember($input){
-        
-        $message = '';
-        $headers = '<table class="auto>'
-                       . '   <thead>'
-                             . '<tr>'
-                                . '<th> Firstname </th>'
-                                . '<th> Lastname </th>'
-                                . '<th> email </th>'
-                                . '<th> Role </th>'
-                             . '</tr>'
-                       . '   </thead>';
-        $body_1 = '   <tbody>';
-        $body_3 = '   </tbody>'
-               . '</table>';
-        $body_2 = '';
-        foreach($input as $request){
-
-                    $body_2 .= '<tr>'
-                                . '<td>'.$request->first_name.'</td>'
-                                . '<td>'.$request->last_name.'</td>'
-                                . '<td>'.$request->email.'</td>'
-                                . '<td>'.$request->role.'</td>'
-                            . '</tr>';
-                }
-
-                $message = $headers
-                          .$body_1
-                          .$body_2
-                          .$body_3;     
-        return $message;
-    }
-    
     /* added on SPW v. 5 helper method to build email message for vm settings */
-    private function buildMessageVM_settings($inputForm){
+    private function vmSettingsMessage($inputForm){
         
         $message = '';
         $headers = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -134,13 +105,13 @@ class ProjectController extends CI_Controller
                       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
                     </head>
                     </html>'
-                    .'<table "style="width:80%">'
+                    .'<table border="1" cellpadding="0" cellspacing="0" style="width:80%">'
                        . '   <thead>'
                              . '<tr>'
                                 . '<th> IMAGE </th>'
                                 . '<th> RAM </th>'
                                 . '<th> STORAGE </th>'
-                                . '<th> No. VMs </th>'
+                                . '<th> VMs </th>'
                              . '</tr>'
                        . '   </thead>';
         $body_1 = '   <tbody>';
