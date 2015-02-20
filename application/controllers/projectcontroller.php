@@ -38,7 +38,7 @@ class ProjectController extends CI_Controller
             $message = "Click <a href=/'$requetUrl/'>here</a> to see request";
             $subject = 'A new VM request is awaiting acceptance';
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
-//            send_email($this, $email, $subject, $message); /*testing email*/
+            send_email($this, $email, $subject, $message); /*testing email*/
             
         }/*user is professor and updates vm requests for a project*/
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
