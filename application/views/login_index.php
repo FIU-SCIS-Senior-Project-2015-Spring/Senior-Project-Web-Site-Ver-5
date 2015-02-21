@@ -118,7 +118,55 @@ if (strlen($fullErrorText) > 0) {
                 'value' => 'Log In'
             ));
             ?>
+            
+            <!-- Button trigger modal -->
+            <a href type="link" class="pull-right" data-toggle="modal" data-target="#myModal">
+            Forgot password?
+            </a>
+            
             <?php echo form_close() ?>
+            
+<!-- Modal -->
+<div class="modal modal-narrow fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" id="myModalLabel">Request Password Change</h3>
+      </div>
+      <div class="modal-body">
+        <?php echo form_open('admin/forgot_password', array('class' => 'form-signin')) ?>
+
+            <h4>Insert your email</h4>
+
+            <?php
+
+            echo form_input(array(
+                'id' => 'email_address',
+                'name' => 'email_address',
+                'type' => 'email',
+                'class' => 'input-block-level input-large',
+                'placeholder' => 'Email address',
+                'required' => '',
+                'title' => 'Email address'
+            ));
+
+            echo form_submit(array(
+                'id' => 'accounts',
+                'name' => 'accounts',
+                'type' => 'Submit',
+                'class' => 'btn btn-large btn-primary',
+                'value' => 'Send'
+            ));
+            ?>
+            <?php echo form_close() ?>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
         </div>
 
         <!-- bottom text<-->

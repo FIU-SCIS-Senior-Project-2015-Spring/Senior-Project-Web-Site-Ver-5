@@ -366,6 +366,49 @@ class AdminController extends CI_Controller {
 	  redirect( 'admin/filters' );
   }
   
+  public function forgot_password( )
+  {
+	  $this->load->library( 'form_validation' );
+	  $this->form_validation->set_rules( 'email_address', 'Email Address', 'required|valid_email' );
+	  
+	  if( $this->form_validation->run( ) != false )
+	  {
+		  $this->load->model( 'spw_user_model' );
+		  $res = $this->spw_user_model->is_spw_registered( $this->input->post( 'email_address' ) );
+		  
+		  if( $res )
+		  {
+                          $user_id = $this->spw_user_model->get_user_id($this->input->post( 'email_address' ));
+			  
+			  $message ='<html>
+        <head><title>Senior Project Website Account Password</title></head>
+        <body>
+        <p>Hello,</p>
+        
+        <p>Someone (hopefully you) has requested to change your password at the Senior Project Website. If you did not send this request, please ignore this message.</p>
+        
+        <p>To change your password, please visit the following page:</p>
+        
+        <br><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5/admin/email_activation/' . $this->reversible_encryption( $user_id ) . '"> http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5/admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>
+        </body>
+            </html>';
+            
+            send_email( $this, $this->input->post( 'email_address' ), 'Senior Project Website Account', $message );
+			  
+			  
+			  $msg = 'Message sent to: ' . $this->input->post( 'email_address' );
+			  setFlashMessage( $this, $msg );
+		  }
+		  else
+		  {
+			  $msg = 'There are no associated accounts with address: ' . $this->input->post( 'email_address' );
+			  setErrorFlashMessage( $this, $msg );
+		  }
+	  }
+	  
+	  redirect( 'login' );
+  }
+  
   /* Added to SPW v. 3 */
   public function activation( $hash_id = '' )
   {
