@@ -138,6 +138,35 @@ class SPW_vm_request_Model extends CI_Model
         return NULL;
     }
     
+    /*return project description*/
+    public function getProjectDescription($project_id){
+        
+        $query = "SELECT description "
+               . "FROM spw_project "
+               . "WHERE id= $project_id ";
+        
+        $q = $this->db->query($query);
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->description;
+        return NULL;
+    }
+    
+    public function getHeadEmail(){
+    
+        $query = "SELECT email "
+               . "FROM spw_user "
+               . "WHERE role= 'head' ";
+        
+        $q = $this->db->query($query);
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->description;
+        return NULL;
+    }
+    
    
 }
 
