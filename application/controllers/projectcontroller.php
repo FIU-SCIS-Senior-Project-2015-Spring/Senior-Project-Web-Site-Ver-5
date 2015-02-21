@@ -32,14 +32,13 @@ class ProjectController extends CI_Controller
             /* inserts vm request on DB */
             $success = $this->spw_vm_request_model->insertVmRequests($formInput,$user_id);
             $projectid = $this->spw_vm_request_model->getProjectId($user_id);
-            $title = $this->spw_vm_request_model->getProjectTitle($projectid);
-            $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMembers($projectid));
+//            $title = $this->spw_vm_request_model->getProjectTitle($projectid);
+//            $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMembers($projectid));
             /*message*/
             $requetUrl = base_url().'vm-request?projectid='.$projectid;
             $email = 'ypera006@fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
-            $message = 'Click <a href=/"$requetUrl/">here</a> to see request</p>'
-                    . $title
-                     .$msg_memb;
+            $message = 'Click <a href=/"$requetUrl/">here</a> to see request';
+                    
             $subject = 'A new VM request is awaiting acceptance';
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
             send_email($this, $email, $subject, $message); /*testing email*/
