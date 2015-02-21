@@ -37,7 +37,7 @@ class ProjectController extends CI_Controller
             /*message*/
             $requetUrl = base_url().'vm-request?projectid='.$projectid;
             $email = 'ypera006@fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
-            $message = 'Click <a href=/"$requetUrl/">here</a> to see request';
+            $message = 'Click <a href="/$requetUrl/">here</a> to see request';
                     
             $subject = 'A new VM request is awaiting acceptance';
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
@@ -69,9 +69,9 @@ class ProjectController extends CI_Controller
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $inputProjectId){
             
             $data['title'] = 'VM - Requests';
-//            $data['project_title'] = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
-//            $data['project_description'] = $this->spw_vm_request_model->getProjectDescription($inputProjectId);
-//            $data['project_members'] = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
+            $data['project_title'] = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
+            $data['project_description'] = $this->spw_vm_request_model->getProjectDescription($inputProjectId);
+            $data['project_members'] = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
             $data['projectid'] = $inputProjectId;
             $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
             /*sets default email for head professor*/

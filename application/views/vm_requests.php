@@ -2,7 +2,11 @@
 
 <h1> VM Requests </h1>
 <?php echo form_open('vm_requests'); ?>
-
+<?php echo '<h4>'.$project_title.'</h4>' ?> 
+<h4> Project Members: </h4>
+<?php foreach($project_members as $member):?>
+<?php echo '<h5>'.$member->first_name.' '.$member->last_name.'</h5>'?>
+<?php endforeach;?>
 
 <br>
 <div id="machines">
