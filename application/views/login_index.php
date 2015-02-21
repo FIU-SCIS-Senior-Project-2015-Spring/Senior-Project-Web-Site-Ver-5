@@ -120,9 +120,9 @@ if (strlen($fullErrorText) > 0) {
             ?>
             
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary btn-large pull-right" data-toggle="modal" data-target="#myModal">
+            <a href type="link" class="pull-right" data-toggle="modal" data-target="#myModal">
             Forgot password?
-            </button>
+            </a>
             
             <?php echo form_close() ?>
             
