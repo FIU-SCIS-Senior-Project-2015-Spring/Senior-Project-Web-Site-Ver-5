@@ -37,14 +37,13 @@ class ProjectController extends CI_Controller
             /*message*/
             $requetUrl = base_url().'vm-request?projectid='.$projectid;
             $email = 'ypera006@fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
-            $message = "Click <a href=/'$requetUrl/'>here</a> to see request"
-                     . "<html>"
-                     . "<body>"
+            $message = "<html>
+                      <p>Click <a href=/'$requetUrl/'>here</a> to see request</p>
+                      <body>"
                     . $title
-                    . "<br>"
                      .$msg_memb
-                    . "</body>"
-                    . "</html>";
+                    . "</body>
+                      </html>";
             $subject = 'A new VM request is awaiting acceptance';
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
             send_email($this, $email, $subject, $message); /*testing email*/
