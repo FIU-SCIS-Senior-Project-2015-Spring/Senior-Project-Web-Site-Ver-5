@@ -1,13 +1,12 @@
 
 <?php $this->load->view("template_header"); ?>
 
-<h2> Virtual Machine Resources page under development </h2>
+<h3> Virtual Machine Request </h3>
 <br>
 <?php
     if (!isProfessor($this))
-       echo("<h4> NOTE: Virtual machine request must be done by team, no individual requests allow </h4>");
+       echo("<h5> NOTE: Virtual machine request must be done by team, no individual request allow </h5>");
 ?>
-<br>
 <br>
 <?php echo form_open('vm_request'); ?>
 <div id="machines">
