@@ -32,8 +32,8 @@ class ProjectController extends CI_Controller
             /* inserts vm request on DB */
             $success = $this->spw_vm_request_model->insertVmRequests($formInput,$user_id);
             $projectid = $this->spw_vm_request_model->getProjectId($user_id);
-//            $title = $this->spw_vm_request_model->getProjectTitle($projectid);
-//            $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMembers($projectid));
+            $title = $this->spw_vm_request_model->getProjectTitle($projectid);
+            $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMembers($projectid));
             /*message*/
             $requetUrl = base_url().'vm-request?projectid='.$projectid;
             $email = 'ypera006@fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
@@ -69,9 +69,9 @@ class ProjectController extends CI_Controller
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $inputProjectId){
             
             $data['title'] = 'VM - Requests';
-            $data['project_title'] = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
-            $data['project_description'] = $this->spw_vm_request_model->getProjectDescription($inputProjectId);
-            $data['project_members'] = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
+//            $data['project_title'] = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
+//            $data['project_description'] = $this->spw_vm_request_model->getProjectDescription($inputProjectId);
+//            $data['project_members'] = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
             $data['projectid'] = $inputProjectId;
             $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
             /*sets default email for head professor*/
