@@ -17,6 +17,11 @@
    
 }
 
+.modal-narrow{
+ width: 400px;
+ margin-left: -200px;
+}
+
 #main-content{
     background: repeat scroll 0 0 rgba(255, 255, 255, 0.5);
     border: 1px solid #1B335B;
