@@ -1,7 +1,12 @@
 <?php $this->load->view("template_header"); ?>
 
-<h1> VMs Requests </h1>
+<h1> VM Requests </h1>
 <h3> <?php echo $project_title ?> </h3>
+<h4> Project Members: </h4>
+<?php foreach($project_members as $member):?>
+<?php echo '<h5>'.$member->first_name.' '.$member->last_name.'</h5>'?>
+<?php endforeach;?>
+<!--<p> <?php echo $project_description ?></p>-->
 <br>
 <div id="machines">
 <div class="machine col-md-12">
