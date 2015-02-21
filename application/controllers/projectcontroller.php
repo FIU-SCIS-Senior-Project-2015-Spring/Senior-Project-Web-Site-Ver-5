@@ -46,7 +46,7 @@ class ProjectController extends CI_Controller
                        </html>";
             $subject = 'A new VM request is awaiting acceptance';
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
-//            send_email($this, $email, $subject, $message); /*testing email*/
+            send_email($this, $email, $subject, $message); 
             
         }/*user is professor and updates vm requests for a project*/
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
@@ -66,7 +66,7 @@ class ProjectController extends CI_Controller
                           . '</body>'
                           . '</html>';
             
-//            send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body); /*testing email*/            
+            send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);             
             $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
             echo json_encode(array("success"=> $success));
             
