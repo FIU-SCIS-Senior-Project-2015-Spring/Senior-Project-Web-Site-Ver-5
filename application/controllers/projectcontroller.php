@@ -39,7 +39,7 @@ class ProjectController extends CI_Controller
             $email = 'ypera006@fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
             $message ='<html> 
                         <body>
-                             <p> Click <a href=/"$requetUrl/">here</a> to see request from:</P>
+                             <p> Click <a href="/$requetUrl/">here</a> to see request from:</P>
                              <h4>'. $title .'</h4>
                              <h6>'. $msg_memb. '</h6>
                         </body>
