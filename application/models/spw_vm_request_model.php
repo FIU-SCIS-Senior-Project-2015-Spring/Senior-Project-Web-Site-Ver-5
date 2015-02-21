@@ -163,7 +163,7 @@ class SPW_vm_request_Model extends CI_Model
         
         if($q->num_rows() > 0)
             foreach ($q->result() as $row)
-                return $row->description;
+                return $row->email;
         return NULL;
     }
     
