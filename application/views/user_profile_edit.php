@@ -13,7 +13,14 @@
     } 
     else 
     {
-?>
+$spw_id = getCurrentUserId($this);
+        
+//check if the user has uploaded a picture already
+$file = checkUserUploadedPic($this, $spw_id);
+
+if ($file != null)
+{
+        ?>
         <button type="button" class="btn btn-large btn-primary pull-right" data-toggle="modal" data-target="#LinkedInModal">Sync with LinkedIn</button>
                 <!-- Modal -->
                 <div class="modal modal-narrow fade span4 center-text row-fluid" id="LinkedInModal" tabindex="-1" role="dialog" aria-labelledby="LinkedInModalLabel" aria-hidden="true">
@@ -36,6 +43,9 @@
                     </div>
                   </div>
                 </div>
+<?php }  else {?>
+            <button class="btn">bam</button>    
+            <?php } ?>
 
         <?php if(strcmp($userDetails->user->role ,"HEAD") == 0){ ?>
             <h2>Head Professor Profile</h2>
@@ -71,6 +81,9 @@
             <div>
                 <?php echo form_open_multipart('usercontroller/do_upload');?>
                 <input class="btn-small" type="file" name="userfile" size="20" style="margin-top: 10px; margin-bottom: 5px" />
+                
+                <?php if ($file != null) { ?>
+                
                 <button type="button" class="btn-small btn-primary" data-toggle="modal" data-target="#myModal">Upload Picture</button>
                 <!-- Modal -->
                 <div class="modal modal-narrow fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -91,6 +104,9 @@
                     </div>
                   </div>
                 </div>
+                <?php }else { ?>
+                <input class="btn-small btn-primary" type="submit" value="Upload Picture">    
+                <?php } ?>
                 <?php echo form_close() ?>
             </div>
         </div>
