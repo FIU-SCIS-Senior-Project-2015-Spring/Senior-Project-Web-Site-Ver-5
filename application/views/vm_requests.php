@@ -1,8 +1,7 @@
 <?php $this->load->view("template_header"); ?>
 
-<h1> VM Requests </h1>
 <?php echo form_open('vm_requests'); ?>
-<?php echo '<h4>'.$project_title.'</h4>' ?> 
+<h1>  <?php echo '<h3>'.'VM Requests from project '.$project_title.'</h3>' ?> </h1>
 <h4> Project Members: </h4>
 <?php foreach($project_members as $member):?>
 <?php echo '<h5>'.$member->first_name.' '.$member->last_name.'</h5>'?>
@@ -145,7 +144,7 @@
     </tbody>
 </table>
 </div>
-<label for="usr">email address:</label>
+<label for="usr">Default email of <?php echo $name_default ?></label>
 <input  type="text" id="email_address" value=<?php echo $email_address ?> class="form-control"/>
 <button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
 </div>
