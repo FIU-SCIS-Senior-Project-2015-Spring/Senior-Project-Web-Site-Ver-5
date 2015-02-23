@@ -43,9 +43,8 @@ if ($file != null)
                     </div>
                   </div>
                 </div>
-<?php }  else {?>
-            <button class="btn">bam</button>    
-            <?php } ?>
+                
+<?php }  else { echo anchor('/user/linkedIn_sync', 'Sync with LinkedIn', array('class' => 'btn btn-primary btn-large pull-right')); }?>
 
         <?php if(strcmp($userDetails->user->role ,"HEAD") == 0){ ?>
             <h2>Head Professor Profile</h2>
