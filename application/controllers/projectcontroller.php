@@ -36,7 +36,7 @@ class ProjectController extends CI_Controller
             $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMembers($projectid));
             /*message*/
             $requetUrl = base_url().'vm-request?projectid='.$projectid;
-            $email = 'sadjadi@cs.fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
+            $email = 'ypera006@fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
             $message ="<html> 
                         <body>
                              <p> Click <a href=\"$requetUrl\">here</a> to see request from:</P>
@@ -46,7 +46,7 @@ class ProjectController extends CI_Controller
                        </html>";
             $subject = 'A new VM request is awaiting acceptance';
             echo json_encode(array("success"=>$success,"url"=>$requetUrl));
-            send_email($this, $email, $subject, $message); 
+//            send_email($this, $email, $subject, $message); 
             
         }/*user is professor and updates vm requests for a project*/
         else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
@@ -66,7 +66,7 @@ class ProjectController extends CI_Controller
                           . '</body>'
                           . '</html>';
             
-            send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);             
+//            send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);             
             $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
             echo json_encode(array("success"=> $success));
             
@@ -79,16 +79,21 @@ class ProjectController extends CI_Controller
             $data['project_members'] = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
             $data['projectid'] = $inputProjectId;
             $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
-            /*sets default email for head professor*/
-            $data['email_address'] = 'beacon@cheese.com';
+            /*sets default email for vm creation */
+            $data['email_address'] = $this->spw_vm_request_model->getVMDefaultEmailCreation();
+            $data['name_default'] = $this->spw_vm_request_model->getDefaultName();
             $this->load->view('vm_requests', $data);
             
         }
         else { 
             
-            $data['title'] = 'VM - Request';
-            $data['requests'] = $this->spw_vm_request_model->getUserRequests($user_id);
-            $this->load->view('vm_request', $data);
+            if($this->spw_user_model->isUserAStudent(getCurrentUserId($this)) && $inputProjectId)
+                $this->load->view('vm_request_message');
+            else{
+                $data['title'] = 'VM - Request';
+                $data['requests'] = $this->spw_vm_request_model->getUserRequests($user_id);
+                $this->load->view('vm_request', $data);
+            }
         }
         
     }
