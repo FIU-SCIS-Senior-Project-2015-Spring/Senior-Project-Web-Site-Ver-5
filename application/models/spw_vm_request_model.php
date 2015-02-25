@@ -167,6 +167,67 @@ class SPW_vm_request_Model extends CI_Model
         return NULL;
     }
     
+    /* set default email of a person who's going to be notified 
+    * from head professor about a vm creation */
+    public function setEmailToDefault($full_name, $email){
+        
+        $query = "TRUNCATE TABLE spw_vm_default_email ";
+        $q = $this->db->query($query);
+        $query = "insert into spw_vm_default_email (full_name, email) "
+               . "values ('$full_name', '$email')";
+            $q = $this->db->query($query);
+            if(!$q) return false;
+    }
+    
+    /* get default name to be shown on the professor interface */
+    public function getDefaultName(){
+        
+        $query = "SELECT full_name " 
+                ."FROM spw_vm_default_email ";
+        
+        $q = $this->db->query($query);
+        
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->full_name;
+        
+        return $results;
+    }
+    
+    /* get default email shown on the input field */
+    public function getVMDefaultEmailCreation(){
+
+        $query = "SELECT email " 
+                ."FROM spw_vm_default_email ";
+
+        $q = $this->db->query($query);
+
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->email;
+        return NULL;
+    }
+    
+        /* added in SPW v5 
+        * get default email and name to be shown on the table */
+        public function getDefaultEmailAndName(){
+        
+        $query = "SELECT full_name, email " 
+                ."FROM spw_vm_default_email ";
+        
+        $q = $this->db->query($query);
+        
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($results,$row);
+        
+        return $results;
+    }
+    
    
 }
 

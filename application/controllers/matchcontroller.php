@@ -498,6 +498,7 @@ class MatchController extends CI_Controller {
         $this->load->helper('project_summary_view_model');
         load_project_summary_models($this);
         $this->load->model('spw_match_model');
+        $this->load->model('spw_vm_request_model');
     }
 
     public function index() {
@@ -679,6 +680,21 @@ class MatchController extends CI_Controller {
         } else {
             $this->spw_match_model->setMinimum($rank);
             setFlashMessage($this, "Saved minimum successfully.");
+        }
+        redirect('admin/admin_dashboard');
+    }
+    
+    /*added in SPW v5 to set default email notification*/
+    public function setDefafultEmail(){
+        
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('email_address', 'Email Address', 'valid_email');
+        
+        if ($this->form_validation->run( ) == true){
+            
+            $name = $this->input->post('full_name');
+            $default_email = $this->input->post('email_address');
+            $this->spw_vm_request_model->setEmailToDefault($name,$default_email);
         }
         redirect('admin/admin_dashboard');
     }

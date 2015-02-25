@@ -149,6 +149,24 @@ class SPW_Term_Model extends CI_Model
 		
 		return NULL;
 	}
+        
+        /* added in SPW v5 
+        * get default email and name to be shown on the table */
+        public function getDefaultEmailAndName(){
+        
+        $query = "SELECT full_name, email " 
+                ."FROM spw_vm_default_email ";
+        
+        $q = $this->db->query($query);
+        
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($results,$row);
+        
+        return $results;
+    }
 }
 	
 ?>

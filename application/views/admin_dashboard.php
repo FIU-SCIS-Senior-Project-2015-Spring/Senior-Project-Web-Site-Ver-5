@@ -436,6 +436,76 @@ echo form_close()
 ?>
 </div>
 
+    <!--added on SPW v5 to set default email notification-->
+    <?php
+        echo form_open('match/setDefafultEmail', array(
+            'class' => '',
+        ));
+    ?>
+    <div class="well">
+    <div class="text-center">
+        <h4>Set Default Email For VM Creation</h4>
+    </div>
+    <?php 
+    
+    echo("<div>");
+    echo form_label('Name:');
+    echo form_input(array(
+                        'id' => 'full_name',
+                        'name' => 'full_name',
+                        'type' => 'text',
+                        'placeholder' => 'Full Name',
+                        'required' => '',
+                        'title' => 'Full Name'
+                        ));
+    echo("</div>");
+    
+    echo("<div>");
+    echo form_label('Email:');
+    echo form_input(array(
+                        'id' => 'email_address',
+                        'name' => 'email_address',
+                        'type' => 'email',
+                        'placeholder' => 'email@example.com',
+                        'value' => set_value('email_address'),
+                        'required' => '',
+                        'title' => 'Email address'
+                        ));
+    echo("</div>");
+
+    echo("<div>");
+    echo form_submit(array(
+        'id' => 'btn',
+        'name' => 'min',
+        'type' => 'Submit',
+        'class' => 'btn btn-info',
+        'value' => 'Set Default Email'
+    ));
+    echo("</div>");
+    $default_info = SPW_Term_Model::getInstance();
+    $info = $default_info->getDefaultEmailAndName();
+    echo form_close()
+    ?>
+    <br>
+    <br>
+    <table class="table" >
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Default Email</th>
+            </tr>
+        </thead>
+        <tr class="info">
+            <!--display current default name and email--> 
+           <?php foreach($info as $row):?>
+            <td> <?php echo $row->full_name ?> </td>
+            <td> <?php echo $row->email ?> </td>
+            <?php endforeach;?>
+        </tr>
+    </table>        
+</div>
+
+
 <!--
 <?php
 echo form_open('admin/activate_deactive_users', array(
