@@ -36,7 +36,7 @@ class ProjectController extends CI_Controller
                 $projectid = $this->spw_vm_request_model->getProjectId($user_id);
                 $title = $this->spw_vm_request_model->getProjectTitle($projectid);
                 $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMembers($projectid));
-                /*message*/
+                /*create email message for student to notify professor*/
                 $requetUrl = base_url().'vm-request?projectid='.$projectid;
                 $email = 'ypera006@fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
                 $message ="<html> 
@@ -54,12 +54,15 @@ class ProjectController extends CI_Controller
             else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
 
                 $inputForm = json_decode($input);
-                /*get project id*/
                 $project_title = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
                 $students = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
-                /* creates email message */
+                /*create 1st part of the email message with project members*/
                 $msg_members = $this->projectMemberMessage($students);
-                $msg_vm_settings = $this->vmSettingsMessage($inputForm);
+                /*get approved vm requests*/
+                $approved_vm = $this->getApprovedVM($inputForm);
+                /*Create 2nd part of email message with approved vm*/
+                $msg_vm_settings = $this->createApprovedVM_Message($approved_vm);
+                /*format email message*/
                 $msg_vm_body = '<html>'
                               . '<body>'
                               . '<h2>'.$project_title.'</h2>'
@@ -67,8 +70,11 @@ class ProjectController extends CI_Controller
                               .$msg_vm_settings
                               . '</body>'
                               . '</html>';
-
-                send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);             
+                /*send email message only if you have approved vms*/
+                if(count($approved_vm) > 0){
+                    send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
+                }
+                /*update vm requests*/    
                 $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
                 echo json_encode(array("success"=> $success));
 
@@ -77,12 +83,12 @@ class ProjectController extends CI_Controller
 
                 $data['title'] = 'VM - Requests';
                 $data['project_title'] = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
-                $data['project_description'] = $this->spw_vm_request_model->getProjectDescription($inputProjectId);
                 $data['project_members'] = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
                 $data['projectid'] = $inputProjectId;
                 $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
-                /*sets default email for vm creation */
+                /*gets default email for vm creation */
                 $data['email_address'] = $this->spw_vm_request_model->getVMDefaultEmailCreation();
+                /*gets default name for vm creation */
                 $data['name_default'] = $this->spw_vm_request_model->getDefaultName();
                 $this->load->view('vm_requests', $data);
 
@@ -107,6 +113,18 @@ class ProjectController extends CI_Controller
         }
     }
     
+    /* added on SPW v. 5 search for vm request with status approved */
+    private function getApprovedVM($input){
+        
+        $approved_vm = array();
+        foreach($input as $row){
+            if($row->status == 'APPROVED'){
+               array_push($approved_vm,$row);
+            }
+        }
+        return $approved_vm;
+    }
+    
     /* added on SPW v. 5 helper method to build email message for project members */
     private function projectMemberMessage($input){
         $msg = '';
@@ -116,8 +134,8 @@ class ProjectController extends CI_Controller
         return $msg;
     }
     
-    /* added on SPW v. 5 helper method to build email message for vm settings */
-    private function vmSettingsMessage($inputForm){
+    /* added on SPW v. 5 helper method to build email message for approved vm settings */
+    private function createApprovedVM_Message($inputForm){
         
         $message = '';
         $headers = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
