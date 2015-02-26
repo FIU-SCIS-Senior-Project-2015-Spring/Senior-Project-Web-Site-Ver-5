@@ -171,6 +171,10 @@
 	
 	foreach( $query->result_array( ) as $row )
 	{ 
+            //temporary fix for nested forms problem.
+            echo form_open();
+            echo form_close();
+            
 		echo( "<tr>" );
 			echo( "<table class=\"well\" style=\"width:99%;\">" );
 				echo( "<tr>" );
