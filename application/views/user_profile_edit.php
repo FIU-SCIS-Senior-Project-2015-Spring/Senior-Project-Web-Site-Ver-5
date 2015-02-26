@@ -83,9 +83,9 @@ if ($file != null)
                 
                 <?php if ($file != null) { ?>
                 
-                <button type="button" class="btn-small btn-primary" data-toggle="modal" data-target="#myModal">Upload Picture</button>
+                <button type="button" class="btn-small btn-primary" data-toggle="modal" data-target="#UploadModal">Upload Picture</button>
                 <!-- Modal -->
-                <div class="modal modal-narrow fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal modal-narrow fade" id="UploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                   <div class="modal-dialog">
                     <div class="modal-content">
                       <div class="modal-header">
