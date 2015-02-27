@@ -28,7 +28,7 @@ class LoginController extends CI_Controller {
 
     public function fiu_oauth2() {
         $client = new OAuth2\Client(
-            '207722926532-i8n5hj9731ot64j05jmuqp8qrp2p1l37.apps.googleusercontent.com', '1MxV7y0MZWsV-2Y2wy_04xr5', 'http://'.$_SERVER['HTTP_HOST'].'/Senior-Project-Web-Site-Ver-5/login/google_oauth2_callback'
+            '207722926532-i8n5hj9731ot64j05jmuqp8qrp2p1l37.apps.googleusercontent.com', '1MxV7y0MZWsV-2Y2wy_04xr5', 'http://'.$_SERVER['HTTP_HOST'].'/senior-project-website-v4/login/google_oauth2_callback'
         );
 
         $configuration = new OAuth2\Service\Configuration(
@@ -46,7 +46,7 @@ class LoginController extends CI_Controller {
 
     public function google_oauth2() {
         $client = new OAuth2\Client(
-            '207722926532-i8n5hj9731ot64j05jmuqp8qrp2p1l37.apps.googleusercontent.com', '1MxV7y0MZWsV-2Y2wy_04xr5', 'http://'.$_SERVER['HTTP_HOST'].'/Senior-Project-Web-Site-Ver-5/login/google_oauth2_callback'
+            '207722926532-i8n5hj9731ot64j05jmuqp8qrp2p1l37.apps.googleusercontent.com', '1MxV7y0MZWsV-2Y2wy_04xr5', 'http://'.$_SERVER['HTTP_HOST'].'/senior-project-website-v4/login/google_oauth2_callback'
         );
 
         $configuration = new OAuth2\Service\Configuration(
@@ -66,7 +66,7 @@ class LoginController extends CI_Controller {
         $code = $this->input->get("code");
 
         $client = new OAuth2\Client(
-            '207722926532-i8n5hj9731ot64j05jmuqp8qrp2p1l37.apps.googleusercontent.com', '1MxV7y0MZWsV-2Y2wy_04xr5', 'http://'.$_SERVER['HTTP_HOST'].'/Senior-Project-Web-Site-Ver-5/login/google_oauth2_callback'
+            '207722926532-i8n5hj9731ot64j05jmuqp8qrp2p1l37.apps.googleusercontent.com', '1MxV7y0MZWsV-2Y2wy_04xr5', 'http://'.$_SERVER['HTTP_HOST'].'/senior-project-website-v4/login/google_oauth2_callback'
         );
 
         $configuration = new OAuth2\Service\Configuration(
