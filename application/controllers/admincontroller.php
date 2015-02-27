@@ -399,17 +399,17 @@ class AdminController extends CI_Controller {
             send_email( $this, $this->input->post( 'email_address' ), 'Senior Project Website Account', $message );
 			  
 			  
-			  $msg = 'Message sent to: ' . $this->input->post( 'email_address' . '.' );
+			  $msg = 'Message sent to: ' . $this->input->post( 'email_address' ) . '.';
 			  setFlashMessage( $this, $msg );
 		  }
 		  else if (!$res)
 		  {
-			  $msg = 'There are no associated accounts with address: ' . $this->input->post( 'email_address' . '.' );
+			  $msg = 'There are no associated accounts with address: ' . $this->input->post( 'email_address' ) . '.';
 			  setErrorFlashMessage( $this, $msg );
 		  }
                   else
                   {
-                          $msg = 'Account associated with: ' . $this->input->post( 'email_address' . ' is inactive. Contact your professor to resolve this issue.' );
+                          $msg = 'Account associated with: ' . $this->input->post( 'email_address' ) . ' is inactive. Contact your professor to resolve this issue.';
 			  setErrorFlashMessage( $this, $msg );
                   }
 	  }
