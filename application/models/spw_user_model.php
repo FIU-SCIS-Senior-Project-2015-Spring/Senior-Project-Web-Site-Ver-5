@@ -335,6 +335,22 @@ class SPW_User_Model extends CI_Model
             return false;
     
     }
+    
+    //Added in SPW V5.
+    //Function uses email address to check if user is active.
+    public function is_user_active($email_address)
+    {
+        $query = $this->db
+                      ->where('email', $email_address)
+                      ->where('status', 'ACTIVE')                       
+                      ->limit(1)
+                      ->get('spw_user');
+        if($query->num_rows() > 0)
+            return true;
+        else 
+            return false;
+    
+    }
 
 
     public function is_spw_registered($email_address)

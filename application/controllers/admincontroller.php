@@ -366,6 +366,8 @@ class AdminController extends CI_Controller {
 	  redirect( 'admin/filters' );
   }
   
+  //Added in SPW v5
+  //Function verifies user's account and sends an email if the account exists and is active.
   public function forgot_password( )
   {
 	  $this->load->library( 'form_validation' );
@@ -375,8 +377,9 @@ class AdminController extends CI_Controller {
 	  {
 		  $this->load->model( 'spw_user_model' );
 		  $res = $this->spw_user_model->is_spw_registered( $this->input->post( 'email_address' ) );
+                  $status = $this->spw_user_model->is_user_active( $this->input->post( 'email_address' ) );
 		  
-		  if( $res )
+		  if( $res && $status )
 		  {
                           $user_id = $this->spw_user_model->get_user_id($this->input->post( 'email_address' ));
 			  
@@ -396,14 +399,19 @@ class AdminController extends CI_Controller {
             send_email( $this, $this->input->post( 'email_address' ), 'Senior Project Website Account', $message );
 			  
 			  
-			  $msg = 'Message sent to: ' . $this->input->post( 'email_address' );
+			  $msg = 'Message sent to: ' . $this->input->post( 'email_address' . '.' );
 			  setFlashMessage( $this, $msg );
 		  }
-		  else
+		  else if (!$res)
 		  {
-			  $msg = 'There are no associated accounts with address: ' . $this->input->post( 'email_address' );
+			  $msg = 'There are no associated accounts with address: ' . $this->input->post( 'email_address' . '.' );
 			  setErrorFlashMessage( $this, $msg );
 		  }
+                  else
+                  {
+                          $msg = 'Account associated with: ' . $this->input->post( 'email_address' . ' is inactive. Contact your professor to resolve this issue.' );
+			  setErrorFlashMessage( $this, $msg );
+                  }
 	  }
 	  
 	  redirect( 'login' );
