@@ -1530,7 +1530,7 @@ class SPW_User_Model extends CI_Model
     {
         $sql = 'select id, first_name, last_name
                 from spw_user
-                where (spw_user.role = "STUDENT") and (spw_user.project IS NULL)
+                where (spw_user.role = "STUDENT") and (spw_user.project IS NULL) and (spw_user.status = "ACTIVE")
                 order by first_name ASC';
         
         $query = $this->db->query($sql);
