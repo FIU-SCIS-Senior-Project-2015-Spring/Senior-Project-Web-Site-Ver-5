@@ -20,14 +20,13 @@ class ProjectController extends CI_Controller
     public function vm_request()
     {
             if(isUserLoggedIn($this)){
-                $session_data = $this->session->userdata('logged_in');
-                /* gets usr id */
-                $user_id = $session_data['id'];
+
+                $user_id = getCurrentUserId($this);
                 $input = file_get_contents('php://input');
                 $inputProjectId = $this->input->get('projectid', TRUE);
 
             /*user is student and submit vm request*/
-            if($input && $this->spw_user_model->isUserAStudent(getCurrentUserId($this))){
+            if($input && $this->spw_user_model->isUserAStudent($user_id)){
 
                 $formInput = json_decode($input);
                 /* inserts vm request on DB */
@@ -38,7 +37,7 @@ class ProjectController extends CI_Controller
                 $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMembers($projectid));
                 /*create email message for student to notify professor*/
                 $requetUrl = base_url().'vm-request?projectid='.$projectid;
-                $email = 'sadjadi@cs.fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
+                $email = 'ypera006@fiu.edu';//'sadjadi@cs.fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
                 $message ="<html> 
                             <body>
                                  <p> Click <a href=\"$requetUrl\">here</a> to see request from:</P>
@@ -51,7 +50,7 @@ class ProjectController extends CI_Controller
                 send_email($this, $email, $subject, $message); 
 
             }/*user is professor and updates vm requests for a project*/
-            else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
+            else if($this->spw_user_model->isUserProfessor($user_id) && $input){
 
                 $inputForm = json_decode($input);
                 $project_title = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
@@ -79,7 +78,7 @@ class ProjectController extends CI_Controller
                 echo json_encode(array("success"=> $success));
 
             }/*user is head professor and has vm request for a project to look at it*/
-            else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $inputProjectId){
+            else if($this->spw_user_model->isUserProfessor($user_id) && $inputProjectId){
 
                 $data['title'] = 'VM - Requests';
                 $data['project_title'] = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
@@ -94,14 +93,11 @@ class ProjectController extends CI_Controller
 
             }
             else { 
-
-                if($this->spw_user_model->isUserAStudent(getCurrentUserId($this)) && $inputProjectId){
+            /* check if current day is under deadline and prompt warning message if need be */
+                if($this->SPW_Term_Model->currentDateUnderDeadline()|| $this->spw_user_model->isUserAStudent($user_id) && $inputProjectId){
                     $this->load->view('vm_request_message');
-                }/* check if current day is under deadline and prompt warning message if need be */
-                else if($this->SPW_Term_Model->currentDateUnderDeadline()){
-                    $this->load->view('vm_request_message');
-                }/* normal flow of events, current day is over deadline and student access*/
-                else{/*VM - Request page to create a new vm request */
+                }/* normal flow of events, current day is after deadline and student accesses*/
+                else{/*VM - Request page to create a virtual machine request */
                     $data['title'] = 'VM - Request';
                     $data['requests'] = $this->spw_vm_request_model->getUserRequests($user_id);
                     $this->load->view('vm_request', $data);

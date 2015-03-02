@@ -14,7 +14,7 @@
     <table class="auto" id="machines_table" >
     <thead>
       <tr>
-         <th>Operating System</th>
+         <th>Image Name</th>
          <th>Memory RAM</th>
          <th>Storage</th>
          <th>Number of VM</th>
@@ -43,6 +43,7 @@
                         <option>8</option>
                         <option>12</option>
                         <option>16</option>
+                        <option>32</option>
                 </select>
             </td>
            <td>
@@ -53,6 +54,9 @@
                         <option>20</option>
                         <option>24</option>
                         <option>30</option>
+                        <option>50</option>
+                        <option>70</option>
+                        <option>100</option>
                 </select>
            </td>
            <td>
@@ -74,14 +78,14 @@
 </div>
 </div>
 <br>
-<button id="addRequest" type="button" class="btn btn-default">Add Another Request</button>
+<button id="addRequest" type="button" class="btn btn-default">Add Virtual Machine</button>
 <button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
 
 <h4>Previous Requests</h4>
 <table class="auto table">
     <thead>
         <tr>
-            <th>Operating System</th>
+            <th>Image Name</th>
             <th>Memory RAM</th>
             <th>Storage</th>
             <th>Number of VM</th>

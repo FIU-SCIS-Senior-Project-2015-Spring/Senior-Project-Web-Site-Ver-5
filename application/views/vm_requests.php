@@ -14,7 +14,7 @@
     <thead>
         <tr>
             <th>Request No.</th>
-            <th>Operating System</th>
+            <th>Image Name</th>
             <th>Memory RAM</th>
             <th>Storage</th>
             <th>Number of VM</th>
@@ -82,7 +82,9 @@
                             20,
                             24,
                             30,
-                            50
+                            50,
+                            70,
+                            100
                         );
                         
                             foreach($hdds as $hdd){
