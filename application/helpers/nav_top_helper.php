@@ -159,4 +159,26 @@ if ( !function_exists('getCurrentUserHeaderImage'))
     }
 }
 
+/*added in spw v. 5
+ *Fuction used to fix pictures not appearing in in certain views (task #299).
+ *Function uses user_id, and returns relative address of the user's picture.*/
+function getImage($user_id) {
+
+    $png_version = $user_id . '.png';
+    $jpg_version = $user_id . '.jpg';
+    $gif_version = $user_id . '.gif';
+    $jpeg_version = $user_id . '.jpeg';
+
+    if (file_exists('./img/' . $png_version))
+        return '/img/' . $png_version;
+    else if (file_exists('./img/' . $jpg_version))
+        return '/img/' . $jpg_version;
+    else if (file_exists('./img/' . $gif_version))
+        return '/img/' . $gif_version;
+    else if (file_exists('./img/' . $jpeg_version))
+        return '/img/' . $jpeg_version;
+    else
+        return '/img/no-photo.jpeg';
+}
+
 ?>
