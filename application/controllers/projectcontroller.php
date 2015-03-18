@@ -48,6 +48,7 @@ class ProjectController extends CI_Controller
                 $subject = 'A new VM request is awaiting acceptance';
                 echo json_encode(array("success"=>$success,"url"=>$requetUrl));
                 send_email($this, $email, $subject, $message); 
+                setFlashMessage($this, "Succesfully submitted a virtual machine request");
 
             }/*user is professor and updates vm requests for a project*/
             else if($this->spw_user_model->isUserProfessor($user_id) && $input){
@@ -72,6 +73,7 @@ class ProjectController extends CI_Controller
                 /*send email message only if you have approved vms*/
                 if(count($approved_vm) > 0){
                     send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
+                    setFlashMessage($this, "Succesfully approved ".count($approved_vm)." virtual machine request(s)");
                 }
                 /*update vm requests*/    
                 $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);

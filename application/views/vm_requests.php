@@ -161,7 +161,6 @@ $('#submitRequests').click(function(){
     var john_email = $("#email_address").val();
     if(isEmail(john_email)){
         uploadMachines(data,john_email);
-        alert("Upload Succefull");
     }
     else 
         alert("Incorrect email");

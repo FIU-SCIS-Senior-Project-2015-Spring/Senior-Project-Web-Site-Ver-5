@@ -438,7 +438,7 @@ echo form_close()
 
     <!--added on SPW v5 to set default email notification-->
     <?php
-        echo form_open('match/setDefafultEmail', array(
+        echo form_open('admin/setDefafultEmail', array(
             'class' => '',
         ));
     ?>
