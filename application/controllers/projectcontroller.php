@@ -16,6 +16,40 @@ class ProjectController extends CI_Controller
         $this->load->model('spw_vm_request_model');
     }
     
+    
+    /*load vm_image view*/
+    public function vm_images(){
+        if(isUserLoggedIn($this)){
+            if($this->spw_user_model->isUserProfessor(getCurrentUserId($this))){
+            $data['title'] = 'VM - Images';
+            $data['images'] = $this->spw_vm_request_model->
+                    searchFilteredImages("status = 'ACTIVE' OR status = 'INACTIVE' ");
+            $this->load->view('vm_images',$data);
+            }
+            else{
+                $this->load->view('vm_request_message');
+            }
+        }
+        else{
+            redirect('login','refresh');
+        }
+    }
+    
+    /* added in SPW v5 to add an image name */
+    public function addImages(){
+        
+        $image = $this->input->post('image_name');
+
+        if($this->spw_vm_request_model->addImage($image)){
+            setFlashMessage($this, "Succesfully added $image as a new image");
+            redirect('vm-images');
+        }
+        else{
+            setFlashMessage($this, "ERROR: Image $image already exists in the system");
+            redirect('vm-images');
+        }
+    }
+    
     /*added on SPW v. 5 for vm request management */
     public function vm_request()
     {
@@ -87,6 +121,7 @@ class ProjectController extends CI_Controller
                 $data['project_members'] = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
                 $data['projectid'] = $inputProjectId;
                 $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
+                $data['active_images'] = $this->spw_vm_request_model->getActiveImages();
                 /*gets default email for vm creation */
                 $data['email_address'] = $this->spw_vm_request_model->getVMDefaultEmailCreation();
                 /*gets default name for vm creation */
@@ -102,6 +137,7 @@ class ProjectController extends CI_Controller
                 else{/*VM - Request page to create a virtual machine request */
                     $data['title'] = 'VM - Request';
                     $data['requests'] = $this->spw_vm_request_model->getUserRequests($user_id);
+                    $data['active_images'] = $this->spw_vm_request_model->getActiveImages();
                     $this->load->view('vm_request', $data);
                 }
             }

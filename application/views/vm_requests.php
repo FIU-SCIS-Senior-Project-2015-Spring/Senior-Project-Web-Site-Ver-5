@@ -6,7 +6,11 @@
 <?php foreach($project_members as $member):?>
 <?php echo '<h5>'.$member->first_name.' '.$member->last_name.'</h5>'?>
 <?php endforeach;?>
-
+<?php
+    $oses = array();
+    foreach($active_images as $r){
+    $oses[] = $r->image_name;}
+?>
 <br>
 <div id="machines">
 <div class="machine col-md-12">
@@ -15,8 +19,8 @@
         <tr>
             <th>Request No.</th>
             <th>Image Name</th>
-            <th>Memory RAM</th>
-            <th>Storage</th>
+            <th>Memory RAM (gb)</th>
+            <th>Storage (gb)</th>
             <th>Number of VM</th>
             <th>Status</th>
         </tr>
@@ -34,12 +38,6 @@
             <td>
                 <select name="os" style="width: auto">
                 <?php 
-                    $oses = array(
-                        'Windows Server 2008',
-                        'Ubuntu Server',
-                        'Windows Server 2003'
-                    );
-                        
                         foreach($oses as $os){
                             if($request->OS === $os)
                                 echo'<option selected="selected">'.$os.'</option>';
@@ -54,6 +52,7 @@
                 <select name="ram" style="width: 80px">
                 <?php 
                     $rams = array(
+                        1,
                         2,
                         4,
                         8,

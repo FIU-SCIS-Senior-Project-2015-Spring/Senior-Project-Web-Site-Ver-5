@@ -15,8 +15,8 @@
     <thead>
       <tr>
          <th>Image Name</th>
-         <th>Memory RAM</th>
-         <th>Storage</th>
+         <th>Memory RAM (gb)</th>
+         <th>Storage (gb)</th>
          <th>Number of VM</th>
       </tr>
    </thead>
@@ -26,18 +26,15 @@
             <td>
                 <select name="os">
                         <?php 
-                            $oses = array(
-                                "Windows Server 2008",
-                                "Ubuntu Server",
-                                "Windows Server 2003"
-                            );
-                            foreach($oses as $os)
-                                echo '<option>'.$os.'</option>';
+                            
+                            foreach($active_images as $os)
+                                echo '<option>'.$os->image_name.'</option>';
                         ?>
                 </select>
             </td>
             <td>
-                <select name="ram" 
+                <select name="ram"> 
+                        <option>1</option>
                         <option>2</option>
                         <option>4</option>
                         <option>8</option>
