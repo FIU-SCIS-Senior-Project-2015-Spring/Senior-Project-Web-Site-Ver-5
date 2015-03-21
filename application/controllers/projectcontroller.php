@@ -16,6 +16,32 @@ class ProjectController extends CI_Controller
         $this->load->model('spw_vm_request_model');
     }
     
+    /* added in SPW v5 to change the status of an image in the system */
+    public function changeImageStatus(){
+        /*collect info to show on message*/
+        $status = $this->input->post( 'status' );
+        $image = $_POST[ 'image_name' ];
+        /*if query succeed, show Successfully message*/
+        if($this->spw_vm_request_model->updateImageStatus($status,$image)){
+            setFlashMessage( $this, "Successfully updated status of image $image to ". strtoupper($status) );
+        }/*if query does not succeed, show Error message*/
+        else{
+            setFlashMessage( $this, "Error updating status of image $image to ". strtoupper($status) );
+        }
+        redirect('vm-images');
+    }
+    
+    /* added in SPW v5 to pass current image's info to 
+     * form changeImageStatus in vm_editImage view*/
+    public function setImageStatus(){
+        
+        $data = array( );
+        $data[ 'change_status' ] = $_POST[ 'change_status' ];
+        $data[ 'image_name' ] = $_POST[ 'image_name' ];
+        $data[ 'status' ] = $_POST[ 'status' ];
+        $this->load->view('vm_editImage', $data );
+    }
+    
     /* added in SPW v5 to filter images on the system */
     public function filterImages(){
         $where = "";
