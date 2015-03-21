@@ -287,6 +287,17 @@ class SPW_vm_request_Model extends CI_Model
         return $results;
     }
     
+    /*update image status*/
+    public function updateImageStatus($status,$image){
+        
+        $query = "update spw_vm_images "
+                    . "set status = '$status' "
+                    . "where image_name = '$image' ";
+            $q = $this->db->query($query);
+            if($q) return true;
+            else return false;
+    }
+    
     
    
 }
