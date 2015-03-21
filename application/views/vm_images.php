@@ -103,7 +103,10 @@ echo form_close();
              echo("<div class=\"well\">");
              echo("<div class=\"text-center\">");
                     
-               
+                    echo form_open('projectcontroller/setImageStatus', array(
+                                                               'class' => '',
+                                                               'id' => ''
+                                                               ));  
                echo('<h4> Image Name: '.$image.' </h4>');
                if($status === 'INACTIVE'){
                     echo('<h4>Image Status: <span class="label label-warning">'."$status".'</span></h4>');
@@ -111,6 +114,22 @@ echo form_close();
                if($status === 'ACTIVE'){
                     echo('<h4>Image Status: <span class="label label-success">'."$status".'</span></h4>');
                }
+                    $data = array( 
+                    'image_name' => $image,
+                    'status' => $status,
+                    'change_status' => TRUE
+                    );
+                    echo form_hidden($data);
+                    echo( "<br>" );
+                    echo form_submit(array(
+                       'id' => 'btn',
+                       'name' => 'search',
+                       'type' => 'Submit',
+                       'class' => 'btn btn-info',
+                       'value' => 'Set Image Status'
+                    )); 
+
+                    echo form_close();
                 
                 echo("</div>");
                 echo("</div>");
