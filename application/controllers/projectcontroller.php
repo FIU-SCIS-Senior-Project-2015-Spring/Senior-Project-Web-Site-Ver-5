@@ -16,6 +16,24 @@ class ProjectController extends CI_Controller
         $this->load->model('spw_vm_request_model');
     }
     
+    /* added in SPW v5 to filter images on the system */
+    public function filterImages(){
+        $where = "";
+        $data = array( );
+       /* active images only */
+        if( isset( $_POST[ 'active' ] ) && !isset( $_POST[ 'inactive' ] ) && !isset( $_POST[ 'all_images' ] )){
+            $where = "status = 'ACTIVE' ";
+        }/* inactive image only */
+        else if( isset( $_POST[ 'inactive' ] ) && !isset( $_POST[ 'active' ] ) && !isset( $_POST[ 'all_images' ] )){
+            $where = "status = 'INACTIVE' ";
+        }/* all image status */
+        else{
+            $where = "status = 'ACTIVE' OR status = 'INACTIVE' ";
+        }
+        $data['images'] = $this->spw_vm_request_model->searchFilteredImages($where);
+        $this->load->view('vm_images',$data);
+    }
+    
     
     /*load vm_image view*/
     public function vm_images(){
