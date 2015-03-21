@@ -2,7 +2,7 @@
 <?php
     /*user clicks on Set Image Status button*/
     if(isset($change_status) && $change_status){
-        
+    echo("<h4> Change Image Status </h4>");    
     echo("<div class=\"well\">");
     echo("<div class=\"text-center\">");
     
