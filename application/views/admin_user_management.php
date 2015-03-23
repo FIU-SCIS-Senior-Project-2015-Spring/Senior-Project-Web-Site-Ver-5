@@ -200,8 +200,8 @@
 				echo( "<tr>" );
 					echo( "<td style=\"padding: 15px;\">" );
 						if( $row['picture'] == NULL )
-							echo( "<img src=\"" . base_url( '' . getImage($row['id'])) . "\" height=\"80\" width=\"80\">" );
-                                                else
+							echo( "<img src=\"" . base_url( '/img/no-photo.jpeg' ) . "\" height=\"80\" width=\"80\">" );
+						else
 							echo( "<img src=\"" . $row['picture'] . "\" height=\"80\" width=\"80\">" );
 					echo( "<br /><br />" );
 					echo form_open( 'admin/impersonate', array( 'id' => 'impersonate_form' ) );
