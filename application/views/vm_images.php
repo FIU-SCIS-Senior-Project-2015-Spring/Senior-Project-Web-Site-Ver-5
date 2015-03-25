@@ -85,49 +85,46 @@ echo form_close();
 
 </div>
 </div>    
-    
 <?php
         $image = "";
         $status = "";
         echo( "<br>" );
         echo("<table class=\"table table-bordered\">");
         echo("<tr>");
-            echo("<th>Image Name</th>");
-            echo("<th>Image Status</th>");
-            echo("<th>Change Image Status</th>");
-            echo("<th>Delete Image</th>");
+            echo("<th style=\"text-align:center\"> IMAGE NAME </th>");
+            echo("<th style=\"text-align:center\"> IMAGE STATUS </th>");
+            echo("<th style=\"text-align:center\"> CHANGE IMAGE STATUS </th>");
+            echo("<th style=\"text-align:center\"> DELETE IMAGE </th>");
         echo("</tr>");
         
         foreach($images as $row){
             echo("<tr>");
-                        echo form_open('projectcontroller/setImageStatus', array(
-                                                               'class' => '',
-                                                               'id' => ''
-                                                               ));
+                        
             $image = $row->image_name;
             $status = $row->status;
-            echo("<td> $image </td>");
-            echo("<td> $status </td>");
-            echo("<td> change </td>");
-            echo("<td>");
-                 echo("content:\"\e014\"");
+            echo("<td style=\"text-align:center\">"); 
+                    echo $image ;
             echo("</td>");
-            
-                        $data = array( 
-                            'image_name' => $image,
-                            'status' => $status,
-                            'change_status' => TRUE
-                            );
-                        echo form_hidden($data);
-
-                        echo form_close(); 
+            echo("<td style=\"text-align:center\">"); 
+                    echo $status;
+            echo("</td>");
+            echo("<td style=\"text-align:center\">");
+                if($status == 'ACTIVE'){
+                    echo("<a href=> <img id=\"\" src=\"http://localhost/Senior-Project-Web-Site-Ver-5//img/green_light.png\" height=\"20\" width=\"20\" > </a>");
+                }else{
+                    echo("<a href=> <img id=\"\" src=\"http://localhost/Senior-Project-Web-Site-Ver-5//img/red_light.png\" height=\"20\" width=\"20\" > </a>");
+                }
+            echo("</td>");
+            echo("<td style=\"text-align:center\">"); 
+                    echo("<a href=> <img id=\"\" src=\"http://localhost/Senior-Project-Web-Site-Ver-5//img/deletered.png\" height=\"20\" width=\"20\" > </a>");
+            echo("</td>");
             
             echo("</tr>");
         }
         
         echo("</table>");
         
-?>
+?>  
 </div>    
     
 
