@@ -46,16 +46,19 @@ class ProjectController extends CI_Controller
     public function filterImages(){
         $where = "";
         $data = array( );
-       /* active images only */
-        if( isset( $_POST[ 'active' ] ) && !isset( $_POST[ 'inactive' ] ) && !isset( $_POST[ 'all_images' ] )){
-            $where = "status = 'ACTIVE' ";
-        }/* inactive image only */
-        else if( isset( $_POST[ 'inactive' ] ) && !isset( $_POST[ 'active' ] ) && !isset( $_POST[ 'all_images' ] )){
-            $where = "status = 'INACTIVE' ";
-        }/* all image status */
-        else{
-            $where = "status = 'ACTIVE' OR status = 'INACTIVE' ";
+        
+        $image_input = $this->input->post('image_name');
+        $select = $this->input->post('id');
+       
+        if($select == 'all_images'){
+            $where = "(status = \"ACTIVE\" OR status = \"INACTIVE\") ";
+        }else{
+            $where = "status = \"".strtoupper($select)."\" ";
         }
+        if($image_input != ""){
+            $where .= " AND image_name LIKE "."\"%".$image_input."%\"  ";
+        }
+       
         $data['images'] = $this->spw_vm_request_model->searchFilteredImages($where);
         $this->load->view('vm_images',$data);
     }
