@@ -19,16 +19,20 @@ class ProjectController extends CI_Controller
     /* added in SPW v5 to change the status of an image in the system */
     public function changeImageStatus(){
         /*collect info to show on message*/
+//        $data = array( );
         $status = $this->input->post( 'status' );
-        $image = $_POST[ 'image_name' ];
+        $image = $this->input->post( 'image_name' );
+        echo $image;
+        echo $status;
         /*if query succeed, show Successfully message*/
-        if($this->spw_vm_request_model->updateImageStatus($status,$image)){
-            setFlashMessage( $this, "Successfully updated status of image $image to ". strtoupper($status) );
-        }/*if query does not succeed, show Error message*/
-        else{
-            setFlashMessage( $this, "Error updating status of image $image to ". strtoupper($status) );
-        }
-        redirect('vm-images');
+//        if($this->spw_vm_request_model->updateImageStatus($status,$image)){
+//            setFlashMessage( $this, "Successfully updated status of image $image to ". strtoupper($status) );
+//        }/*if query does not succeed, show Error message*/
+//        else{
+//            setFlashMessage( $this, "Error updating status of image $image to ". strtoupper($status) );
+//        }
+//        $this->load->view('vm_images',$data);
+//        redirect('vm-images');
     }
     
     /* added in SPW v5 to pass current image's info to 
@@ -46,16 +50,19 @@ class ProjectController extends CI_Controller
     public function filterImages(){
         $where = "";
         $data = array( );
-       /* active images only */
-        if( isset( $_POST[ 'active' ] ) && !isset( $_POST[ 'inactive' ] ) && !isset( $_POST[ 'all_images' ] )){
-            $where = "status = 'ACTIVE' ";
-        }/* inactive image only */
-        else if( isset( $_POST[ 'inactive' ] ) && !isset( $_POST[ 'active' ] ) && !isset( $_POST[ 'all_images' ] )){
-            $where = "status = 'INACTIVE' ";
-        }/* all image status */
-        else{
-            $where = "status = 'ACTIVE' OR status = 'INACTIVE' ";
+        
+        $image_input = $this->input->post('image_name');
+        $select = $this->input->post('id');
+       
+        if($select == 'all_images'){
+            $where = "(status = \"ACTIVE\" OR status = \"INACTIVE\") ";
+        }else{
+            $where = "status = \"".strtoupper($select)."\" ";
         }
+        if($image_input != ""){
+            $where .= " AND image_name LIKE "."\"%".$image_input."%\"  ";
+        }
+       
         $data['images'] = $this->spw_vm_request_model->searchFilteredImages($where);
         $this->load->view('vm_images',$data);
     }

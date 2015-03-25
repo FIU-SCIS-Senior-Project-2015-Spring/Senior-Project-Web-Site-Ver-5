@@ -259,7 +259,7 @@ class SPW_vm_request_Model extends CI_Model
         
         $query = "SELECT image_name, status " 
                 ."FROM spw_vm_images "
-                . "WHERE $where ";
+                . "WHERE ".$where." ";
         $q = $this->db->query($query);
         
         $results = array();
