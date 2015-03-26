@@ -227,8 +227,7 @@ class SPW_vm_request_Model extends CI_Model
         
         return $results;
     }
-    
-    
+       
     /*adds new image name to the system*/
     public function addImage($image){
         
@@ -297,8 +296,6 @@ class SPW_vm_request_Model extends CI_Model
             if($q) return true;
             else return false;
     }
-    
-    
-   
+     
 }
 

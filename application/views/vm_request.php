@@ -14,9 +14,9 @@
     <table class="auto" id="machines_table" >
     <thead>
       <tr>
-         <th>Image Name</th>
-         <th>Memory RAM (gb)</th>
-         <th>Storage (gb)</th>
+         <th>Operating System</th>
+         <th>Memory RAM</th>
+         <th>Storage</th>
          <th>Number of VM</th>
       </tr>
    </thead>
@@ -26,21 +26,23 @@
             <td>
                 <select name="os">
                         <?php 
-                            
-                            foreach($active_images as $os)
-                                echo '<option>'.$os->image_name.'</option>';
+                            $oses = array(
+                                "Windows Server 2008",
+                                "Ubuntu Server",
+                                "Windows Server 2003"
+                            );
+                            foreach($oses as $os)
+                                echo '<option>'.$os.'</option>';
                         ?>
                 </select>
             </td>
             <td>
-                <select name="ram"> 
-                        <option>1</option>
+                <select name="ram" 
                         <option>2</option>
                         <option>4</option>
                         <option>8</option>
                         <option>12</option>
                         <option>16</option>
-                        <option>32</option>
                 </select>
             </td>
            <td>
@@ -51,9 +53,6 @@
                         <option>20</option>
                         <option>24</option>
                         <option>30</option>
-                        <option>50</option>
-                        <option>70</option>
-                        <option>100</option>
                 </select>
            </td>
            <td>
@@ -75,14 +74,14 @@
 </div>
 </div>
 <br>
-<button id="addRequest" type="button" class="btn btn-default">Add Virtual Machine</button>
+<button id="addRequest" type="button" class="btn btn-default">Add Another Request</button>
 <button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
 
 <h4>Previous Requests</h4>
 <table class="auto table">
     <thead>
         <tr>
-            <th>Image Name</th>
+            <th>Operating System</th>
             <th>Memory RAM</th>
             <th>Storage</th>
             <th>Number of VM</th>
