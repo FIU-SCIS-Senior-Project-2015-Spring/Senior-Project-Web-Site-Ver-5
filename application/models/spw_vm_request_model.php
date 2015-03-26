@@ -227,7 +227,75 @@ class SPW_vm_request_Model extends CI_Model
         
         return $results;
     }
+       
+    /*adds new image name to the system*/
+    public function addImage($image){
+        
+        if(!$this->isImageOnSystem($image)){
+            $query = "insert into spw_vm_images (image_name, status) "
+               . "values ('$image', 'ACTIVE')";
+            $q = $this->db->query($query);
+            return true;
+        }
+        return false;
+    }
     
-   
+    /*checks if an image already exitis in the system*/
+    public function isImageOnSystem($image){
+        
+        $query = "SELECT image_name COLLATE utf8_general_ci " 
+                ."FROM spw_vm_images "
+                . "WHERE image_name = '$image' ";
+        $q = $this->db->query($query);
+        if($q->num_rows() > 0){
+            return true;
+        }
+        return false;
+    }
+    
+    /*filters images in the system*/
+    public function searchFilteredImages($where){
+        
+        $query = "SELECT image_name, status " 
+                ."FROM spw_vm_images "
+                . "WHERE ".$where." ";
+        $q = $this->db->query($query);
+        
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($results,$row);
+        
+        return $results;
+    }
+    
+    /*return all active images in the system */
+    public function getActiveImages(){
+        
+         $query = "SELECT image_name " 
+                ."FROM spw_vm_images "
+                . "WHERE status = 'ACTIVE' ";
+        $q = $this->db->query($query);
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($results,$row);
+        
+        return $results;
+    }
+    
+    /*update image status*/
+    public function updateImageStatus($status,$image){
+        
+        $query = "update spw_vm_images "
+                    . "set status = '$status' "
+                    . "where image_name = '$image' ";
+            $q = $this->db->query($query);
+            if($q) return true;
+            else return false;
+    }
+     
 }
 
