@@ -15,8 +15,8 @@ class ProjectController extends CI_Controller
         $this->load->model('spw_notification_model');
         $this->load->model('spw_vm_request_model');
     }
-	
-	/* added in SPW v5 to change the status of an image in the system */
+    
+    /* added in SPW v5 to change the status of an image in the system */
     public function changeImageStatus(){
         /*collect info to show on message*/
 //        $data = array( );
@@ -66,8 +66,9 @@ class ProjectController extends CI_Controller
         $data['images'] = $this->spw_vm_request_model->searchFilteredImages($where);
         $this->load->view('vm_images',$data);
     }
-	
-	/*load vm_image view*/
+    
+    
+    /*load vm_image view*/
     public function vm_images(){
         if(isUserLoggedIn($this)){
             if($this->spw_user_model->isUserProfessor(getCurrentUserId($this))){
@@ -99,19 +100,18 @@ class ProjectController extends CI_Controller
             redirect('vm-images');
         }
     }
-	
+    
     /*added on SPW v. 5 for vm request management */
     public function vm_request()
     {
             if(isUserLoggedIn($this)){
-                $session_data = $this->session->userdata('logged_in');
-                /* gets usr id */
-                $user_id = $session_data['id'];
+
+                $user_id = getCurrentUserId($this);
                 $input = file_get_contents('php://input');
                 $inputProjectId = $this->input->get('projectid', TRUE);
 
             /*user is student and submit vm request*/
-            if($input && $this->spw_user_model->isUserAStudent(getCurrentUserId($this))){
+            if($input && $this->spw_user_model->isUserAStudent($user_id)){
 
                 $formInput = json_decode($input);
                 /* inserts vm request on DB */
@@ -122,7 +122,7 @@ class ProjectController extends CI_Controller
                 $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMembers($projectid));
                 /*create email message for student to notify professor*/
                 $requetUrl = base_url().'vm-request?projectid='.$projectid;
-                $email = 'sadjadi@cs.fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
+                $email = 'ypera006@fiu.edu';//'sadjadi@cs.fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
                 $message ="<html> 
                             <body>
                                  <p> Click <a href=\"$requetUrl\">here</a> to see request from:</P>
@@ -133,9 +133,10 @@ class ProjectController extends CI_Controller
                 $subject = 'A new VM request is awaiting acceptance';
                 echo json_encode(array("success"=>$success,"url"=>$requetUrl));
                 send_email($this, $email, $subject, $message); 
+                setFlashMessage($this, "Succesfully submitted a virtual machine request");
 
             }/*user is professor and updates vm requests for a project*/
-            else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $input){
+            else if($this->spw_user_model->isUserProfessor($user_id) && $input){
 
                 $inputForm = json_decode($input);
                 $project_title = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
@@ -157,19 +158,21 @@ class ProjectController extends CI_Controller
                 /*send email message only if you have approved vms*/
                 if(count($approved_vm) > 0){
                     send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
+                    setFlashMessage($this, "Succesfully approved ".count($approved_vm)." virtual machine request(s)");
                 }
                 /*update vm requests*/    
                 $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
                 echo json_encode(array("success"=> $success));
 
             }/*user is head professor and has vm request for a project to look at it*/
-            else if($this->spw_user_model->isUserProfessor(getCurrentUserId($this)) && $inputProjectId){
+            else if($this->spw_user_model->isUserProfessor($user_id) && $inputProjectId){
 
                 $data['title'] = 'VM - Requests';
                 $data['project_title'] = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
                 $data['project_members'] = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
                 $data['projectid'] = $inputProjectId;
                 $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
+                $data['active_images'] = $this->spw_vm_request_model->getActiveImages();
                 /*gets default email for vm creation */
                 $data['email_address'] = $this->spw_vm_request_model->getVMDefaultEmailCreation();
                 /*gets default name for vm creation */
@@ -178,16 +181,14 @@ class ProjectController extends CI_Controller
 
             }
             else { 
-
-                if($this->spw_user_model->isUserAStudent(getCurrentUserId($this)) && $inputProjectId){
+            /* check if current day is under deadline and prompt warning message if need be */
+                if($this->SPW_Term_Model->currentDateUnderDeadline()|| $this->spw_user_model->isUserAStudent($user_id) && $inputProjectId){
                     $this->load->view('vm_request_message');
-                }/* check if current day is under deadline and prompt warning message if need be */
-                else if($this->SPW_Term_Model->currentDateUnderDeadline()){
-                    $this->load->view('vm_request_message');
-                }/* normal flow of events, current day is over deadline and student access*/
-                else{/*VM - Request page to create a new vm request */
+                }/* normal flow of events, current day is after deadline and student accesses*/
+                else{/*VM - Request page to create a virtual machine request */
                     $data['title'] = 'VM - Request';
                     $data['requests'] = $this->spw_vm_request_model->getUserRequests($user_id);
+                    $data['active_images'] = $this->spw_vm_request_model->getActiveImages();
                     $this->load->view('vm_request', $data);
                 }
             }
