@@ -110,13 +110,17 @@ echo form_close();
             echo("</td>");
             echo("<td style=\"text-align:center\">");
                 if($status == 'ACTIVE'){
-                    echo("<a href=> <img id=\"\" src=\"http://localhost/Senior-Project-Web-Site-Ver-5//img/green_light.png\" height=\"20\" width=\"20\" > </a>");
+                    echo("<a href=".base_url('./vm-images/status?status='.$status.
+                            "&image_name=".urlencode($image)).
+                            "> <img id=\"\" src=".base_url('img/green_light.png')." height=\"20\" width=\"20\" > </a>");
                 }else{
-                    echo("<a href=> <img id=\"\" src=\"http://localhost/Senior-Project-Web-Site-Ver-5//img/red_light.png\" height=\"20\" width=\"20\" > </a>");
+                    echo("<a href=".base_url('./vm-images/status?status='.$status.
+                            "&image_name=".urlencode($image)).
+                            "> <img id=\"\" src=".base_url('img/red_light.png')." height=\"20\" width=\"20\" > </a>");
                 }
             echo("</td>");
             echo("<td style=\"text-align:center\">"); 
-                    echo("<a href=> <img id=\"\" src=\"http://localhost/Senior-Project-Web-Site-Ver-5//img/deletered.png\" height=\"20\" width=\"20\" > </a>");
+                    echo("<a href=> <img id=\"\" src=".base_url('img/deletered.png')." height=\"20\" width=\"20\" > </a>");
             echo("</td>");
             
             echo("</tr>");
