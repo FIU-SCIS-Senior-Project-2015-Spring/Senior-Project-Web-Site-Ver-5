@@ -76,6 +76,7 @@ $route['(?i)(user)/(:any)'] = 'usercontroller/profile/$2';
 $route['(?i)(vm-request)'] = 'projectcontroller/vm_request';
 $route['(?i)(vm-images)'] = 'projectcontroller/vm_images';
 $route['(?i)(vm-images)/addImage'] = 'projectcontroller/addImages';
+$route['(?i)(vm-images)/status'] = 'projectcontroller/changeImageStatus';
 
 $route['(?i)(past-projects)'] = 'projectcontroller/past_projects';
 $route['(?i)(project)/(create)'] = 'projectcontroller/create_new_project';
