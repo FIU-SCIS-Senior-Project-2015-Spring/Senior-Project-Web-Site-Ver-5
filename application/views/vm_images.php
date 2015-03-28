@@ -8,7 +8,7 @@
                                                   'id' => 'registration_form'
                                                   ));
   ?>
-<div class="well">
+<div class="well" style=" margin-top: 20px;">
 <div class="text-center">
     <h4> Add New Image Name </h4>
 </div>
@@ -120,7 +120,10 @@ echo form_close();
                 }
             echo("</td>");
             echo("<td style=\"text-align:center\">"); 
-                    echo("<a href=> <img id=\"\" src=".base_url('img/deletered.png')." height=\"20\" width=\"20\" > </a>");
+                    $msg = "Are you sure you want to delete image $image ?";
+                    echo("<a href=".base_url('./vm-images/delete?image_name='.
+                            urlencode($image))." onclick=\"return confirm('$msg')\"> <img id=\"\" src=".
+                            base_url('img/deletered.png')." height=\"20\" width=\"20\" > </a>");
             echo("</td>");
             
             echo("</tr>");

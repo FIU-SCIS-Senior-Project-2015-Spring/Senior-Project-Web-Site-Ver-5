@@ -298,6 +298,23 @@ class SPW_vm_request_Model extends CI_Model
             else return false;
     }
     
+    /*delete an image name from the system*/
+    public function deleteImage($image){
+        
+        /*delete any request wth image matching*/
+        $query = "DELETE FROM spw_vm_request "
+               . "where OS = '$image' ";
+        $q = $this->db->query($query);
+        /*delete image name from system*/
+        $query = "DELETE FROM spw_vm_images "
+                 . "where image_name = '$image' ";
+
+        $q = $this->db->query($query);
+        
+        if($q) return true;
+        else return false;
+    }
+    
     
    
 }
