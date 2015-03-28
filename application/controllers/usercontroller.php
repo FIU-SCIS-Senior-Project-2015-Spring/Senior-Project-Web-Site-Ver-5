@@ -404,11 +404,14 @@ class UserController extends CI_Controller
 
     public function linkedIn_initiate()
     {
+        
+        $base_url = $this->config->base_url();
+        
         // setup before redirecting to Linkedin for authentication.
          $linkedin_config = array(
-             'appKey'       => '1ky0pyoc0rpe',
-             'appSecret'    => '7WIPfrEkya3QT3LR',
-             'callbackUrl'  => 'http://spws.cis.fiu.edu/senior-project-website-v4/user/linkedIn_callback'
+             'appKey'       => '78n2iumdq3w0z5',
+             'appSecret'    => 'Ge6PcBGMqLvwUyfw',
+             'callbackUrl'  => $base_url.'user/linkedIn_callback'
          );
         
         $this->load->library('linkedin', $linkedin_config);
@@ -428,11 +431,14 @@ class UserController extends CI_Controller
 
     public function linkedIn_sync()
     {
+        
+        $base_url = $this->config->base_url();
+        
         // setup before redirecting to Linkedin for authentication.
          $linkedin_config = array(
-             'appKey'       => '1ky0pyoc0rpe',
-             'appSecret'    => '7WIPfrEkya3QT3LR',
-             'callbackUrl'  => 'http://spws.cis.fiu.edu/senior-project-website-v4/user/linkedIn_callback'
+             'appKey'       => '78n2iumdq3w0z5',
+             'appSecret'    => 'Ge6PcBGMqLvwUyfw',
+             'callbackUrl'  => $base_url.'user/linkedIn_callback'
          );
         
         $this->load->library('linkedin', $linkedin_config);
@@ -462,11 +468,14 @@ class UserController extends CI_Controller
     }
 
     public  function linkedIn_callback() {
+        
+        
+        $base_url = $this->config->base_url();
 
         $linkedin_config = array(
-                     'appKey'       => '1ky0pyoc0rpe',
-                     'appSecret'    => '7WIPfrEkya3QT3LR',
-                     'callbackUrl'  => 'http://spws.cis.fiu.edu/senior-project-website-v4/user/linkedIn_callback'
+                     'appKey'       => '78n2iumdq3w0z5',
+                     'appSecret'    => 'Ge6PcBGMqLvwUyfw',
+                     'callbackUrl'  => $base_url.'user/linkedIn_callback'
                  );
                 
         $this->load->library('linkedin', $linkedin_config);
