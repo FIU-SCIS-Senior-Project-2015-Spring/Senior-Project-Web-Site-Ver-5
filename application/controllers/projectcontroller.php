@@ -16,6 +16,24 @@ class ProjectController extends CI_Controller
         $this->load->model('spw_vm_request_model');
     }
     
+    /* added in SPW v5 to delete an image in the system */
+    public function deleteImage(){
+        $image_name = '';
+        if (isset($_GET['image_name'])){
+            $image_name = urldecode($_GET['image_name']);
+        }
+        /*if query succeed, show Successfully message*/
+        if($this->spw_vm_request_model->deleteImage($image_name)){
+            $message = "Successfully deleted image $image_name";
+            setFlashMessage( $this, $message);
+        }/*if query does not succeed, show Error message*/
+        else{
+            $message = "Error deleting $image_name";
+            setFlashMessage( $this, $message);
+        }
+        redirect('vm-images');
+    }
+    
     /* added in SPW v5 to change the status of an image in the system */
     public function changeImageStatus(){
         $status =''; $image_name = '';
