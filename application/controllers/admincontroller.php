@@ -176,10 +176,13 @@ class AdminController extends CI_Controller {
   /* Added to SPW v.3 for User Management System */
   public function register_new_user( )
 	{
-		$this->load->library('form_validation');
+    $this->load->library('form_validation');
     $this->form_validation->set_rules('email_address', 'Email Address', 'required|valid_email');
     $this->form_validation->set_rules('role', 'Role', 'required');
     $data = array();
+    
+
+    $base_url = $this->config->base_url();
     
     if ($this->form_validation->run( ) !== false)
     {
@@ -195,7 +198,7 @@ class AdminController extends CI_Controller {
 	  $message = $row[ 'intro' ];
 	}
 
-		$message = $message . '<br><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5/admin/email_activation/' . $this->reversible_encryption( $user_id ) . '"> http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5/admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>';    	
+		$message = $message . '<br><a href="' . $base_url . 'admin/email_activation/' . $this->reversible_encryption( $user_id ) . '"> ' . $base_url . 'admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>';    	
                 send_email($this, $this->input->post('email_address'), 'Senior Project Website Account', $message );
                 
                 $msg = 'Successfully created a user with the email: ' . $this->input->post('email_address') . '. 
@@ -327,6 +330,9 @@ class AdminController extends CI_Controller {
   {
 	  $this->load->library( 'form_validation' );
 	  $this->form_validation->set_rules( 'email_address', 'Email Address', 'required|valid_email' );
+          
+
+          $base_url = $this->config->base_url();
 	  
 	  if( $this->form_validation->run( ) != false )
 	  {
@@ -347,7 +353,7 @@ class AdminController extends CI_Controller {
         <p>We have created an account for you to access it.</p>
           <p> Please log in with your email address and this temporary password: ' .  $password . '</p>
           <p>Once you login, update your profile and refer to the User Guide on the "About" page for help.</p>
-            <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">Senior Project Website</a></p>
+            <p><a href="' . $base_url . '">Senior Project Website</a></p>
             </body>
             </html>';
             
@@ -373,6 +379,9 @@ class AdminController extends CI_Controller {
   {
 	  $this->load->library( 'form_validation' );
 	  $this->form_validation->set_rules( 'email_address', 'Email Address', 'required|valid_email' );
+          
+
+          $base_url = $this->config->base_url();
 	  
 	  if( $this->form_validation->run( ) != false )
 	  {
@@ -393,7 +402,7 @@ class AdminController extends CI_Controller {
         
         <p>To change your password, please visit the following page:</p>
         
-        <br><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5/admin/email_activation/' . $this->reversible_encryption( $user_id ) . '"> http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5/admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>
+        <br><a href="' . $base_url . 'admin/email_activation/' . $this->reversible_encryption( $user_id ) . '"> ' . $base_url . 'admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>
         </body>
             </html>';
             
@@ -528,6 +537,9 @@ class AdminController extends CI_Controller {
         $this->form_validation->set_rules('password_1', 'Password', 'required|min_length[6]');
         $this->form_validation->set_rules('password_2', 'Password', 'required|min_length[6]');
         $data = array();
+        
+
+        $base_url = $this->config->base_url();
 
         if ($this->form_validation->run() !== false) {
             $this->load->model('spw_user_model');
@@ -540,7 +552,7 @@ class AdminController extends CI_Controller {
                                 <p>We have created an account for you to access it.</p>
                                 <p> Please log in with your email address and this temporary password:' . $this->input->post('password_1') . ' </p>
                                     <p>Once you login, please update your profile and refer to the User Guide on the About page for help.</p>
-                                <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
+                                <p><a href="' . $base_url . '">SeniorProjectWebsite</a></p>
                             </body>
                             </html>';
 

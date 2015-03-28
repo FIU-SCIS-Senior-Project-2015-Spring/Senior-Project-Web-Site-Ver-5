@@ -271,13 +271,15 @@ class SPW_Notification_Model extends CI_Model
         //send email
          $email = $this->spw_user_model->getUserInfo($user_id);
          $email = $email->email;
-       
-                    
+         
+
+         $base_url = $this->config->base_url();
+         
         $message = '<html >  <head><title></title></head>
                         <body>
                             <h2>Project Deleted!! </h2>
                             <p>  Project "' . $project_title .'" has been deleted by ' . $professor_fullname . '.</p>
-                            <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
+                            <p><a href="' . $base_url . '">SeniorProjectWebsite</a></p>
                         </body>
                     </html>';
 
@@ -323,13 +325,15 @@ class SPW_Notification_Model extends CI_Model
         $this->db->insert('spw_notification',$data);
          //send email        
          $email = $this->spw_user_model->getUserInfo($user_id);
-         $email = $email->email;     
-                    
+         $email = $email->email;
+         
+         $base_url = $this->config->base_url();
+         
         $message = '<html >  <head><title></title></head>
                         <body>
                             <h2>Project Rejected!! </h2>
                             <p>  Project "' . $project_title .'" has been rejected by ' . $professor_fullname . '.</p>
-                            <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
+                            <p><a href="' . $base_url . '">SeniorProjectWebsite</a></p>
                         </body>
                     </html>';
 
@@ -364,12 +368,14 @@ class SPW_Notification_Model extends CI_Model
         //send email        
          $email = $this->spw_user_model->getUserInfo($to_user_id);
          $email = $email->email;     
-                    
+         
+         $base_url = $this->config->base_url();
+         
         $message = '<html >  <head><title></title></head>
                         <body>
                             <h2>Project Approved!! </h2>
                             <p>  Project "' . $project_title .'" has been approved by ' . $fullname . '.</p>
-                            <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
+                            <p><a href="' . $base_url . '">SeniorProjectWebsite</a></p>
                         </body>
                     </html>';
 
@@ -396,11 +402,14 @@ class SPW_Notification_Model extends CI_Model
         //send email
         $email = $this->spw_user_model->getUserInfo($professor_id);
         $email = $email->email;
+        
+        $base_url = $this->config->base_url();
+        
         $message = '<html >  <head><title></title></head>
                                     <body>
                                         <h2>New project proposed!! </h2>
                                         <p> Project "' . $project_title . '" is waiting for your approval.</p>
-                                        <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
+                                        <p><a href="' . $base_url . '">SeniorProjectWebsite</a></p>
                                     </body>
                                 </html>';
 

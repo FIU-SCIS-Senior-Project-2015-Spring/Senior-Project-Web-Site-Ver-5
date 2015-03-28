@@ -730,6 +730,9 @@ class ProjectController extends CI_Controller
     }
     public function leave()
     {
+        
+        $base_url = $this->config->base_url();
+        
         if (!is_POST_request($this))
         {
             redirect('/');
@@ -755,7 +758,7 @@ class ProjectController extends CI_Controller
                                     <body>
                                         <h2>Team Member Left your project!! </h2>
                                         <p>' . $fullname . ' has left your project.</p>
-                                        <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
+                                        <p><a href="' . $base_url . '">SeniorProjectWebsite</a></p>
                                     </body>
                                 </html>';
 
@@ -1643,6 +1646,7 @@ class ProjectController extends CI_Controller
             $currentUserId = getCurrentUserId($this);
           
             $hasProject = $this->spw_user_model->get_project($currentUserId);
+            
             if(isset($hasProject))
             {
                  setErrorFlashMessage($this, 'First leave your current project before joining a new one');
@@ -1656,6 +1660,9 @@ class ProjectController extends CI_Controller
 
                      //send email notification to all team members
                 $teamIds = $this->spw_project_model->get_team_members($project_id);
+                
+                $base_url = $this->config->base_url();
+                
                 foreach ($teamIds as $memberID) {
                     $email = $this->spw_user_model->getUserInfo($memberID);
                     $email = $email->email;
@@ -1663,7 +1670,7 @@ class ProjectController extends CI_Controller
                                     <body>
                                         <h2>New Team Member!! </h2>
                                         <p>' . $fullname . ' has joined your project.</p>
-                                        <p><a href="http://spws-dev.cis.fiu.edu/Senior-Project-Web-Site-Ver-5">SeniorProjectWebsite</a></p>
+                                        <p><a href="' . $base_url . '">SeniorProjectWebsite</a></p>
                                     </body>
                                 </html>';
 
