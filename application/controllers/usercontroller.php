@@ -406,9 +406,9 @@ class UserController extends CI_Controller
     {
         // setup before redirecting to Linkedin for authentication.
          $linkedin_config = array(
-             'appKey'       => '1ky0pyoc0rpe',
-             'appSecret'    => '7WIPfrEkya3QT3LR',
-             'callbackUrl'  => 'http://spws.cis.fiu.edu/senior-project-website-v4/user/linkedIn_callback'
+             'appKey'       => '78n2iumdq3w0z5',
+             'appSecret'    => 'Ge6PcBGMqLvwUyfw',
+             'callbackUrl'  => 'http://localhost/Senior-Project-Web-Site-Ver-5/user/linkedIn_callback'
          );
         
         $this->load->library('linkedin', $linkedin_config);
@@ -430,9 +430,9 @@ class UserController extends CI_Controller
     {
         // setup before redirecting to Linkedin for authentication.
          $linkedin_config = array(
-             'appKey'       => '1ky0pyoc0rpe',
-             'appSecret'    => '7WIPfrEkya3QT3LR',
-             'callbackUrl'  => 'http://spws.cis.fiu.edu/senior-project-website-v4/user/linkedIn_callback'
+             'appKey'       => '78n2iumdq3w0z5',
+             'appSecret'    => 'Ge6PcBGMqLvwUyfw',
+             'callbackUrl'  => 'http://localhost/Senior-Project-Web-Site-Ver-5/user/linkedIn_callback'
          );
         
         $this->load->library('linkedin', $linkedin_config);
@@ -464,9 +464,9 @@ class UserController extends CI_Controller
     public  function linkedIn_callback() {
 
         $linkedin_config = array(
-                     'appKey'       => '1ky0pyoc0rpe',
-                     'appSecret'    => '7WIPfrEkya3QT3LR',
-                     'callbackUrl'  => 'http://spws.cis.fiu.edu/senior-project-website-v4/user/linkedIn_callback'
+                     'appKey'       => '78n2iumdq3w0z5',
+                     'appSecret'    => 'Ge6PcBGMqLvwUyfw',
+                     'callbackUrl'  => 'http://localhost/Senior-Project-Web-Site-Ver-5/user/linkedIn_callback'
                  );
                 
         $this->load->library('linkedin', $linkedin_config);

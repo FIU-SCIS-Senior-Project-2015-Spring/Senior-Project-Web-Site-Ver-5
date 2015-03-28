@@ -184,7 +184,6 @@ if( isset( $session_data[ "head_professor" ] ) ) { ?>
 
                                                             echo img(array(
                                                                 'src' => $src . '?x=' . time(),
-                                                                'alt' => 'User Profile Image',
                                                                 'class' => 'img-header-profile-big img-polaroid'
                                                             ));
                                                             ?>
