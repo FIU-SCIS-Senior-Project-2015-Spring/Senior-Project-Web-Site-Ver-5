@@ -443,7 +443,7 @@ class AdminController extends CI_Controller {
 		  $user_id = $this->decryption( $hash_id );
                   $user_time = $this->decryption( $hash_time );
                   
-                  if (time() > $user_time)
+                  if ($_SERVER["REQUEST_TIME"] > $user_time)
                   {
                       $msg = 'Link expired; please create another request to change your password.';
                       setErrorFlashMessage( $this, $msg );
