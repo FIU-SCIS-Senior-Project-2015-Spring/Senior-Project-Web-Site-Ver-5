@@ -405,7 +405,7 @@ class AdminController extends CI_Controller {
         
         <p>To change your password, please visit the following page:</p>
         
-        <br><a href="' . $base_url . 'admin/email_activation/' . $this->reversible_encryption( $user_id ) . ':' . $this->reversible_encryption( $expiration_time ) .'"> ' . $base_url . 'admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>
+        <br><a href="' . $base_url . 'admin/email_activation/' . $this->reversible_encryption( $user_id ) . '#' . $this->reversible_encryption( $expiration_time ) .'"> ' . $base_url . 'admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>
         </body>
             </html>';
             
@@ -435,7 +435,7 @@ class AdminController extends CI_Controller {
   {
 	  if( $hash !== '' )
 	  {
-                  $piece = explode(':', $hash);
+                  $piece = explode("#", $hash);
                   
                   $hash_id = $piece[0];
                   $hash_time = $piece[1];
