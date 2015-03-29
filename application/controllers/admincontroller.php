@@ -443,9 +443,9 @@ class AdminController extends CI_Controller {
 		  $user_id = $this->decryption( $hash_id );
                   $user_time = $this->decryption( $hash_time );
                   
-                  if (time() > (int)$user_time)
+                  if (time() > $user_time)
                   {
-                      $msg = 'Link expired;' . time() . '>' . (int)$user_time . ' please create another request to change your password.';
+                      $msg = 'Link expired;' . time() . '>' . $user_time . ' please create another request to change your password.';
                       setErrorFlashMessage( $this, $msg );
                       redirect('login');
                       return;
