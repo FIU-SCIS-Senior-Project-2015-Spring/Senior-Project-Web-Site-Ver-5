@@ -392,6 +392,9 @@ class AdminController extends CI_Controller {
 		  if( $res && $status )
 		  {
                           $user_id = $this->spw_user_model->get_user_id($this->input->post( 'email_address' ));
+                          
+                          $to_expire = 86400;
+                          $expiration_time = time() + $to_expire;
 			  
 			  $message ='<html>
         <head><title>Senior Project Website Account Password</title></head>
