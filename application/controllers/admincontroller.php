@@ -392,9 +392,6 @@ class AdminController extends CI_Controller {
 		  if( $res && $status )
 		  {
                           $user_id = $this->spw_user_model->get_user_id($this->input->post( 'email_address' ));
-                          
-                          $to_expire = 86400;
-                          $expiration_time = time() + $to_expire;
 			  
 			  $message ='<html>
         <head><title>Senior Project Website Account Password</title></head>
@@ -405,7 +402,7 @@ class AdminController extends CI_Controller {
         
         <p>To change your password, please visit the following page:</p>
         
-        <br><a href="' . $base_url . 'admin/email_activation/' . $this->reversible_encryption( $user_id ) . '#' . $this->reversible_encryption( $expiration_time ) .'"> ' . $base_url . 'admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>
+        <br><a href="' . $base_url . 'admin/email_activation/' . $this->reversible_encryption( $user_id ) . '"> ' . $base_url . 'admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>
         </body>
             </html>';
             
@@ -431,26 +428,11 @@ class AdminController extends CI_Controller {
   }
   
   /* Added to SPW v. 3 */
-  public function activation( $hash = '' )
+  public function activation( $hash_id = '' )
   {
-	  if( $hash !== '' )
+	  if( $hash_id !== '' )
 	  {
-                  $piece = explode("#", $hash);
-                  
-                  $hash_id = $piece[0];
-                  $hash_time = $piece[1];
-                  
 		  $user_id = $this->decryption( $hash_id );
-                  $user_time = $this->decryption( $hash_time );
-                  
-                  if ($_SERVER["REQUEST_TIME"] > $user_time)
-                  {
-                      $msg = 'Link expired; please create another request to change your password.';
-                      setErrorFlashMessage( $this, $msg );
-                      redirect('login');
-                      return;
-                  }
-                  
 		  $data = array( );
 		  
 		  $this->load->model( 'spw_user_model' );
