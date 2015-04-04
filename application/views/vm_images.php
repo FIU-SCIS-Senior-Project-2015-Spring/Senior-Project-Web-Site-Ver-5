@@ -89,7 +89,7 @@ echo form_close();
         $image = "";
         $status = "";
         echo( "<br>" );
-        echo("<table class=\"table table-bordered\">");
+        echo("<table id=\"images\" class=\"table table-bordered\">");
         echo("<tr>");
             echo("<th style=\"text-align:center\"> IMAGE NAME </th>");
             echo("<th style=\"text-align:center\"> IMAGE STATUS </th>");
@@ -133,6 +133,10 @@ echo form_close();
         
 ?>  
 </div>    
-    
+<script language="javascript" type="text/javascript">  
+//<![CDATA[  
+    var tf1 = setFilterGrid("images");  
+//]]>  
+</script>   
 
 <?php $this->load->view("template_footer"); ?>
