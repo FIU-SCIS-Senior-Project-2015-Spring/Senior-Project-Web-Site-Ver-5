@@ -16,6 +16,137 @@ class ProjectController extends CI_Controller
         $this->load->model('spw_vm_request_model');
     }
     
+    /*added in SPW v5 to filter vm requests*/
+    public function filterVMRequests($image,$ram,$storage,$qty,$status,$name,$term){
+        
+        $data = array( );
+        $where = "";
+        
+        if($image == ""){
+            $image = NULL;
+        }
+        if($ram == 'ALL RAM'){
+            $ram = NULL;
+        }
+        if($status == 'ALL STATUS'){
+            $status = NULL;
+        }
+        if($storage == 'ALL STORAGE'){
+            $storage = NULL;
+        }
+        if($qty == 'ALL VMs'){
+            $qty = NULL;
+        }
+        if($name == ""){
+            $name = NULL;
+        }
+        if($term == ""){
+            $term = NULL;
+        }
+        
+        if(isset($image)){
+            if(strlen($where) >= 1)
+                $where .= " AND OS LIKE "."\"%".$image."%\"  ";
+            else
+                $where = "OS LIKE "."\"%".$image."%\"  ";
+        }
+        if(isset($ram)){
+            if(strlen($where) >= 1)
+                $where .= " AND RAM = '$ram' ";
+            else
+                $where = "RAM = '$ram' ";
+        }
+        if(isset($storage)){
+            if(strlen($where) >= 1)
+                $where .= " AND storage = '$storage' ";
+            else
+                $where = "storage = '$storage' ";
+        }
+        if(isset($qty)){
+            if(strlen($where) >= 1)
+                $where .= " AND numb_vm = '$qty' ";
+            else
+                $where = "numb_vm = '$qty' ";
+        }
+        if(isset($status)){
+            if(strlen($where) >= 1)
+                $where .= " AND status = '$status' ";
+            else
+                $where = "status = '$status' ";
+        }
+        if(isset($name)){
+            if(strlen($where) >= 1)
+                $where .= " AND student_name LIKE "."\"%".$name."%\"  ";
+            else
+                $where = "student_name LIKE "."\"%".$name."%\"  ";
+        }
+        if(isset($term)){
+            if(strlen($where) >= 1)
+                $where .= " AND term LIKE "."\"%".$term."%\"  ";
+            else
+                $where = "term LIKE "."\"%".$term."%\"  ";
+        }
+           
+        $data['title'] = 'VM - Requests';
+        $data['requests'] = $this->spw_vm_request_model->searchFilteredVms($where);
+        $data['active_images'] = $this->spw_vm_request_model->getActiveImages();
+        /*gets default email for vm creation */
+        $data['email_address'] = $this->spw_vm_request_model->getVMDefaultEmailCreation();
+        /*gets default name for vm creation */
+        $data['name_default'] = $this->spw_vm_request_model->getDefaultName();
+        $data['image'] = $image;
+        $data['ram'] = $ram;
+        $data['storage'] = $storage;
+        $data['qty'] = $qty;
+        $data['status'] = $status;
+        $data['name'] = $name;
+        $data['term'] = $term;
+        $this->load->view('vm_requests2', $data);
+    }
+    
+    /*loads all VM request into vm_request2.php and calls filter */
+    public function vm_requests(){
+        
+        if(isUserLoggedIn($this)){
+            
+            $input = file_get_contents('php://input');
+            
+            $image = $this->input->get('image');
+            $ram = $this->input->get('ram');
+            $storage = $this->input->get('storage');
+            $qty = $this->input->get('qty');
+            $status = $this->input->get('status');
+            $name = $this->input->get('name');
+            $term = $this->input->get('term');
+            
+            if($status || $ram || $storage || $qty || $image || $name || $term){
+                $this->filterVMRequests($image,$ram,$storage,$qty,$status,$name,$term);
+            }else if($input){
+                
+                $inputForm = json_decode($input);
+                $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
+                echo json_encode(array("success"=> $success));
+                
+            }else{
+            
+                $data['title'] = 'VM - Requests';
+                $data['requests'] = $this->spw_vm_request_model->getVMRequests();
+                $data['active_images'] = $this->spw_vm_request_model->getActiveImages();
+                /*gets default email for vm creation */
+                $data['email_address'] = $this->spw_vm_request_model->getVMDefaultEmailCreation();
+                /*gets default name for vm creation */
+                $data['name_default'] = $this->spw_vm_request_model->getDefaultName();
+                $data['image'] = $image;
+                $data['name'] = $name;
+                $data['term'] = $term;
+        
+                $this->load->view('vm_requests2', $data);
+            }
+        }else{
+            redirect('login','refresh');
+        }
+    }
+    
     /* added in SPW v5 to delete an image in the system */
     public function deleteImage(){
         $image_name = '';
@@ -156,7 +287,7 @@ class ProjectController extends CI_Controller
                            </html>";
                 $subject = 'A new VM request is awaiting acceptance';
                 echo json_encode(array("success"=>$success,"url"=>$requetUrl));
-                send_email($this, $email, $subject, $message); 
+//                send_email($this, $email, $subject, $message); 
                 setFlashMessage($this, "Succesfully submitted a virtual machine request");
 
             }/*user is professor and updates vm requests for a project*/
@@ -181,7 +312,7 @@ class ProjectController extends CI_Controller
                               . '</html>';
                 /*send email message only if you have approved vms*/
                 if(count($approved_vm) > 0){
-                    send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
+//                    send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
                     setFlashMessage($this, "Succesfully approved ".count($approved_vm)." virtual machine request(s)");
                 }
                 /*update vm requests*/    
