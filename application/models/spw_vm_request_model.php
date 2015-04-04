@@ -37,14 +37,16 @@ class SPW_vm_request_Model extends CI_Model
     public function insertVmRequests($requests,$user_id){
         
         $project_id = $this->getProjectId($user_id);
+        $student_name = $this->getStudentName($user_id);
+        $current_term = $this->getCurrentTermName();
         /* for each request insert its settings */
         foreach($requests as $request){
             $os = $request->os;
             $ram = $request->ram;
             $hdd = $request->hdd;
             $qty = $request->qty;
-            $query = "insert into spw_vm_request (project_id, OS, RAM, storage, numb_vm, status) "
-                    . "values ($project_id,'$os',$ram,$hdd,$qty,'PENDING')";
+            $query = "insert into spw_vm_request (project_id, OS, RAM, storage, numb_vm, status, student_id, student_name, term) "
+                    . "values ($project_id,'$os',$ram,$hdd,$qty,'PENDING', $user_id, '$student_name', '$current_term' )";
             $q = $this->db->query($query);
             if(!$q) return false;
         }
@@ -315,6 +317,73 @@ class SPW_vm_request_Model extends CI_Model
         else return false;
     }
     
+    /* returns al requests in the system */
+    public function getVMRequests(){
+        
+        $q = $this->db->query("SELECT id,OS, RAM, storage, numb_vm, status, student_name, term "
+                            . "FROM spw_vm_request ");
+        $requests = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($requests,$row);
+        
+        return $requests;
+    }
+    
+    /*filters vm in the system*/
+    public function searchFilteredVms($where){
+        
+        if($where == ""){
+            $query = "SELECT id,OS, RAM, storage, numb_vm, status, student_name, term "
+                ."FROM spw_vm_request ";
+        }else{
+        $query = "SELECT id,OS, RAM, storage, numb_vm, status, student_name, term "
+                ."FROM spw_vm_request "
+                . "WHERE ".$where." ";
+        }
+        $q = $this->db->query($query);
+        
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($results,$row);
+        
+        return $results;
+    }
+    
+    /*retrive student's full name*/
+    public function getStudentName($user_id){
+        
+        $query = "SELECT CONCAT_WS(' ', first_name, last_name) AS full_name "
+       . "FROM spw_user "
+       . "WHERE id = $user_id ";
+
+        $q = $this->db->query($query);
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->full_name;
+        return NULL;
+    }
+    
+    /*retrive current term*/
+    public function getCurrentTermName(){
+        
+        $query = "SELECT name "
+                . "FROM spw_term "
+                . "WHERE start_date IN "
+                         . "(SELECT MAX(start_date) "
+                         . " FROM spw_term) ";
+        
+        $q = $this->db->query($query);
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->name;
+        return NULL;
+
+    }
     
    
 }
