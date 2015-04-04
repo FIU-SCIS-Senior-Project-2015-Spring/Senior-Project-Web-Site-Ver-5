@@ -110,6 +110,9 @@ overflow: scroll;
 <div>
     <?php echo anchor('vm-images', 'VM Images', array('style' => 'margin-right: 8px', 'class' => 'btn btn-primary btn-small pull-right')) ?>
 </div>
+<div>
+    <?php echo anchor('vm-requests', 'VM Requests', array('style' => 'margin-right: 8px', 'class' => 'btn btn-primary btn-small pull-right')) ?>
+</div>
 <br><br>
 
 <!-- Start Well for Head Professor Dashboard -->
