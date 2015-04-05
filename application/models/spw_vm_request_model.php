@@ -230,6 +230,19 @@ class SPW_vm_request_Model extends CI_Model
         return $results;
     }
     
+    public function getStudentid($req_id){
+     
+        $query = "SELECT student_id "
+                . "FROM spw_vm_request "
+                . "WHERE id = $req_id ";
+        
+        $q = $this->db->query($query);
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->student_id;
+        return NULL;
+    }
+    
     
     /*adds new image name to the system*/
     public function addImage($image){
@@ -384,6 +397,25 @@ class SPW_vm_request_Model extends CI_Model
         return NULL;
 
     }
+    
+    public function getStudentEmail($req_id){
+
+        $query = "SELECT email " 
+        ."FROM spw_user " 
+        ."WHERE id IN "
+                . "(SELECT student_id "
+                . " FROM spw_vm_request "
+                . " WHERE id = $req_id ) ";
+        
+        $q = $this->db->query($query);
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->email;
+        return NULL;
+        
+    }
+    
+
     
    
 }
