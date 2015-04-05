@@ -124,6 +124,22 @@ class ProjectController extends CI_Controller
             }else if($input){
                 
                 $inputForm = json_decode($input);
+                /*get approved vm requests*/
+                $approved_vm = $this->getApprovedVM($inputForm);
+//                /*Create email message with approved vm*/
+                $msg_vm_settings = $this->createApprovedVM_Message($approved_vm);
+                /*format email message*/
+                $msg_vm_body = '<html>'
+                              . '<body>'
+                              .$msg_vm_settings
+                              . '</body>'
+                              . '</html>';
+                /*send email message only if you have approved vms*/
+                if(count($approved_vm) > 0){
+//                    send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
+                    setFlashMessage($this, "Succesfully approved ".count($approved_vm)." virtual machine request(s)");
+                }
+                
                 $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
                 echo json_encode(array("success"=> $success));
                 
@@ -225,6 +241,7 @@ class ProjectController extends CI_Controller
     
     /*load vm_image view*/
     public function vm_images(){
+
         if(isUserLoggedIn($this)){
             if($this->spw_user_model->isUserProfessor(getCurrentUserId($this))){
             $data['title'] = 'VM - Images';
@@ -276,7 +293,7 @@ class ProjectController extends CI_Controller
                 $title = $this->spw_vm_request_model->getProjectTitle($projectid);
                 $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMembers($projectid));
                 /*create email message for student to notify professor*/
-                $requetUrl = base_url().'vm-request?projectid='.$projectid;
+                $requetUrl = base_url().'vm-requests';
                 $email = 'ypera006@fiu.edu';//'sadjadi@cs.fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
                 $message ="<html> 
                             <body>
@@ -393,6 +410,8 @@ class ProjectController extends CI_Controller
                                 . '<th> RAM </th>'
                                 . '<th> STORAGE </th>'
                                 . '<th> VMs </th>'
+                                . '<th> NAME </th>'
+                                . '<th> EMAIL </th>'
                              . '</tr>'
                        . '   </thead>';
         $body_1 = '   <tbody>';
@@ -407,6 +426,9 @@ class ProjectController extends CI_Controller
                 $hdd = $request->hdd;
                 $qty = $request->qty;
                 $status = $request->status;
+                $std_id = $this->spw_vm_request_model->getStudentid($key);
+                $student_name = $this->spw_vm_request_model->getStudentName($std_id);
+                $student_email = $this->spw_vm_request_model->getStudentEmail($key);
                 
                 if($status == 'APPROVED'){
                     $body_2 .= '<tr>'
@@ -414,6 +436,8 @@ class ProjectController extends CI_Controller
                                 . '<td>'.$ram.'</td>'
                                 . '<td>'.$hdd.'</td>'
                                 . '<td>'.$qty.'</td>'
+                                . '<td>'.$student_name.'</td>'
+                                . '<td>'.$student_email.'</td>'
                             . '</tr>';
                 }
                 $message = $headers
