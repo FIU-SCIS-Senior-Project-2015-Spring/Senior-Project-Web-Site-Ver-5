@@ -75,8 +75,8 @@
 </div>
 </div>
 <br>
-<button id="addRequest" type="button" class="btn btn-default">Add Virtual Machine</button>
-<button id="submitRequests" type="button" class="btn btn-default pull-right">Submit</button>
+<button id="addRequest" type="button" class="btn btn-info">Add Virtual Machine</button>
+<button id="submitRequests" type="button" class="btn btn-primary pull-right">Submit</button>
 
 <h4>Previous Requests</h4>
 <table class="auto table">

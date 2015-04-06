@@ -1,17 +1,16 @@
 <?php $this->load->view("template_header"); ?>
 <?php
-    /*user clicks on Set Image Status button*/
-    if(isset($change_status) && $change_status){
-    echo("<h4> Change Image Status </h4>");    
+        
+    echo("<h4> Edit Image </h4>");    
     echo("<div class=\"well\">");
     echo("<div class=\"text-center\">");
     
-        echo form_open('projectcontroller/changeImageStatus', array(
+        echo form_open('projectcontroller/editImage', array(
                                                                     'class' => '',
                                                                     'id' => ''
                                                                     ));
                 $data = array( 
-                    'image_name' => $image_name
+                    'old_image_name' => $image_name
                     );
                 echo form_hidden($data);
                 echo('<h4> Image Name: '.$image_name.' </h4>');
@@ -21,10 +20,14 @@
                 if($status === 'ACTIVE'){
                      echo('<h4>Image Status: <span class="label label-success">'."$status".'</span></h4>');
                 }
-                    echo form_dropdown('status', 
-                            array( 
-                                'active' => 'ACTIVE', 
-                                'inactive' => 'INACTIVE' ));
+                      echo form_input(array(
+                        'id' => 'image_name',
+                        'name' => 'image_name',
+                        'type' => 'text',
+                        'placeholder' => $image_name,
+                        'required' => '',
+                        'title' => 'Image Name'
+                        ));
                 echo( "<br>" );
                 echo( "<br>" );
                 echo form_submit(array(
@@ -32,16 +35,14 @@
                              'name' => 'accounts',
                              'type' => 'Submit',
                              'class' => 'btn btn-info',
-                             'value' => 'Change Image Status'
+                             'value' => 'Submit'
                              ));
         echo form_close( );
     
     echo("</div>");
     echo("</div>");
-    }
-    else if(isset($delete_image) && $delete_image){
-        echo ("delete the image");
-    }
+    
+    
      
     
 ?>

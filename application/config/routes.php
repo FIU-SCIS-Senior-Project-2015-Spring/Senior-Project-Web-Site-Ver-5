@@ -74,10 +74,12 @@ $route['(?i)(user)/(:any)'] = 'usercontroller/profile/$2';
 
 // added on SPW v5
 $route['(?i)(vm-request)'] = 'projectcontroller/vm_request';
+$route['(?i)(vm-requests)'] = 'projectcontroller/vm_requests';
 $route['(?i)(vm-images)'] = 'projectcontroller/vm_images';
 $route['(?i)(vm-images)/addImage'] = 'projectcontroller/addImages';
 $route['(?i)(vm-images)/status'] = 'projectcontroller/changeImageStatus';
 $route['(?i)(vm-images)/delete'] = 'projectcontroller/deleteImage';
+$route['(?i)(vm-images)/edit'] = 'projectcontroller/loadEditImage';
 
 $route['(?i)(past-projects)'] = 'projectcontroller/past_projects';
 $route['(?i)(project)/(create)'] = 'projectcontroller/create_new_project';

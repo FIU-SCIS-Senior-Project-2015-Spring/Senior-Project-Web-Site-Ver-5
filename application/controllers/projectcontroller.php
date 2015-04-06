@@ -16,6 +16,189 @@ class ProjectController extends CI_Controller
         $this->load->model('spw_vm_request_model');
     }
     
+    /*added in SPW v5 to filter vm requests*/
+    public function filterVMRequests($image,$ram,$storage,$qty,$status,$name,$term){
+        
+        $data = array( );
+        $where = "";
+        
+        if($image == ""){
+            $image = NULL;
+        }
+        if($ram == 'ALL RAM'){
+            $ram = NULL;
+        }
+        if($status == 'ALL STATUS'){
+            $status = NULL;
+        }
+        if($storage == 'ALL STORAGE'){
+            $storage = NULL;
+        }
+        if($qty == 'ALL VMs'){
+            $qty = NULL;
+        }
+        if($name == ""){
+            $name = NULL;
+        }
+        if($term == ""){
+            $term = NULL;
+        }
+        
+        if(isset($image)){
+            if(strlen($where) >= 1)
+                $where .= " AND OS LIKE "."\"%".$image."%\"  ";
+            else
+                $where = "OS LIKE "."\"%".$image."%\"  ";
+        }
+        if(isset($ram)){
+            if(strlen($where) >= 1)
+                $where .= " AND RAM = '$ram' ";
+            else
+                $where = "RAM = '$ram' ";
+        }
+        if(isset($storage)){
+            if(strlen($where) >= 1)
+                $where .= " AND storage = '$storage' ";
+            else
+                $where = "storage = '$storage' ";
+        }
+        if(isset($qty)){
+            if(strlen($where) >= 1)
+                $where .= " AND numb_vm = '$qty' ";
+            else
+                $where = "numb_vm = '$qty' ";
+        }
+        if(isset($status)){
+            if(strlen($where) >= 1)
+                $where .= " AND status = '$status' ";
+            else
+                $where = "status = '$status' ";
+        }
+        if(isset($name)){
+            if(strlen($where) >= 1)
+                $where .= " AND student_name LIKE "."\"%".$name."%\"  ";
+            else
+                $where = "student_name LIKE "."\"%".$name."%\"  ";
+        }
+        if(isset($term)){
+            if(strlen($where) >= 1)
+                $where .= " AND term LIKE "."\"%".$term."%\"  ";
+            else
+                $where = "term LIKE "."\"%".$term."%\"  ";
+        }
+           
+        $data['title'] = 'VM - Requests';
+        $data['requests'] = $this->spw_vm_request_model->searchFilteredVms($where);
+        $data['active_images'] = $this->spw_vm_request_model->getAllImages();
+        /*gets default email for vm creation */
+        $data['email_address'] = $this->spw_vm_request_model->getVMDefaultEmailCreation();
+        /*gets default name for vm creation */
+        $data['name_default'] = $this->spw_vm_request_model->getDefaultName();
+        $data['image'] = $image;
+        $data['ram'] = $ram;
+        $data['storage'] = $storage;
+        $data['qty'] = $qty;
+        $data['status'] = $status;
+        $data['name'] = $name;
+        $data['term'] = $term;
+        $this->load->view('vm_requests2', $data);
+    }
+    
+    /*loads all VM request into vm_request2.php and calls filter */
+    public function vm_requests(){
+        
+        if(isUserLoggedIn($this)){
+            
+            $input = file_get_contents('php://input');
+            
+            $image = $this->input->get('image');
+            $ram = $this->input->get('ram');
+            $storage = $this->input->get('storage');
+            $qty = $this->input->get('qty');
+            $status = $this->input->get('status');
+            $name = $this->input->get('name');
+            $term = $this->input->get('term');
+            
+            if($status || $ram || $storage || $qty || $image || $name || $term){
+                $this->filterVMRequests($image,$ram,$storage,$qty,$status,$name,$term);
+            }else if($input){
+                
+                $inputForm = json_decode($input);
+                /*get approved vm requests*/
+                $approved_vm = $this->getApprovedVM($inputForm);
+                /*Create email message with approved vm*/
+                $msg_vm_settings = $this->createApprovedVM_Message($approved_vm);
+                /*format email message*/
+                $msg_vm_body = '<html>'
+                              . '<body>'
+                              .$msg_vm_settings
+                              . '</body>'
+                              . '</html>';
+                /*send email message only if you have approved vms*/
+                if(count($approved_vm) > 0){
+//                    send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
+                    setFlashMessage($this, "Succesfully approved ".count($approved_vm)." virtual machine request(s)");
+                }
+                
+                $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
+                echo json_encode(array("success"=> $success));
+                
+            }else{
+            
+                $data['title'] = 'VM - Requests';
+                $data['requests'] = $this->spw_vm_request_model->getVMRequests();
+                $data['active_images'] = $this->spw_vm_request_model->getAllImages();
+                /*gets default email for vm creation */
+                $data['email_address'] = $this->spw_vm_request_model->getVMDefaultEmailCreation();
+                /*gets default name for vm creation */
+                $data['name_default'] = $this->spw_vm_request_model->getDefaultName();
+                $data['image'] = $image;
+                $data['name'] = $name;
+                $data['term'] = $term;
+        
+                $this->load->view('vm_requests2', $data);
+            }
+        }else{
+            redirect('login','refresh');
+        }
+    }
+    
+    /*added in SPW v5 to edit an image*/
+    public function loadEditImage(){
+        
+         if(isUserLoggedIn($this)){
+            $data = array( );
+            $status =''; $image_name = '';
+            if ( isset($_GET['status']) && isset($_GET['image_name'])) {
+                $status = $_GET['status'];
+                $image_name = urldecode($_GET['image_name']);
+            }
+            $data['image_name'] = $image_name;
+            $data['status'] = $status;
+            $this->load->view('vm_editImage',$data);
+         }
+         else{
+             redirect('login','refresh');
+         }
+    }
+    
+    /*added in SPW v5 to edit an image in the system*/
+    public function editImage(){
+        
+        $image_name = $this->input->post('image_name');
+        $old_image_name = $this->input->post('old_image_name');
+        
+        if($this->spw_vm_request_model->editImage($old_image_name, $image_name)){
+            $message = "Successfully edit image $old_image_name to $image_name";
+            setFlashMessage( $this, $message);
+        }
+        else{
+            $message = "Error editting $old_image_name";
+            setFlashMessage( $this, $message);
+        }
+        redirect('vm-images');
+    }
+    
     /* added in SPW v5 to delete an image in the system */
     public function deleteImage(){
         $image_name = '';
@@ -59,47 +242,58 @@ class ProjectController extends CI_Controller
         redirect('vm-images');
     }
     
-    /* added in SPW v5 to pass current image's info to 
-     * form changeImageStatus in vm_editImage view*/
-    public function setImageStatus(){
-        
-        $data = array( );
-        $data[ 'change_status' ] = $_POST[ 'change_status' ];
-        $data[ 'image_name' ] = $_POST[ 'image_name' ];
-        $data[ 'status' ] = $_POST[ 'status' ];
-        $this->load->view('vm_editImage', $data );
-    }
-    
     /* added in SPW v5 to filter images on the system */
-    public function filterImages(){
+    public function filterImages($image, $status){
         $where = "";
         $data = array( );
         
-        $image_input = $this->input->post('image_name');
-        $select = $this->input->post('id');
-       
-        if($select == 'all_images'){
-            $where = "(status = \"ACTIVE\" OR status = \"INACTIVE\") ";
-        }else{
-            $where = "status = \"".strtoupper($select)."\" ";
+        if($image == ""){
+            $image = NULL;
         }
-        if($image_input != ""){
-            $where .= " AND image_name LIKE "."\"%".$image_input."%\"  ";
+        if($status == 'ALL STATUS'){
+            $status = NULL;
         }
-       
-        $data['images'] = $this->spw_vm_request_model->searchFilteredImages($where);
+        
+         if(isset($image)){
+            if(strlen($where) >= 1)
+                $where .= " AND image_name LIKE "."\"%".$image."%\"  ";
+            else
+                $where = "image_name LIKE "."\"%".$image."%\"  ";
+        }
+        if(isset($status)){
+            if(strlen($where) >= 1)
+                $where .= " AND status = '$status' ";
+            else
+                $where = "status = '$status' ";
+        }
+        
+        $data['image'] = $image;
+        $data['status'] = $status;
+        $data['results'] = $this->spw_vm_request_model->searchFilteredImages($where);
         $this->load->view('vm_images',$data);
     }
     
     
     /*load vm_image view*/
     public function vm_images(){
+
         if(isUserLoggedIn($this)){
+            
             if($this->spw_user_model->isUserProfessor(getCurrentUserId($this))){
-            $data['title'] = 'VM - Images';
-            $data['images'] = $this->spw_vm_request_model->
-                    searchFilteredImages("status = 'ACTIVE' OR status = 'INACTIVE' ");
-            $this->load->view('vm_images',$data);
+                
+                $image = $this->input->get('image');
+                $status = $this->input->get('status');
+                
+                if($image || $status){
+                    $this->filterImages($image, $status);
+                }
+                else{
+                
+                    $data['title'] = 'VM - Images';
+                    $data['results'] = $this->spw_vm_request_model->searchFilteredImages("");
+                    $data['image'] = $image;
+                    $this->load->view('vm_images',$data);
+                }
             }
             else{
                 $this->load->view('vm_request_message');
@@ -145,7 +339,7 @@ class ProjectController extends CI_Controller
                 $title = $this->spw_vm_request_model->getProjectTitle($projectid);
                 $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMembers($projectid));
                 /*create email message for student to notify professor*/
-                $requetUrl = base_url().'vm-request?projectid='.$projectid;
+                $requetUrl = base_url().'vm-requests';
                 $email = 'ypera006@fiu.edu';//'sadjadi@cs.fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
                 $message ="<html> 
                             <body>
@@ -156,7 +350,7 @@ class ProjectController extends CI_Controller
                            </html>";
                 $subject = 'A new VM request is awaiting acceptance';
                 echo json_encode(array("success"=>$success,"url"=>$requetUrl));
-                send_email($this, $email, $subject, $message); 
+//                send_email($this, $email, $subject, $message); 
                 setFlashMessage($this, "Succesfully submitted a virtual machine request");
 
             }/*user is professor and updates vm requests for a project*/
@@ -181,7 +375,7 @@ class ProjectController extends CI_Controller
                               . '</html>';
                 /*send email message only if you have approved vms*/
                 if(count($approved_vm) > 0){
-                    send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
+//                    send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
                     setFlashMessage($this, "Succesfully approved ".count($approved_vm)." virtual machine request(s)");
                 }
                 /*update vm requests*/    
@@ -262,6 +456,8 @@ class ProjectController extends CI_Controller
                                 . '<th> RAM </th>'
                                 . '<th> STORAGE </th>'
                                 . '<th> VMs </th>'
+                                . '<th> NAME </th>'
+                                . '<th> EMAIL </th>'
                              . '</tr>'
                        . '   </thead>';
         $body_1 = '   <tbody>';
@@ -276,6 +472,9 @@ class ProjectController extends CI_Controller
                 $hdd = $request->hdd;
                 $qty = $request->qty;
                 $status = $request->status;
+                $std_id = $this->spw_vm_request_model->getStudentid($key);
+                $student_name = $this->spw_vm_request_model->getStudentName($std_id);
+                $student_email = $this->spw_vm_request_model->getStudentEmail($key);
                 
                 if($status == 'APPROVED'){
                     $body_2 .= '<tr>'
@@ -283,6 +482,8 @@ class ProjectController extends CI_Controller
                                 . '<td>'.$ram.'</td>'
                                 . '<td>'.$hdd.'</td>'
                                 . '<td>'.$qty.'</td>'
+                                . '<td>'.$student_name.'</td>'
+                                . '<td>'.$student_email.'</td>'
                             . '</tr>';
                 }
                 $message = $headers

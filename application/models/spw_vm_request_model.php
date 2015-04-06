@@ -37,14 +37,16 @@ class SPW_vm_request_Model extends CI_Model
     public function insertVmRequests($requests,$user_id){
         
         $project_id = $this->getProjectId($user_id);
+        $student_name = $this->getStudentName($user_id);
+        $current_term = $this->getCurrentTermName();
         /* for each request insert its settings */
         foreach($requests as $request){
             $os = $request->os;
             $ram = $request->ram;
             $hdd = $request->hdd;
             $qty = $request->qty;
-            $query = "insert into spw_vm_request (project_id, OS, RAM, storage, numb_vm, status) "
-                    . "values ($project_id,'$os',$ram,$hdd,$qty,'PENDING')";
+            $query = "insert into spw_vm_request (project_id, OS, RAM, storage, numb_vm, status, student_id, student_name, term) "
+                    . "values ($project_id,'$os',$ram,$hdd,$qty,'PENDING', $user_id, '$student_name', '$current_term' )";
             $q = $this->db->query($query);
             if(!$q) return false;
         }
@@ -228,6 +230,19 @@ class SPW_vm_request_Model extends CI_Model
         return $results;
     }
     
+    public function getStudentid($req_id){
+     
+        $query = "SELECT student_id "
+                . "FROM spw_vm_request "
+                . "WHERE id = $req_id ";
+        
+        $q = $this->db->query($query);
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->student_id;
+        return NULL;
+    }
+    
     
     /*adds new image name to the system*/
     public function addImage($image){
@@ -257,9 +272,14 @@ class SPW_vm_request_Model extends CI_Model
     /*filters images in the system*/
     public function searchFilteredImages($where){
         
-        $query = "SELECT image_name, status " 
-                ."FROM spw_vm_images "
-                . "WHERE ".$where." ";
+        if($where == ""){
+            $query = "SELECT image_name, status " 
+                ."FROM spw_vm_images ";
+        }else{
+            $query = "SELECT image_name, status " 
+                    ."FROM spw_vm_images "
+                    . "WHERE ".$where." ";
+        }
         $q = $this->db->query($query);
         
         $results = array();
@@ -277,6 +297,21 @@ class SPW_vm_request_Model extends CI_Model
          $query = "SELECT image_name " 
                 ."FROM spw_vm_images "
                 . "WHERE status = 'ACTIVE' ";
+        $q = $this->db->query($query);
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($results,$row);
+        
+        return $results;
+    }
+    
+    /*return all images in the system */
+    public function getAllImages(){
+        
+         $query = "SELECT image_name " 
+                ."FROM spw_vm_images ";
         $q = $this->db->query($query);
         $results = array();
         
@@ -315,6 +350,107 @@ class SPW_vm_request_Model extends CI_Model
         else return false;
     }
     
+    /* returns al requests in the system */
+    public function getVMRequests(){
+        
+        $q = $this->db->query("SELECT id,OS, RAM, storage, numb_vm, status, student_name, term "
+                            . "FROM spw_vm_request ");
+        $requests = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($requests,$row);
+        
+        return $requests;
+    }
+    
+    /*filters vm in the system*/
+    public function searchFilteredVms($where){
+        
+        if($where == ""){
+            $query = "SELECT id,OS, RAM, storage, numb_vm, status, student_name, term "
+                ."FROM spw_vm_request ";
+        }else{
+        $query = "SELECT id,OS, RAM, storage, numb_vm, status, student_name, term "
+                ."FROM spw_vm_request "
+                . "WHERE ".$where." ";
+        }
+        $q = $this->db->query($query);
+        
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($results,$row);
+        
+        return $results;
+    }
+    
+    /*retrive student's full name*/
+    public function getStudentName($user_id){
+        
+        $query = "SELECT CONCAT_WS(' ', first_name, last_name) AS full_name "
+       . "FROM spw_user "
+       . "WHERE id = $user_id ";
+
+        $q = $this->db->query($query);
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->full_name;
+        return NULL;
+    }
+    
+    /*retrive current term*/
+    public function getCurrentTermName(){
+        
+        $query = "SELECT name "
+                . "FROM spw_term "
+                . "WHERE start_date IN "
+                         . "(SELECT MAX(start_date) "
+                         . " FROM spw_term) ";
+        
+        $q = $this->db->query($query);
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->name;
+        return NULL;
+
+    }
+    
+    public function getStudentEmail($req_id){
+
+        $query = "SELECT email " 
+        ."FROM spw_user " 
+        ."WHERE id IN "
+                . "(SELECT student_id "
+                . " FROM spw_vm_request "
+                . " WHERE id = $req_id ) ";
+        
+        $q = $this->db->query($query);
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->email;
+        return NULL;
+        
+    }
+    
+    /*update an image name in the system*/
+    public function editImage($old_image, $new_image){
+        
+        $query = "update spw_vm_images "
+               . "set image_name = '$new_image' "
+               . "where image_name = '$old_image' ";
+        $q = $this->db->query($query);
+        if($q){
+            $query = "update spw_vm_request "
+                   . "set OS='$new_image' "
+                   . "where OS = '$old_image' ";
+            $q = $this->db->query($query);
+        }
+        if($q) return true;
+        else return false;
+    }
     
    
 }
