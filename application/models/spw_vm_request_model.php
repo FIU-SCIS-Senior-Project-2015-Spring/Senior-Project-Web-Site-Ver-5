@@ -272,9 +272,14 @@ class SPW_vm_request_Model extends CI_Model
     /*filters images in the system*/
     public function searchFilteredImages($where){
         
-        $query = "SELECT image_name, status " 
-                ."FROM spw_vm_images "
-                . "WHERE ".$where." ";
+        if($where == ""){
+            $query = "SELECT image_name, status " 
+                ."FROM spw_vm_images ";
+        }else{
+            $query = "SELECT image_name, status " 
+                    ."FROM spw_vm_images "
+                    . "WHERE ".$where." ";
+        }
         $q = $this->db->query($query);
         
         $results = array();
@@ -292,6 +297,21 @@ class SPW_vm_request_Model extends CI_Model
          $query = "SELECT image_name " 
                 ."FROM spw_vm_images "
                 . "WHERE status = 'ACTIVE' ";
+        $q = $this->db->query($query);
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($results,$row);
+        
+        return $results;
+    }
+    
+    /*return all images in the system */
+    public function getAllImages(){
+        
+         $query = "SELECT image_name " 
+                ."FROM spw_vm_images ";
         $q = $this->db->query($query);
         $results = array();
         
@@ -415,7 +435,22 @@ class SPW_vm_request_Model extends CI_Model
         
     }
     
-
+    /*update an image name in the system*/
+    public function editImage($old_image, $new_image){
+        
+        $query = "update spw_vm_images "
+               . "set image_name = '$new_image' "
+               . "where image_name = '$old_image' ";
+        $q = $this->db->query($query);
+        if($q){
+            $query = "update spw_vm_request "
+                   . "set OS='$new_image' "
+                   . "where OS = '$old_image' ";
+            $q = $this->db->query($query);
+        }
+        if($q) return true;
+        else return false;
+    }
     
    
 }
