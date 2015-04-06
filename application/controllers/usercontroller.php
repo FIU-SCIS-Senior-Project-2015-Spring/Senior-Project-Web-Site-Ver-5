@@ -409,9 +409,9 @@ class UserController extends CI_Controller
         
         // setup before redirecting to Linkedin for authentication.
          $linkedin_config = array(
-             'appKey'       => '78n2iumdq3w0z5',
-             'appSecret'    => 'Ge6PcBGMqLvwUyfw',
-             'callbackUrl'  => $base_url.'user/linkedIn_callback'
+             'appKey'       => $this->config->item('app_key'),
+             'appSecret'    => $this->config->item('app_secret'),
+             'callbackUrl'  => $base_url . $this->config->item('callback_uri_linkedin')
          );
         
         $this->load->library('linkedin', $linkedin_config);
@@ -422,7 +422,7 @@ class UserController extends CI_Controller
         $this->session->set_flashdata('oauth_request_token_secret',$token['linkedin']['oauth_token_secret']);
         $this->session->set_flashdata('oauth_request_token',$token['linkedin']['oauth_token']);
 
-        $link = "https://api.linkedin.com/uas/oauth/authorize?oauth_token=". $token['linkedin']['oauth_token']; 
+        $link = $this->config->item('api_linkedin_endpoint') . "?oauth_token=". $token['linkedin']['oauth_token']; 
 
         $this->session->set_flashdata('linkedIn_sync', 'false'); 
 
@@ -436,9 +436,9 @@ class UserController extends CI_Controller
         
         // setup before redirecting to Linkedin for authentication.
          $linkedin_config = array(
-             'appKey'       => '78n2iumdq3w0z5',
-             'appSecret'    => 'Ge6PcBGMqLvwUyfw',
-             'callbackUrl'  => $base_url.'user/linkedIn_callback'
+             'appKey'       => $this->config->item('app_key'),
+             'appSecret'    => $this->config->item('app_secret'),
+             'callbackUrl'  => $base_url . $this->config->item('callback_uri_linkedin')
          );
         
         $this->load->library('linkedin', $linkedin_config);
@@ -448,7 +448,7 @@ class UserController extends CI_Controller
         $this->session->set_flashdata('oauth_request_token_secret',$token['linkedin']['oauth_token_secret']);
         $this->session->set_flashdata('oauth_request_token',$token['linkedin']['oauth_token']);
         
-        $link = "https://api.linkedin.com/uas/oauth/authorize?oauth_token=". $token['linkedin']['oauth_token'];  
+        $link = $this->config->item('api_linkedin_endpoint') . "?oauth_token=". $token['linkedin']['oauth_token'];  
 
         $this->session->set_flashdata('linkedIn_sync', 'true');
 
@@ -473,10 +473,10 @@ class UserController extends CI_Controller
         $base_url = $this->config->base_url();
 
         $linkedin_config = array(
-                     'appKey'       => '78n2iumdq3w0z5',
-                     'appSecret'    => 'Ge6PcBGMqLvwUyfw',
-                     'callbackUrl'  => $base_url.'user/linkedIn_callback'
-                 );
+             'appKey'       => $this->config->item('app_key'),
+             'appSecret'    => $this->config->item('app_secret'),
+             'callbackUrl'  => $base_url . $this->config->item('callback_uri_linkedin')
+         );
                 
         $this->load->library('linkedin', $linkedin_config);
         $this->linkedin->setResponseFormat(LINKEDIN::_RESPONSE_JSON);
