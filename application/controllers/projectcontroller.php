@@ -89,7 +89,7 @@ class ProjectController extends CI_Controller
            
         $data['title'] = 'VM - Requests';
         $data['requests'] = $this->spw_vm_request_model->searchFilteredVms($where);
-        $data['active_images'] = $this->spw_vm_request_model->getActiveImages();
+        $data['active_images'] = $this->spw_vm_request_model->getAllImages();
         /*gets default email for vm creation */
         $data['email_address'] = $this->spw_vm_request_model->getVMDefaultEmailCreation();
         /*gets default name for vm creation */
@@ -126,7 +126,7 @@ class ProjectController extends CI_Controller
                 $inputForm = json_decode($input);
                 /*get approved vm requests*/
                 $approved_vm = $this->getApprovedVM($inputForm);
-//                /*Create email message with approved vm*/
+                /*Create email message with approved vm*/
                 $msg_vm_settings = $this->createApprovedVM_Message($approved_vm);
                 /*format email message*/
                 $msg_vm_body = '<html>'
@@ -147,7 +147,7 @@ class ProjectController extends CI_Controller
             
                 $data['title'] = 'VM - Requests';
                 $data['requests'] = $this->spw_vm_request_model->getVMRequests();
-                $data['active_images'] = $this->spw_vm_request_model->getActiveImages();
+                $data['active_images'] = $this->spw_vm_request_model->getAllImages();
                 /*gets default email for vm creation */
                 $data['email_address'] = $this->spw_vm_request_model->getVMDefaultEmailCreation();
                 /*gets default name for vm creation */
@@ -161,6 +161,42 @@ class ProjectController extends CI_Controller
         }else{
             redirect('login','refresh');
         }
+    }
+    
+    /*added in SPW v5 to edit an image*/
+    public function loadEditImage(){
+        
+         if(isUserLoggedIn($this)){
+            $data = array( );
+            $status =''; $image_name = '';
+            if ( isset($_GET['status']) && isset($_GET['image_name'])) {
+                $status = $_GET['status'];
+                $image_name = urldecode($_GET['image_name']);
+            }
+            $data['image_name'] = $image_name;
+            $data['status'] = $status;
+            $this->load->view('vm_editImage',$data);
+         }
+         else{
+             redirect('login','refresh');
+         }
+    }
+    
+    /*added in SPW v5 to edit an image in the system*/
+    public function editImage(){
+        
+        $image_name = $this->input->post('image_name');
+        $old_image_name = $this->input->post('old_image_name');
+        
+        if($this->spw_vm_request_model->editImage($old_image_name, $image_name)){
+            $message = "Successfully edit image $old_image_name to $image_name";
+            setFlashMessage( $this, $message);
+        }
+        else{
+            $message = "Error editting $old_image_name";
+            setFlashMessage( $this, $message);
+        }
+        redirect('vm-images');
     }
     
     /* added in SPW v5 to delete an image in the system */
@@ -206,35 +242,34 @@ class ProjectController extends CI_Controller
         redirect('vm-images');
     }
     
-    /* added in SPW v5 to pass current image's info to 
-     * form changeImageStatus in vm_editImage view*/
-    public function setImageStatus(){
-        
-        $data = array( );
-        $data[ 'change_status' ] = $_POST[ 'change_status' ];
-        $data[ 'image_name' ] = $_POST[ 'image_name' ];
-        $data[ 'status' ] = $_POST[ 'status' ];
-        $this->load->view('vm_editImage', $data );
-    }
-    
     /* added in SPW v5 to filter images on the system */
-    public function filterImages(){
+    public function filterImages($image, $status){
         $where = "";
         $data = array( );
         
-        $image_input = $this->input->post('image_name');
-        $select = $this->input->post('id');
-       
-        if($select == 'all_images'){
-            $where = "(status = \"ACTIVE\" OR status = \"INACTIVE\") ";
-        }else{
-            $where = "status = \"".strtoupper($select)."\" ";
+        if($image == ""){
+            $image = NULL;
         }
-        if($image_input != ""){
-            $where .= " AND image_name LIKE "."\"%".$image_input."%\"  ";
+        if($status == 'ALL STATUS'){
+            $status = NULL;
         }
-       
-        $data['images'] = $this->spw_vm_request_model->searchFilteredImages($where);
+        
+         if(isset($image)){
+            if(strlen($where) >= 1)
+                $where .= " AND image_name LIKE "."\"%".$image."%\"  ";
+            else
+                $where = "image_name LIKE "."\"%".$image."%\"  ";
+        }
+        if(isset($status)){
+            if(strlen($where) >= 1)
+                $where .= " AND status = '$status' ";
+            else
+                $where = "status = '$status' ";
+        }
+        
+        $data['image'] = $image;
+        $data['status'] = $status;
+        $data['results'] = $this->spw_vm_request_model->searchFilteredImages($where);
         $this->load->view('vm_images',$data);
     }
     
@@ -243,11 +278,22 @@ class ProjectController extends CI_Controller
     public function vm_images(){
 
         if(isUserLoggedIn($this)){
+            
             if($this->spw_user_model->isUserProfessor(getCurrentUserId($this))){
-            $data['title'] = 'VM - Images';
-            $data['images'] = $this->spw_vm_request_model->
-                    searchFilteredImages("status = 'ACTIVE' OR status = 'INACTIVE' ");
-            $this->load->view('vm_images',$data);
+                
+                $image = $this->input->get('image');
+                $status = $this->input->get('status');
+                
+                if($image || $status){
+                    $this->filterImages($image, $status);
+                }
+                else{
+                
+                    $data['title'] = 'VM - Images';
+                    $data['results'] = $this->spw_vm_request_model->searchFilteredImages("");
+                    $data['image'] = $image;
+                    $this->load->view('vm_images',$data);
+                }
             }
             else{
                 $this->load->view('vm_request_message');
