@@ -25,6 +25,10 @@ body {
     background-color: #D0D0D0;
 }
 
+#image_table > thead{
+    background-color: #D0D0D0;
+}
+
 #machines_table > thead > tr > th,
 #machines_table > tbody > tr > td {
   text-align: center;
