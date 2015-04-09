@@ -107,8 +107,11 @@ class ProjectController extends CI_Controller
     /*loads all VM request into vm_request2.php and calls filter if need to*/
     public function vm_requests(){
         
-        if(isUserLoggedIn($this)){
-
+        if(!isUserLoggedIn($this)){
+            redirect('login','refresh');
+        }
+        if($this->spw_user_model->isUserProfessor(getCurrentUserId($this))){
+        
             $input = file_get_contents('php://input');
             
             $image = $this->input->get('image');
@@ -162,7 +165,7 @@ class ProjectController extends CI_Controller
                 $this->load->view('vm_requests2', $data);
             }
         }else{
-            redirect('login','refresh');
+            $this->load->view('vm_request_message');
         }
     }
     
@@ -325,11 +328,13 @@ class ProjectController extends CI_Controller
     /*added on SPW v. 5 for vm request management */
     public function vm_request()
     {
-            if(isUserLoggedIn($this)){
+            if(!isUserLoggedIn($this)){
+                redirect('login','refresh');
+            }
 
-                $user_id = getCurrentUserId($this);
-                $input = file_get_contents('php://input');
-                $inputProjectId = $this->input->get('projectid', TRUE);
+            $user_id = getCurrentUserId($this);
+            $input = file_get_contents('php://input');
+            $inputProjectId = $this->input->get('projectid', TRUE);
 
             /*user is student and submit vm request*/
             if($input && $this->spw_user_model->isUserAStudent($user_id)){
@@ -369,10 +374,6 @@ class ProjectController extends CI_Controller
                     $this->load->view('vm_request', $data);
                 }
             }
-        }
-        else{
-              redirect('login','refresh');
-        }
     }
     
     /* added on SPW v. 5 search for vm request with status approved */
