@@ -104,11 +104,11 @@ class ProjectController extends CI_Controller
         $this->load->view('vm_requests2', $data);
     }
     
-    /*loads all VM request into vm_request2.php and calls filter */
+    /*loads all VM request into vm_request2.php and calls filter if need to*/
     public function vm_requests(){
         
         if(isUserLoggedIn($this)){
-            
+
             $input = file_get_contents('php://input');
             
             $image = $this->input->get('image');
@@ -136,7 +136,7 @@ class ProjectController extends CI_Controller
                               . '</html>';
                 /*send email message only if you have approved vms*/
                 if(count($approved_vm) > 0){
-//                    send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
+                    send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
                     setFlashMessage($this, "Succesfully approved ".count($approved_vm)." virtual machine request(s)");
                 }
                 
@@ -340,7 +340,7 @@ class ProjectController extends CI_Controller
                 /*collect information to fill email message*/
                 $projectid = $this->spw_vm_request_model->getProjectId($user_id);
                 $title = $this->spw_vm_request_model->getProjectTitle($projectid);
-                $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMembers($projectid));
+                $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMember($user_id));
                 /*create email message for student to notify professor*/
                 $requetUrl = base_url().'vm-requests';
                 $email = 'ypera006@fiu.edu';//'sadjadi@cs.fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
@@ -353,52 +353,8 @@ class ProjectController extends CI_Controller
                            </html>";
                 $subject = 'A new VM request is awaiting acceptance';
                 echo json_encode(array("success"=>$success,"url"=>$requetUrl));
-//                send_email($this, $email, $subject, $message); 
+                send_email($this, $email, $subject, $message); 
                 setFlashMessage($this, "Succesfully submitted a virtual machine request");
-
-            }/*user is professor and updates vm requests for a project*/
-            else if($this->spw_user_model->isUserProfessor($user_id) && $input){
-
-                $inputForm = json_decode($input);
-                $project_title = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
-                $students = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
-                /*create 1st part of the email message with project members*/
-                $msg_members = $this->projectMemberMessage($students);
-                /*get approved vm requests*/
-                $approved_vm = $this->getApprovedVM($inputForm);
-                /*Create 2nd part of email message with approved vm*/
-                $msg_vm_settings = $this->createApprovedVM_Message($approved_vm);
-                /*format email message*/
-                $msg_vm_body = '<html>'
-                              . '<body>'
-                              . '<h2>'.$project_title.'</h2>'
-                              . $msg_members
-                              .$msg_vm_settings
-                              . '</body>'
-                              . '</html>';
-                /*send email message only if you have approved vms*/
-                if(count($approved_vm) > 0){
-//                    send_email($this, $this->input->get('email_address'), 'Virtual Machine Request', $msg_vm_body);
-                    setFlashMessage($this, "Succesfully approved ".count($approved_vm)." virtual machine request(s)");
-                }
-                /*update vm requests*/    
-                $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
-                echo json_encode(array("success"=> $success));
-
-            }/*user is head professor and has vm request for a project to look at it*/
-            else if($this->spw_user_model->isUserProfessor($user_id) && $inputProjectId){
-
-                $data['title'] = 'VM - Requests';
-                $data['project_title'] = $this->spw_vm_request_model->getProjectTitle($inputProjectId);
-                $data['project_members'] = $this->spw_vm_request_model->getStudentProjectMembers($inputProjectId);
-                $data['projectid'] = $inputProjectId;
-                $data['requests'] = $this->spw_vm_request_model->getPendingRequestsFromProject($inputProjectId);
-                $data['active_images'] = $this->spw_vm_request_model->getActiveImages();
-                /*gets default email for vm creation */
-                $data['email_address'] = $this->spw_vm_request_model->getVMDefaultEmailCreation();
-                /*gets default name for vm creation */
-                $data['name_default'] = $this->spw_vm_request_model->getDefaultName();
-                $this->load->view('vm_requests', $data);
 
             }
             else { 
