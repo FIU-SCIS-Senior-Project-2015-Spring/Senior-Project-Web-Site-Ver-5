@@ -479,7 +479,41 @@ class SPW_User_Model extends CI_Model
    		}
     
 		return implode( $pass );
-  }
+        }
+        
+        //Added in SPWS.V5 #449
+        public function store_token($token, $spw_id)
+        {
+            $updateData = array ('token' => $token);
+            $this->db->where('id', $spw_id);
+            $this->db->update('spw_user', $updateData);
+        }
+        
+        //Added in SPWS.V5 #449
+        public function verify_token($token, $spw_id)
+        {
+            $query = $this->db
+                ->where('id', $spw_id)
+                ->where('token', $token)
+                ->get('spw_user');
+        
+            if($query->num_rows() > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        //Added in SPWS.V5 #449
+        public function expire_token($spw_id)
+        {
+            $updateData = array ('token' => '');
+            $this->db->where('id', $spw_id);
+            $this->db->update('spw_user', $updateData);
+        }
   
   	/* Added to SPW v.3 for User Management System */
 	public function set_pwd( $id, $pwd )

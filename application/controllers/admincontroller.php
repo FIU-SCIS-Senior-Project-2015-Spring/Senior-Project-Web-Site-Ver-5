@@ -393,9 +393,10 @@ class AdminController extends CI_Controller {
 		  {
                           $user_id = $this->spw_user_model->get_user_id($this->input->post( 'email_address' ));
                           
-                          $to_expire = 86400;
-                          $expiration_time = time() + $to_expire;
-			  
+                          $token = $this->reversible_encryption($user_id);
+                          
+                          $this->spw_user_model->store_token($token);
+                          			  
 			  $message ='<html>
         <head><title>Senior Project Website Account Password</title></head>
         <body>
@@ -405,7 +406,7 @@ class AdminController extends CI_Controller {
         
         <p>To change your password, please visit the following page:</p>
         
-        <br><a href="' . $base_url . 'admin/email_activation/' . $this->reversible_encryption( $user_id ) . ':' . $this->reversible_encryption( $expiration_time ) .'"> ' . $base_url . 'admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>
+        <br><a href="' . $base_url . 'admin/email_activation/' . $token .'"> ' . $base_url . 'admin/email_activation/'. $token . '</a>
         </body>
             </html>';
             
@@ -431,21 +432,16 @@ class AdminController extends CI_Controller {
   }
   
   /* Added to SPW v. 3 */
-  public function activation( $hash = '' )
+  public function activation( $token = '' )
   {
-	  if( $hash !== '' )
+	  if( $token !== '' )
 	  {
-                  $piece = explode(":", $hash);
+              
+		  $user_id = $this->decryption($token);
                   
-                  $hash_id = $piece[0];
-                  $hash_time = $piece[1];
-                  
-		  $user_id = $this->decryption( $hash_id );
-                  $user_time = $this->decryption( $hash_time );
-                  
-                  if (time() > (int)$user_time)
+                  if (!$this->spw_user_model->verify_token($token, $user_id))
                   {
-                      $msg = 'Link expired; please create another request to change your password.';
+                      $msg = 'Token expired; please create another request to change your password.';
                       setErrorFlashMessage( $this, $msg );
                       redirect('login');
                       return;
@@ -508,9 +504,9 @@ class AdminController extends CI_Controller {
 		  $res = $this->spw_user_model->is_spw_registered( $this->input->post( 'email_address' ) );
 		  if( $res )
 		  {
-			  $this->spw_user_model->set_pwd( $this->input->post( 'id' ),
-			  											$this->input->post( 'password_1' ) );
+			  $this->spw_user_model->set_pwd( $this->input->post( 'id' ), $this->input->post( 'password_1' ) );
 			  $msg = 'Successfully updated status for user with the email: ' . $this->input->post( 'email_address' );
+                          $this->spw_user_model->expire_token($this->input->post( 'id' ));
 			  setFlashMessage( $this, $msg );
 		  }
 		  else
