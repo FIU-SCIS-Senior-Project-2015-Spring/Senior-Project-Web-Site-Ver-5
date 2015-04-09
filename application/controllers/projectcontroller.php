@@ -17,7 +17,7 @@ class ProjectController extends CI_Controller
     }
     
     /*added in SPW v5 to filter vm requests*/
-    public function filterVMRequests($image,$ram,$storage,$qty,$status,$name,$term){
+    public function filterVMRequests($image,$f_ram,$storage,$f_qty,$status,$name,$term){
         
         $data = array( );
         $where = "";
@@ -25,17 +25,17 @@ class ProjectController extends CI_Controller
         if($image == ""){
             $image = NULL;
         }
-        if($ram == 'ALL RAM'){
-            $ram = NULL;
+        if($f_ram == ""){
+            $f_ram = NULL;
         }
         if($status == 'ALL STATUS'){
             $status = NULL;
         }
-        if($storage == 'ALL STORAGE'){
+        if($storage == ""){
             $storage = NULL;
         }
-        if($qty == 'ALL VMs'){
-            $qty = NULL;
+        if($f_qty == ""){
+            $f_qty = NULL;
         }
         if($name == ""){
             $name = NULL;
@@ -50,23 +50,23 @@ class ProjectController extends CI_Controller
             else
                 $where = "OS LIKE "."\"%".$image."%\"  ";
         }
-        if(isset($ram)){
+        if(isset($f_ram)){
             if(strlen($where) >= 1)
-                $where .= " AND RAM = '$ram' ";
+                $where .= " AND RAM LIKE "."\"%".$f_ram."%\" ";
             else
-                $where = "RAM = '$ram' ";
+                $where .= " RAM LIKE "."\"%".$f_ram."%\" ";
         }
         if(isset($storage)){
-            if(strlen($where) >= 1)
-                $where .= " AND storage = '$storage' ";
+            if(strlen($where) >= 1) 
+                $where .= " AND storage LIKE "."\"%".$storage."%\" ";
             else
-                $where = "storage = '$storage' ";
+                $where = "storage LIKE "."\"%".$storage."%\" ";
         }
-        if(isset($qty)){
+        if(isset($f_qty)){
             if(strlen($where) >= 1)
-                $where .= " AND numb_vm = '$qty' ";
+                $where .= " AND numb_vm LIKE "."\"%".$f_qty."%\" ";
             else
-                $where = "numb_vm = '$qty' ";
+                $where .= " numb_vm LIKE "."\"%".$f_qty."%\" ";
         }
         if(isset($status)){
             if(strlen($where) >= 1)
@@ -86,7 +86,7 @@ class ProjectController extends CI_Controller
             else
                 $where = "term LIKE "."\"%".$term."%\"  ";
         }
-           
+//        echo $where;   
         $data['title'] = 'VM - Requests';
         $data['requests'] = $this->spw_vm_request_model->searchFilteredVms($where);
         $data['active_images'] = $this->spw_vm_request_model->getAllImages();
@@ -95,9 +95,9 @@ class ProjectController extends CI_Controller
         /*gets default name for vm creation */
         $data['name_default'] = $this->spw_vm_request_model->getDefaultName();
         $data['image'] = $image;
-        $data['ram'] = $ram;
+        $data['f_ram'] = $f_ram;
         $data['storage'] = $storage;
-        $data['qty'] = $qty;
+        $data['f_qty'] = $f_qty;
         $data['status'] = $status;
         $data['name'] = $name;
         $data['term'] = $term;
@@ -112,15 +112,15 @@ class ProjectController extends CI_Controller
             $input = file_get_contents('php://input');
             
             $image = $this->input->get('image');
-            $ram = $this->input->get('ram');
+            $f_ram = $this->input->get('f_ram');
             $storage = $this->input->get('storage');
-            $qty = $this->input->get('qty');
+            $f_qty = $this->input->get('f_qty');
             $status = $this->input->get('status');
             $name = $this->input->get('name');
             $term = $this->input->get('term');
             
-            if($status || $ram || $storage || $qty || $image || $name || $term){
-                $this->filterVMRequests($image,$ram,$storage,$qty,$status,$name,$term);
+            if($status || $f_ram || $storage || $f_qty || $image || $name || $term){
+                $this->filterVMRequests($image,$f_ram,$storage,$f_qty,$status,$name,$term);
             }else if($input){
                 
                 $inputForm = json_decode($input);
@@ -155,6 +155,9 @@ class ProjectController extends CI_Controller
                 $data['image'] = $image;
                 $data['name'] = $name;
                 $data['term'] = $term;
+                $data['f_ram'] = $f_ram;
+                $data['storage'] = $storage;
+                $data['f_qty'] = $f_qty;
         
                 $this->load->view('vm_requests2', $data);
             }
