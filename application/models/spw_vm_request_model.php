@@ -108,11 +108,11 @@ class SPW_vm_request_Model extends CI_Model
         return true;
     }
     
-    /* returns all active students from a project */
-    public function getStudentProjectMembers($project_id){
+    /* returns a student from a project */
+    public function getStudentProjectMember($student_id){
         $query = "SELECT first_name, last_name, email " 
                 ."FROM spw_user " 
-                ."WHERE project = $project_id AND status = 'active' ";
+                ."WHERE project = $student_id AND status = 'active' ";
         
         $q = $this->db->query($query);
         

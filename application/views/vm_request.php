@@ -33,41 +33,13 @@
                 </select>
             </td>
             <td>
-                <select name="ram"> 
-                        <option>1</option>
-                        <option>2</option>
-                        <option>4</option>
-                        <option>8</option>
-                        <option>12</option>
-                        <option>16</option>
-                        <option>32</option>
-                </select>
+                <input id="ram" name="ram" placeholder="Enter memory RAM" type="text" value="">
             </td>
            <td>
-                <select name="hdd">
-                        <option>8</option>
-                        <option>12</option>
-                        <option>16</option>
-                        <option>20</option>
-                        <option>24</option>
-                        <option>30</option>
-                        <option>50</option>
-                        <option>70</option>
-                        <option>100</option>
-                </select>
+               <input id="hdd" name="hdd" placeholder="Enter storage amount" type="text" value="">
            </td>
            <td>
-               <select name="qty">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                </select>
+               <input id="qty" name="qty" placeholder="Enter number of VMs" type="text" value="">
            </td>
         </tr>
     </tbody>
@@ -114,10 +86,14 @@ $('#addRequest').click(function(){
 $('#submitRequests').click(function(){
     console.log("Clicked submit");
     var data = getTableContent();
-    console.log("machines: ");
-    console.log(data);
-    uploadMachines(data);
+    var validInput = isValidInput(data);
+    if(validInput){
+        console.log("machines: ");
+        console.log(data);
+        uploadMachines(data);
+    }
 });
+
 function uploadMachines(machineList){
     $.ajax({
         type: "POST",
@@ -156,6 +132,31 @@ function getTableContent() {
         data.push(obj);
     }
     return data;
+}
+
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n) && n > 0;
+}
+
+function isValidInput(arr){
+    for(var i in arr){
+        var ram = arr[i].ram;
+        var hdd = arr[i].hdd;
+        var qty = arr[i].qty;
+        if(!isNumber(ram)){
+            alert("RAM value: "+ ram +" must be numeric and greater than zero");
+            return false;
+        }
+        if(!isNumber(hdd)){
+            alert("Storage value: "+ hdd +" must be numeric and greater than zero");
+            return false;
+        }
+        if(!isNumber(qty)){
+            alert("Number of Vms value: "+ qty +" must be numeric and greater than zero");
+            return false;
+        }
+    }
+    return true;
 }
 </script>
 <?php echo form_close(); ?>

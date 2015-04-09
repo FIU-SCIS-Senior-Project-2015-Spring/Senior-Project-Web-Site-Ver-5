@@ -18,55 +18,13 @@
                 <input id="image" class="input-medium text-filter" type="text" value="<?php echo $image ?>">
             </th>
             <th>
-                <select class="field-custom dropdown" id="ram">
-                   <?php 
-                    $rams = array(
-                        'ALL RAM',1,2,4,8,12,16,32
-                    );
-                        foreach($rams as $r){
-                            if($ram == $r){
-                                echo'<option selected="selected">'.$r.'</option>';
-                            }else{
-                             echo'<option>'.$r.'</option>';
-                            }
-                        }
-                ?> 
-                </select>
+                <input id="f_ram" class="input-small text-filter" type="text" value="<?php echo $f_ram ?>">
             </th>
             <th>
-                <select class="field-custom dropdown" id="storage">
-   
-                <?php
-                        $hdds = array(
-                            'ALL STORAGE',8,12,16,20,24,30,50,70,100
-                        );
-                        
-                            foreach($hdds as $hdd){
-                                if($storage == $hdd)
-                                    echo'<option selected="selected">'.$hdd.'</option>';
-                                else{
-                                 echo'<option>'.$hdd.'</option>';
-                                }
-                            }
-                  ?>
-                </select>
+                <input id="storage" class="input-small text-filter" type="text" value="<?php echo $storage ?>">
             </th>
             <th>
-                <select class="field-custom dropdown" id="qty">
-                    <?php
-                        $gtys = array(
-                            'ALL VMs',1,2,3,4,5,6,7,8,9
-                        );
-                        
-                            foreach($gtys as $r){
-                               if($qty == $r)
-                                    echo'<option selected="selected">'.$r.'</option>';
-                                else{
-                                 echo'<option>'.$r.'</option>';
-                                }
-                            }
-                    ?>
-                </select>
+                <input id="f_qty" class="input-small text-filter" type="text" value="<?php echo $f_qty ?>">
             </th>
             <th>
                 <select class="field-custom dropdown" id="status">
@@ -120,77 +78,13 @@
                 </select>
             </td>
             <td>
-                <select class="field-custom" name="ram">
-                <?php 
-                    $rams = array(
-                        1,
-                        2,
-                        4,
-                        8,
-                        12,
-                        16,
-                        32
-                    );
-                    
-                        foreach($rams as $ram){
-                            if($request->RAM == $ram)
-                                echo'<option selected="selected">'.$ram.'</option>';
-                            else{
-                             echo'<option>'.$ram.'</option>';
-                            }
-                        }
-                ?>    
-                </select>
+                <input id="ram" name="ram" class="input-small" type="text" value="<?php echo $request->RAM ?>">
             </td>
             <td>
-                <select class="field-custom" name="hdd">
-                <?php
-                        $hdds = array(
-                            8,
-                            12,
-                            16,
-                            20,
-                            24,
-                            30,
-                            50,
-                            70,
-                            100
-                        );
-                        
-                            foreach($hdds as $hdd){
-                                if($request->storage == $hdd)
-                                    echo'<option selected="selected">'.$hdd.'</option>';
-                                else{
-                                 echo'<option>'.$hdd.'</option>';
-                                }
-                            }
-                  ?>
-                </select>
+                <input id="hdd" name="hdd" class="input-small" type="text" value="<?php echo $request->storage ?>">
             </td>
             <td>
-                <select class="field-custom" name="qty">
-                    <?php
-                        $gtys = array(
-                            1,
-                            2,
-                            3,
-                            4,
-                            5,
-                            6,
-                            7,
-                            8,
-                            9
-                        );
-                        
-                            foreach($gtys as $qty){
-                                if($request->numb_vm == $qty)
-                                    echo'<option selected="selected">'.$qty.'</option>';
-                                else{
-                                 echo'<option>'.$qty.'</option>';
-                                }
-                            }
-                    ?>
-                </select>
+                <input id="qty" name="qty" class="input-small" type="text" value="<?php echo $request->numb_vm ?>">
             </td>
             <td>
                 <select class="field-custom" name="status">
@@ -231,9 +125,9 @@
 <script>
 function filterForm(){
    
-    var ram = $('#ram').val();
+    var f_ram = $("#f_ram").val();
     var storage = $('#storage').val();
-    var qty = $('#qty').val();
+    var f_qty = $('#f_qty').val();
     var status = $('#status').val();
     var image = $("#image").val();
     var name = $("#name").val();
@@ -243,9 +137,9 @@ function filterForm(){
     
     if(image!=='') whereto+="image="+image+"&";
     if(status!=='') whereto+="status="+status+"&";
-    if(ram!=='') whereto+="ram="+ram+"&";
+    if(f_ram!=='') whereto+="f_ram="+f_ram+"&";
     if(storage!=='') whereto+="storage="+storage+"&";
-    if(qty!=='') whereto+="qty="+qty+"&";
+    if(f_qty!=='') whereto+="f_qty="+f_qty+"&";
     if(name!=='') whereto+="name="+name+"&";
     if(term!=='') whereto+="term="+term+"&";
 //    if(term!=='') whereto+="term="+term+"&";
@@ -273,13 +167,14 @@ $(".dropdown" ).change(function() {
 $('#submitRequests').click(function(){
     console.log("Clicked submit");
     var data = getTableContent();
+    var validInput = isValidInput(data);
     console.log("machines: ");
     console.log(data);
     var john_email = $("#email_address").val();
-    if(isEmail(john_email)){
+    if(isEmail(john_email) && validInput){
         uploadMachines(data,john_email);
     }
-    else 
+    else if(!isEmail(john_email))  
         alert("Incorrect email");
 });
 
@@ -317,6 +212,7 @@ function getTableContent() {
         var hdd = row.find('[name="hdd"]').val();
         var qty = row.find('[name="qty"]').val();
         var status = row.find('[name="status"]').val();
+
         var obj = {
             "key":key,
             "os":os,
@@ -333,6 +229,29 @@ function getTableContent() {
 function isEmail(email) {
   var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
   return regex.test(email);
+}
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n) && n > 0;
+}
+function isValidInput(arr){
+    for(var i in arr){
+        var ram = arr[i].ram;
+        var hdd = arr[i].hdd;
+        var qty = arr[i].qty;
+        if(!isNumber(ram)){
+            alert("RAM value: "+ ram +" must be numeric and greater than zero");
+            return false;
+        }
+        if(!isNumber(hdd)){
+            alert("Storage value: "+ hdd +" must be numeric and greater than zero");
+            return false;
+        }
+        if(!isNumber(qty)){
+            alert("Number of Vms value: "+ qty +" must be numeric and greater than zero");
+            return false;
+        }
+    }
+    return true;
 }
 </script>
 <?php $this->load->view("template_footer"); ?>
@@ -357,4 +276,11 @@ function isEmail(email) {
     $html = generateSelect('os', $oses, $request->OS); /*call statement*/
 }
 ?>
+<!--
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+isNumeric: function( obj ) {
+    return !jQuery.isArray( obj ) && (obj - parseFloat( obj ) + 1) >= 0;
+}
 -->
