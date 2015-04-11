@@ -263,7 +263,7 @@ class ProjectController extends CI_Controller
             else
                 $where = "status = '$status' ";
         }
-        echo $where;
+//        echo $where;
         $data['image'] = $image;
         $data['status'] = $status;
         $data['results'] = $this->spw_vm_request_model->searchFilteredImages($where);
