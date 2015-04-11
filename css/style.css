@@ -4,6 +4,10 @@ body {
   background: url("../img/az_subtle.png") repeat scroll 0% 0% transparent;
 }
 
+.mg-top-20 {
+  margin-top: 15px;
+}
+
 /* vm-request styles */
 .drop-header {
   padding: 8px;
@@ -38,6 +42,7 @@ body {
 .vm-img-table th {
     margin-bottom: 0;
     text-align: center;
+    width:200px;
 }
 
 #image_table > thead{
