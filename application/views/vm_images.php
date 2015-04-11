@@ -9,7 +9,7 @@
                                                   ));
   ?>
 <div class="well" id="image_div">
-<div class="text-center">
+<div>
     <h4> Add New Image Name </h4>
 </div>
 <?php
@@ -113,7 +113,8 @@ $('#submitRequests').click(function(){
     var data = getTableContent();
     console.log("machines: ");
     console.log(data);
-    uploadMachines(data);
+    if(isValidInput(data))
+        uploadMachines(data);
 });
 
 function uploadMachines(machineList){
@@ -189,6 +190,18 @@ $('.text-filter').keyup(function(e){
 $(".dropdown" ).change(function() {
     filterForm();
 });   
+
+function isValidInput(arr){
+    for(var i in arr){
+        var image = arr[i].image;
+
+        if(image == ""){
+            alert("ALERT: image field cannot be enpty");
+            return false;
+        }
+    }
+    return true;
+}
 
 </script>   
 
