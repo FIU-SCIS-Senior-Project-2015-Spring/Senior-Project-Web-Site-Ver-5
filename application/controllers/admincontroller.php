@@ -393,9 +393,9 @@ class AdminController extends CI_Controller {
 		  {
                           $user_id = $this->spw_user_model->get_user_id($this->input->post( 'email_address' ));
                           
-                          $token = $this->reversible_encryption($user_id);
+                          $token = (string)$this->reversible_encryption($user_id);
                           
-                          $this->spw_user_model->store_token((string)$token);
+                          $this->spw_user_model->store_token($token);
                           			  
 			  $message ='<html>
         <head><title>Senior Project Website Account Password</title></head>
