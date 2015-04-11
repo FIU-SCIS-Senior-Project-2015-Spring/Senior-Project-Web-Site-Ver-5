@@ -4,6 +4,10 @@ body {
   background: url("../img/az_subtle.png") repeat scroll 0% 0% transparent;
 }
 
+.mg-top-20 {
+  margin-top: 15px;
+}
+
 /* vm-request styles */
 .drop-header {
   padding: 8px;
@@ -25,10 +29,6 @@ body {
     background-color: #D0D0D0;
 }
 
-#image_table > thead{
-    background-color: #D0D0D0;
-}
-
 #machines_table > thead > tr > th,
 #machines_table > tbody > tr > td {
   text-align: center;
@@ -41,6 +41,19 @@ body {
 .vm-img-table input[type="text"],
 .vm-img-table th {
     margin-bottom: 0;
+    text-align: center;
+    width:200px;
+}
+
+#image_table > thead{
+    background-color: #D0D0D0;
+}
+#image_div{
+    margin-top: 20px;
+}
+
+#image_table > thead > tr > th,
+#image_table > tbody > tr > td {
     text-align: center;
 }
 /*end vm-request*/

@@ -273,10 +273,10 @@ class SPW_vm_request_Model extends CI_Model
     public function searchFilteredImages($where){
         
         if($where == ""){
-            $query = "SELECT image_name, status " 
+            $query = "SELECT id, image_name, status " 
                 ."FROM spw_vm_images ";
         }else{
-            $query = "SELECT image_name, status " 
+            $query = "SELECT id, image_name, status " 
                     ."FROM spw_vm_images "
                     . "WHERE ".$where." ";
         }
@@ -290,6 +290,8 @@ class SPW_vm_request_Model extends CI_Model
         
         return $results;
     }
+    
+    
     
     /*return all active images in the system */
     public function getActiveImages(){
@@ -452,6 +454,37 @@ class SPW_vm_request_Model extends CI_Model
         else return false;
     }
     
+    /*return all images attributes*/
+    public function allImages(){
+        
+        $query = "SELECT id, image_name, status " 
+                    ."FROM spw_vm_images ";
+        $q = $this->db->query($query);
+        
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($results,$row);
+        
+        return $results;
+    }
+    
+    /* updates images requests by project */
+    public function updateImageRequests($requests){
+        /* for each request update its settings */
+        foreach($requests as $request){
+            $key = $request->key;
+            $image = $request->image;
+            
+            $query = "update spw_vm_images "
+                    . "set image_name = '$image' "
+                    . "where id = $key ";
+            $q = $this->db->query($query);
+            if(!$q) return false;
+        }
+        return true;
+    }
    
 }
 

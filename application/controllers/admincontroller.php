@@ -692,5 +692,10 @@ class AdminController extends CI_Controller {
         }
         redirect('admin/admin_dashboard');
     }
+    
+    public function userManagement(){
+        
+         $this->load->view('admin_user_management2');
+    }
 
 }

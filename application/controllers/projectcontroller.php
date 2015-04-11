@@ -206,30 +206,22 @@ class ProjectController extends CI_Controller
     }
     
     /* added in SPW v5 to delete an image in the system */
-    public function deleteImage(){
-        $image_name = '';
-        if (isset($_GET['image_name'])){
-            $image_name = urldecode($_GET['image_name']);
-        }
+    public function deleteImage($delete_image_name){
+
         /*if query succeed, show Successfully message*/
-        if($this->spw_vm_request_model->deleteImage($image_name)){
-            $message = "Successfully deleted image $image_name";
+        if($this->spw_vm_request_model->deleteImage($delete_image_name)){
+            $message = "Successfully deleted image $delete_image_name";
             setFlashMessage( $this, $message);
         }/*if query does not succeed, show Error message*/
         else{
-            $message = "Error deleting $image_name";
+            $message = "Error deleting $delete_image_name";
             setFlashMessage( $this, $message);
         }
-        redirect('vm-images');
     }
     
     /* added in SPW v5 to change the status of an image in the system */
-    public function changeImageStatus(){
-        $status =''; $image_name = '';
-        if ( isset($_GET['status']) && isset($_GET['image_name'])) {
-            $status = $_GET['status'];
-            $image_name = urldecode($_GET['image_name']);
-        }
+    public function changeImageStatus($image_name, $status){
+
         if($status == 'ACTIVE'){
             $status = 'INACTIVE';
         }
@@ -245,7 +237,6 @@ class ProjectController extends CI_Controller
             $message = "Error updating status of image $image_name to ". strtoupper($status);
             setFlashMessage( $this, $message);
         }
-        redirect('vm-images');
     }
     
     /* added in SPW v5 to filter images on the system */
@@ -256,7 +247,7 @@ class ProjectController extends CI_Controller
         if($image == ""){
             $image = NULL;
         }
-        if($status == 'ALL STATUS'){
+        if($status == 'ALL STATUS' || $status == ""){
             $status = NULL;
         }
         
@@ -272,41 +263,59 @@ class ProjectController extends CI_Controller
             else
                 $where = "status = '$status' ";
         }
-        
+//        echo $where;
         $data['image'] = $image;
         $data['status'] = $status;
         $data['results'] = $this->spw_vm_request_model->searchFilteredImages($where);
         $this->load->view('vm_images',$data);
+        
     }
     
     
     /*load vm_image view*/
     public function vm_images(){
-
-        if(isUserLoggedIn($this)){
-            
-            if($this->spw_user_model->isUserProfessor(getCurrentUserId($this))){
-                
-                $image = $this->input->get('image');
-                $status = $this->input->get('status');
-                
-                if($image || $status){
-                    $this->filterImages($image, $status);
-                }
-                else{
-                
-                    $data['title'] = 'VM - Images';
-                    $data['results'] = $this->spw_vm_request_model->searchFilteredImages("");
-                    $data['image'] = $image;
-                    $this->load->view('vm_images',$data);
-                }
-            }
-            else{
-                $this->load->view('vm_request_message');
-            }
+        
+        if(!isUserLoggedIn($this)){
+             redirect('login','refresh');
         }
-        else{
-            redirect('login','refresh');
+        if($this->spw_user_model->isUserProfessor(getCurrentUserId($this))){
+            $input = file_get_contents('php://input');
+            /*filter variables*/
+            $image = $this->input->get('image');
+            $status = $this->input->get('status');
+            /*forms variables*/
+            $change_status = $this->input->get('change_status');
+            $image_name = $this->input->get('image_name');
+            $delete_image_name = $this->input->get('delete_image_name');
+            $message ="";
+            /*submit form*/
+            if($input){
+                $inputForm = json_decode($input);
+                $success = $this->spw_vm_request_model->updateImageRequests($inputForm);
+                setFlashMessage( $this, "Successfully updated image(s)");
+                die(json_encode(array("success"=> $success)));
+            }/*change image status*/
+            if($change_status){
+                $this->changeImageStatus($image_name,$change_status);
+                $message = "Successfully updated status of image $image_name to ". strtoupper($change_status);
+                setFlashMessage( $this, $message);
+            }/*delete an image*/
+            else if($delete_image_name){
+                $this->deleteImage($delete_image_name);
+                $message = "Successfully deleted image $image_name ";
+            }
+            /*filter images*/
+            if($image || $status){
+                $this->filterImages($image, $status);
+            }else{/*load vm_images view*/
+                $data['title'] = 'VM - Images';
+                $data['results'] = $this->spw_vm_request_model->allImages();
+                $data['image'] = $image;
+                $data['status'] = $status;
+                $this->load->view('vm_images',$data);
+            }
+        }else{/*if user is not head professor, prompt message*/
+            $this->load->view('vm_request_message');
         }
     }
     

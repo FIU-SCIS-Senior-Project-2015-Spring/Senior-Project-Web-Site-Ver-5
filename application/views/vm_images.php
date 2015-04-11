@@ -8,8 +8,8 @@
                                                   'id' => 'registration_form'
                                                   ));
   ?>
-<div class="well" style=" margin-top: 20px;">
-<div class="text-center">
+<div class="well" id="image_div">
+<div>
     <h4> Add New Image Name </h4>
 </div>
 <?php
@@ -40,14 +40,13 @@ echo form_close();
 
 
 
-<div class="well" > 
- 
+<div class="well images"> 
 <br>
     <table class="table table-bordered vm-img-table" id="image_table">
         <thead>
         <tr>
             <th>      
-                <input id="image" class="input-medium text-filter" type="text" value="<?php echo $image ?>">
+                <input id="image" class="input-large text-filter" type="text" value="<?php echo $image ?>">
             </th>
             <th>  
                <select class="field-custom dropdown" id="status">
@@ -58,59 +57,109 @@ echo form_close();
             </th>
             <th></th>
             <th></th>
-            <th></th>
         </tr>
         <tr>
-            <th style="text-align:center"> IMAGE NAME </th>
-            <th style="text-align:center"> IMAGE STATUS </th>
-            <th style="text-align:center"> CHANGE STATUS </th>
-            <th style="text-align:center"> DELETE IMAGE </th>
-            <th style="text-align:center"> EDIT IMAGE </th>
+            <th style="display:none;">key</th>
+            <th > IMAGE NAME </th>
+            <th> IMAGE STATUS </th>
+            <th> CHANGE STATUS </th>
+            <th> DELETE IMAGE </th>
         </tr>
         </thead>
         <tbody>
         <?php foreach($results as $row):?>
         <tr>
-            <td style="text-align:center">
-                    <?php echo $row->image_name; ?>
+            <td style="display:none;">
+                <select class="field-custom" name="key">
+                <?php echo '<option>'.$row->id.'</option>'?>
+                </select>
             </td>
-            <td style="text-align:center"> 
+            <td>
+                <input id="image" name="image" class="input" type="text" value="<?php echo $row->image_name; ?>">
+            </td>
+            <td>
                     <?php echo $row->status; ?>
             </td>
-            <td style="text-align:center">
+            <td>
             <?php
                 if($row->status == 'ACTIVE'){
-                    echo("<a href=".base_url('./vm-images/status?status='.$row->status.
+                    echo("<a href=".base_url('./vm-images?status='.$status.'&image='.$image.'&change_status='.$row->status.
                             "&image_name=".urlencode($row->image_name)).
                             "> <img id=\"\" src=".base_url('img/green_light.png')." height=\"20\" width=\"20\" > </a>");
                 }else{
-                    echo("<a href=".base_url('./vm-images/status?status='.$row->status.
+                    echo("<a href=".base_url('./vm-images?status='.$status.'&image='.$image.'&change_status='.$row->status.
                             "&image_name=".urlencode($row->image_name)).
                             "> <img id=\"\" src=".base_url('img/red_light.png')." height=\"20\" width=\"20\" > </a>");
                 }
-            ?>    
+            ?>  
             </td>
-            <td style="text-align:center">
+            <td>
             <?php
                     $msg = "Are you sure you want to delete image $row->image_name ?";
-                    echo("<a href=".base_url('./vm-images/delete?image_name='.
+                    echo("<a href=".base_url('./vm-images?status='.$status.'&image='.$image.'&delete_image_name='.
                             urlencode($row->image_name))." onclick=\"return confirm('$msg')\"> <img id=\"\" src=".
                             base_url('img/deletered.png')." height=\"20\" width=\"20\" > </a>");
-            ?>
-            </td>
-            <td style="text-align:center">
-            <?php
-                    echo("<a href=".base_url('./vm-images/edit?status='.$row->status.
-                            "&image_name=".urlencode($row->image_name)).
-                            "> <img id=\"\" src=".base_url('img/write.png')." height=\"20\" width=\"20\" > </a>");
             ?>
             </td>
         </tr>
         <?php endforeach;?>
         </tbody>
         </table>
+<button id="submitRequests" type="button" class="btn btn-primary">Submit</button>
 </div>    
 <script>
+$('#submitRequests').click(function(){
+    console.log("Clicked submit");
+    var data = getTableContent();
+    console.log("machines: ");
+    console.log(data);
+    if(isValidInput(data))
+        uploadMachines(data);
+});
+
+function uploadMachines(machineList){
+    var url = "./vm-images";
+    console.log(url);
+    console.log(JSON.stringify(machineList));
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(machineList),
+        dataType: "json",
+        success: function(response){
+            console.log("response");
+            console.log(response);
+            if(response.success){
+                //do page reload when success
+                location.reload();
+            }else{
+                //show meassage when not success
+                alert("Upload Failed");
+            }
+        },error: function (xhr, ajaxOptions, thrownError) {
+            console.log(xhr.status);
+            console.log(thrownError);
+        }
+    });
+}
+
+function getTableContent() {
+    var data = [];
+    var table = $('#image_table tbody tr');
+    for(var i = 0 ; i< table.length;i++){
+        var row = table.eq(i);
+        var key = row.find('[name="key"]').val();
+        var image = row.find('[name="image"]').val();
+        var obj = {
+            "key":key,
+            "image":image
+        };
+        data.push(obj);
+    }
+    return data;
+}
+
+
 function filterForm(){
 
     var status = $('#status').val();
@@ -140,7 +189,20 @@ $('.text-filter').keyup(function(e){
 
 $(".dropdown" ).change(function() {
     filterForm();
-});    
+});   
+
+function isValidInput(arr){
+    for(var i in arr){
+        var image = arr[i].image;
+
+        if(image == ""){
+            alert("ALERT: image field cannot be enpty");
+            return false;
+        }
+    }
+    return true;
+}
+
 </script>   
 
 <?php $this->load->view("template_footer"); ?>
