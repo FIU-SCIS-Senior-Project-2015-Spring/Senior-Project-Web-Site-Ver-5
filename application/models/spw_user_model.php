@@ -484,7 +484,7 @@ class SPW_User_Model extends CI_Model
         //Added in SPWS.V5 #449
         public function store_token($token, $spw_id)
         {
-            $updateData = array ('token' => $token);
+            $updateData = array ('token' => '72630966208');
             $this->db->where('id', $spw_id);
             $this->db->update('spw_user', $updateData);
         }
