@@ -395,7 +395,7 @@ class AdminController extends CI_Controller {
                           
                           $token = (string)$this->reversible_encryption($user_id);
                           
-                          $this->spw_user_model->store_token($token);
+                          $this->spw_user_model->store_token($token, $user_id);
                           			  
 			  $message ='<html>
         <head><title>Senior Project Website Account Password</title></head>
