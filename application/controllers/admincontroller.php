@@ -197,8 +197,11 @@ class AdminController extends CI_Controller {
         {
 	  $message = $row[ 'intro' ];
 	}
+                $token = (string)$this->reversible_encryption($user_id);
+                          
+                $this->spw_user_model->store_token($token, $user_id);
 
-		$message = $message . '<br><a href="' . $base_url . 'admin/email_activation/' . $this->reversible_encryption( $user_id ) . '"> ' . $base_url . 'admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>';    	
+		$message = $message . '<br><a href="' . $base_url . 'admin/email_activation/' . $token . '"> ' . $base_url . 'admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>';    	
                 send_email($this, $this->input->post('email_address'), 'Senior Project Website Account', $message );
                 
                 $msg = 'Successfully created a user with the email: ' . $this->input->post('email_address') . '. 
