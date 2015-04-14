@@ -689,9 +689,173 @@ class AdminController extends CI_Controller {
         redirect('admin/admin_dashboard');
     }
     
+    /*helper function to bypass user(s)*/
+    public function getActiveUsersAndByPassIfNeeded($input){
+        
+        foreach($input as $row){
+            /*if user on DB is pending and in User Management form was made active, bypass him/her*/
+            if($row->col_5 == 'ACTIVE' && $this->spw_user_model->isUserStatusPending($row->id) == 'PENDING'){
+                /*bypass the user*/
+                 $this->bypassActivation($row->id,$row->col_3);
+            }
+        }
+    }
+    public function check_url($url) {
+        $headers = @get_headers( $url);
+        $headers = (is_array($headers)) ? implode( "\n ", $headers) : $headers;
+
+        return (bool)preg_match('#^HTTP/.*\s+[(200|301|302)]+\s#i', $headers);
+    }
+    public function replace_url($input){
+        foreach($input as &$key){
+            if(!$this->check_url($key->picture)){
+                $key->picture = '/img/no-photo.jpeg';
+            }
+        }
+    }
+    
+    /*added in SPW v5 for user management*/
     public function userManagement(){
         
-         $this->load->view('admin_user_management2');
+        if(!isUserLoggedIn($this)){
+            redirect('login','refresh');
+        }
+        
+        $input = file_get_contents('php://input');
+        /*filter variables*/
+        $fn = $this->input->get('fn');
+        $ln = $this->input->get('ln');
+        $email = $this->input->get('email');
+        $status = $this->input->get('status');
+        $role = $this->input->get('role');
+        /*id to be deleted*/
+        $user_id = $this->input->get('id');
+        
+        if($input){/*input from User Management page*/
+            $inputForm = json_decode($input);
+            /*bupass a user(s) if need be*/
+            $this->getActiveUsersAndByPassIfNeeded($inputForm);
+            /*update user info*/
+            $success = $this->spw_user_model->updateUsers($inputForm);
+            die(json_encode(array("success"=> $success)));
+        }
+        if($user_id){
+            $this->deleteUser($user_id);
+        }
+        if($fn || $ln || $email || $status || $role){
+            $this->filterUsers($fn, $ln, $email, $status, $role);
+        }else{
+            $data['title'] = 'User Management';
+            $data['requests'] = $this->spw_user_model->getAllUsers();
+            $data['fn'] = $fn;
+            $data['ln'] = $ln;
+            $data['email'] = $email;
+            $data['role'] = $role;
+            $data['status'] = $status;
+            $this->load->view('admin_user_management2',$data);
+        }
+    }
+    
+    /*added in SPW v5 to filter users by first & last name, email, role and status*/
+    public function filterUsers($fn, $ln, $email, $status, $role){
+        $data = array( );
+        $where = "";
+        
+        if($fn == ""){
+            $fn = NULL;
+        }
+        if($ln == ""){
+            $ln = NULL;
+        }
+        if($email == ""){
+            $email = NULL;
+        }
+        if($status == 'ALL STATUS' || $status == ""){
+            $status = NULL;
+        }
+        if($role == 'ALL ROLES' || $role == ""){
+            $role = NULL;
+        }
+        
+        if(isset($fn)){
+            if(strlen($where) >= 1)
+                $where .= " AND first_name LIKE "."\"%".$fn."%\"  ";
+            else
+                $where = "first_name LIKE "."\"%".$fn."%\"  ";
+        }
+        if(isset($ln)){
+            if(strlen($where) >= 1)
+                $where .= " AND last_name LIKE "."\"%".$ln."%\"  ";
+            else
+                $where = "last_name LIKE "."\"%".$ln."%\"  ";
+        }
+        if(isset($email)){
+            if(strlen($where) >= 1)
+                $where .= " AND email LIKE "."\"%".$email."%\"  ";
+            else
+                $where = "email LIKE "."\"%".$email."%\"  ";
+        }
+        if(isset($status)){
+            if(strlen($where) >= 1)
+                $where .= " AND status = '$status' ";
+            else
+                $where = "status = '$status' ";
+        }
+        if(isset($role)){
+            if(strlen($where) >= 1)
+                $where .= " AND role = '$role' ";
+            else
+                $where = "role = '$role' ";
+        }
+        
+//        echo $where;
+        $data['title'] = 'User Management';
+        $data['requests'] = $this->spw_user_model->searchFilteredUsers($where);
+        $data['fn'] = $fn;
+        $data['ln'] = $ln;
+        $data['email'] = $email;
+        $data['status'] = $status;
+        $data['role'] = $role;
+        $this->load->view('admin_user_management2',$data);
+    }
+    /*delete an user*/
+    public function deleteUser($user_id){
+        $this->spw_user_model->delete_user($user_id);
+    }
+    
+    /* added in SPW v5 bypass a user*/
+    public function bypassActivation($user_id, $email )
+    {
+        $base_url = $this->config->base_url();
+
+
+        if($this->spw_user_model->is_spw_registered( $email ) )
+        {
+            $password = $this->spw_user_model->generate_password( );
+            $hash_password = sha1( $password );
+            $this->spw_user_model->bypass_activation( $user_id, $hash_password );
+
+                            $message ='<html>
+          <head><title>Senior Project Website Account Password</title></head>
+          <body>
+          <h2>Welcome to the Senior Project Website !!</h2>
+
+          <p>We have created an account for you to access it.</p>
+            <p> Please log in with your email address and this temporary password: ' .  $password . '</p>
+            <p>Once you login, update your profile and refer to the User Guide on the "About" page for help.</p>
+              <p><a href="' . $base_url . '">Senior Project Website</a></p>
+              </body>
+              </html>';
+
+            send_email( $email, 'Senior Project Website Account', $message );
+            $msg = 'Successfully bypassed user PENDING status for user with the email: ' . $email;
+            setFlashMessage( $this, $msg );
+        }
+        else
+        {
+            $msg = 'Cannot bypass user PENDING status. An error was encountered for: ' . $email;
+            setErrorFlashMessage( $this, $msg );
+        }
     }
 
 }

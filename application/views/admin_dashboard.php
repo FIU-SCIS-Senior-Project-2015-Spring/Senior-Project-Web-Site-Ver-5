@@ -114,7 +114,7 @@ overflow: scroll;
     <?php echo anchor('vm-requests', 'VM Requests', array('style' => 'margin-right: 8px', 'class' => 'btn btn-primary btn-small pull-right')) ?>
 </div>
 <div>
-    <?php echo anchor('admin/management', 'All Users', array('style' => 'margin-right: 8px', 'class' => 'btn btn-primary btn-small pull-right')) ?>
+    <?php echo anchor('userManagement', 'All Users', array('style' => 'margin-right: 8px', 'class' => 'btn btn-primary btn-small pull-right')) ?>
 </div>
 <br><br>
 

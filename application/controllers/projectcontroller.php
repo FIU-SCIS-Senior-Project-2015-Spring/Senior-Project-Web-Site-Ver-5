@@ -210,13 +210,13 @@ class ProjectController extends CI_Controller
 
         /*if query succeed, show Successfully message*/
         if($this->spw_vm_request_model->deleteImage($delete_image_name)){
-            $message = "Successfully deleted image $delete_image_name";
-            setFlashMessage( $this, $message);
+//            $message = "Successfully deleted image $delete_image_name";
+//            setFlashMessage( $this, $message);
         }/*if query does not succeed, show Error message*/
-        else{
-            $message = "Error deleting $delete_image_name";
-            setFlashMessage( $this, $message);
-        }
+//        else{
+//            $message = "Error deleting $delete_image_name";
+//            setFlashMessage( $this, $message);
+//        }
     }
     
     /* added in SPW v5 to change the status of an image in the system */
@@ -230,13 +230,13 @@ class ProjectController extends CI_Controller
         }
         /*if query succeed, show Successfully message*/
         if($this->spw_vm_request_model->updateImageStatus($status,$image_name)){
-            $message = "Successfully updated status of image $image_name to ". strtoupper($status);
-            setFlashMessage( $this, $message);
+//            $message = "Successfully updated status of image $image_name to ". strtoupper($status);
+//            setFlashMessage( $this, $message);
         }/*if query does not succeed, show Error message*/
-        else{
-            $message = "Error updating status of image $image_name to ". strtoupper($status);
-            setFlashMessage( $this, $message);
-        }
+//        else{
+//            $message = "Error updating status of image $image_name to ". strtoupper($status);
+//            setFlashMessage( $this, $message);
+//        }
     }
     
     /* added in SPW v5 to filter images on the system */
@@ -295,14 +295,13 @@ class ProjectController extends CI_Controller
                 setFlashMessage( $this, "Successfully updated image(s)");
                 die(json_encode(array("success"=> $success)));
             }/*change image status*/
+            
             if($change_status){
                 $this->changeImageStatus($image_name,$change_status);
-                $message = "Successfully updated status of image $image_name to ". strtoupper($change_status);
-                setFlashMessage( $this, $message);
+                $message = "Successfully updated status of image $image_name to ". $change_status;
             }/*delete an image*/
             else if($delete_image_name){
                 $this->deleteImage($delete_image_name);
-                $message = "Successfully deleted image $image_name ";
             }
             /*filter images*/
             if($image || $status){
