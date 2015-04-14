@@ -112,7 +112,7 @@
             <?php
                 $msg = "Are you sure you want to delete user $request->first_name $request->last_name ?";
                 $url = "id=$request->id&fn=$fn&ln=$ln&email=$email&role=$role&status=$status";
-                echo("<a href=".base_url('./userManagement?'.$url).'data-toggle="tooltip" title="Delete User"'.
+                echo("<a data-toggle=\"tooltip\" title=\"Delete User\" href=".base_url('./userManagement?'.$url).
                         " onclick=\"return confirm('$msg')\"> <img id=\"\" src=".
                         base_url('img/deletered.png')." height=\"20\" width=\"20\" > </a>");
             ?>
