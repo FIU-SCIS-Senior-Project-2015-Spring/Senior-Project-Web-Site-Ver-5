@@ -836,8 +836,8 @@ class AdminController extends CI_Controller {
               <p><a href="' . $base_url . '">Senior Project Website</a></p>
               </body>
               </html>';
-
-            send_email( $email, 'Senior Project Website Account', $message );
+              
+            send_email( $this, $email, 'Senior Project Website Account', $message );
             $msg = 'Successfully bypassed user PENDING status for user with the email: ' . $email;
             setFlashMessage( $this, $msg );
         }
