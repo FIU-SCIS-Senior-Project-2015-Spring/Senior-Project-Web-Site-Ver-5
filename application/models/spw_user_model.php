@@ -33,6 +33,73 @@ class SPW_User_Model extends CI_Model
     {
         parent::__construct();
     }
+    
+    public function isUserStatusPending($user_id){
+        
+        $query = "SELECT status "
+               . "FROM spw_user "
+               . "WHERE id= $user_id ";
+        
+        $q = $this->db->query($query);
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->status;
+        return NULL;
+    }
+    
+    /*added in SPW v5to filter users*/
+    public function searchFilteredUsers($where){
+        if($where == ""){
+            $query = "SELECT id, first_name, last_name, email, picture, role, status, hash_pwd "
+                ."FROM spw_user ";
+        }else{
+        $query = "SELECT id, first_name, last_name, email, picture, role, status, hash_pwd "
+                ."FROM spw_user "
+                . "WHERE ".$where." ";
+        }
+        $q = $this->db->query($query);
+        
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($results,$row);
+        
+        return $results;
+        
+    }
+    
+    /*added in SPW v5. to retrive all users*/
+    public function getAllUsers(){
+        
+        $q = $this->db->query("SELECT id, first_name, last_name, email, picture, role, status, hash_pwd "
+                            . "FROM spw_user ");
+        $requests = array();
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($requests,$row);
+        return $requests;
+    }
+    /*added in SPW v5 to update user*/
+    public function updateUsers($requests){
+        /* for each request update its settings */
+        foreach($requests as $request){
+            $id = $request->id;
+            $col_1 = $request->col_1;
+            $col_2 = $request->col_2;
+            $col_3 = $request->col_3;
+            $col_4 = $request->col_4;
+            $col_5 = $request->col_5;
+            
+            $query = "update spw_user "
+                    . "set first_name='$col_1',last_name='$col_2',email='$col_3',role='$col_4',status='$col_5' "
+                    . "where id = $id";
+            $q = $this->db->query($query);
+            if(!$q) return false;
+        }
+        return true;
+    }
 
     public function get_pwd($user_id)
     {
