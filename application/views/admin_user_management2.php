@@ -63,9 +63,8 @@
             <td>
                 <div>
                     <a onclick="return emulateUser(<?php echo '\''.$request->email.'\',\''.$request->hash_pwd.'\',\''.$request->role.'\','.$request->id ?>);" href="" data-toggle="tooltip" title="Act as User">
-                        <img src="<?php if($request->picture) echo $request->picture; else echo base_url( '/img/no-photo.jpeg' ); ?>" alt="" class="img-polaroid" height="50" width="50">
+                        <img onError="this.onerror=null;this.src='img/no-photo.jpeg';" src="<?php if($request->picture) echo $request->picture; else echo base_url( '/img/no-photo.jpeg' ); ?>" alt="" class="img-polaroid" height="50" width="50">
                     </a>
-                    
                 </div>
             </td>
             <td>

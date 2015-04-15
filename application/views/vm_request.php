@@ -2,11 +2,10 @@
 <?php $this->load->view("template_header"); ?>
 
 <h3> Virtual Machine Request </h3>
-<br>
-<?php
-    if (!isProfessor($this))
-       echo("<h5> NOTE: Virtual machine request must be done by team, no individual request allow </h5>");
-?>
+<div>
+    <img onError="this.onerror=null;this.src='img/no-photo.jpeg';" src="<?php if($picture) echo $picture; else echo base_url( '/img/no-photo.jpeg' ); ?>" alt="" class="img-polaroid" height="80" width="80">
+    <p><?php echo $full_name; ?></p>
+</div>
 <br>
 <?php echo form_open('vm_request'); ?>
 <div id="machines">

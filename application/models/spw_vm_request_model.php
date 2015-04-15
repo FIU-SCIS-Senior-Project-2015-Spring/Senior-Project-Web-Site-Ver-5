@@ -9,13 +9,13 @@ class SPW_vm_request_Model extends CI_Model
         parent::__construct();
     }
     
-    /* function returns all requests made for a project, they 
+    /* function returns all requests made for a student, they 
      * could be APPROVED, DENIED, PENDING */
-    public function getUserRequestsFromProject($project_id){
+    public function getUserRequestsFromProject($student_id){
         
         $q = $this->db->query("SELECT OS, RAM, storage, numb_vm, status "
                             . "FROM spw_vm_request "
-                            . "where project_id = $project_id");
+                            . "where student_id = $student_id ");
         $requests = array();
         
         if($q->num_rows() > 0)
@@ -27,17 +27,14 @@ class SPW_vm_request_Model extends CI_Model
     
     /* Returns the project requests */
     public function getUserRequests($user_id){
-        /* base on user id, returns the project id associated to the user */
-        $project_id = $this->getProjectId($user_id);
-        /* calls helper method and returns the requests made for a project */
-        return $this->getUserRequestsFromProject($project_id);
+        /* calls helper method and returns the requests made */
+        return $this->getUserRequestsFromProject($user_id);
     }
     
     /* Inserts vm requests  */
     public function insertVmRequests($requests,$user_id){
         
         $project_id = $this->getProjectId($user_id);
-        $student_name = $this->getStudentName($user_id);
         $current_term = $this->getCurrentTermName();
         /* for each request insert its settings */
         foreach($requests as $request){
@@ -45,8 +42,8 @@ class SPW_vm_request_Model extends CI_Model
             $ram = $request->ram;
             $hdd = $request->hdd;
             $qty = $request->qty;
-            $query = "insert into spw_vm_request (project_id, OS, RAM, storage, numb_vm, status, student_id, student_name, term) "
-                    . "values ($project_id,'$os',$ram,$hdd,$qty,'PENDING', $user_id, '$student_name', '$current_term' )";
+            $query = "insert into spw_vm_request (project_id, OS, RAM, storage, numb_vm, status, student_id, term) "
+                    . "values ($project_id,'$os',$ram,$hdd,$qty,'PENDING', $user_id, '$current_term' )";
             $q = $this->db->query($query);
             if(!$q) return false;
         }
@@ -354,9 +351,9 @@ class SPW_vm_request_Model extends CI_Model
     
     /* returns al requests in the system */
     public function getVMRequests(){
-        
-        $q = $this->db->query("SELECT id,OS, RAM, storage, numb_vm, status, student_name, term "
-                            . "FROM spw_vm_request ");
+
+        $q = $this->db->query("SELECT r.id, r.OS, r.RAM, r.storage, r.numb_vm, CONCAT_WS(' ', u.first_name, u.last_name) AS student_name, r.status, r.term "
+                            . "FROM spw_vm_request r INNER JOIN spw_user u ON r.student_id = u.id ");
         $requests = array();
         
         if($q->num_rows() > 0)
@@ -370,11 +367,11 @@ class SPW_vm_request_Model extends CI_Model
     public function searchFilteredVms($where){
         
         if($where == ""){
-            $query = "SELECT id,OS, RAM, storage, numb_vm, status, student_name, term "
-                ."FROM spw_vm_request ";
+            $query = "SELECT r.id, r.OS, r.RAM, r.storage, r.numb_vm, CONCAT_WS(' ', u.first_name, u.last_name) AS student_name, r.status, r.term "
+                   . "FROM spw_vm_request r INNER JOIN spw_user u ON r.student_id = u.id ";
         }else{
-        $query = "SELECT id,OS, RAM, storage, numb_vm, status, student_name, term "
-                ."FROM spw_vm_request "
+        $query = "SELECT r.id, r.OS, r.RAM, r.storage, r.numb_vm, CONCAT_WS(' ', u.first_name, u.last_name) AS student_name, r.status, r.term "
+               . "FROM spw_vm_request r INNER JOIN spw_user u ON r.student_id = u.id "
                 . "WHERE ".$where." ";
         }
         $q = $this->db->query($query);
@@ -484,6 +481,16 @@ class SPW_vm_request_Model extends CI_Model
             if(!$q) return false;
         }
         return true;
+    }
+    
+    public function deleteVMRequest($request_id){
+        
+        $query = "DELETE FROM spw_vm_request "
+               . "where id = $request_id ";
+        $q = $this->db->query($query);
+        
+        if($q) return true;
+        else return false;
     }
    
 }

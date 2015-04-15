@@ -1,6 +1,5 @@
 <?php $this->load->view("template_header"); ?>
 <h3>Virtual Machine Request Page</h3>
-
 <?php
     $oses = array();
     foreach($active_images as $r){
@@ -18,13 +17,13 @@
                 <input id="image" class="input-medium text-filter" type="text" value="<?php echo $image ?>">
             </th>
             <th>
-                <input id="f_ram" class="input-small text-filter" type="text" value="<?php echo $f_ram ?>">
+                <input id="f_ram" class="input-mini text-filter" type="text" value="<?php echo $f_ram ?>">
             </th>
             <th>
-                <input id="storage" class="input-small text-filter" type="text" value="<?php echo $storage ?>">
+                <input id="storage" class="input-mini text-filter" type="text" value="<?php echo $storage ?>">
             </th>
             <th>
-                <input id="f_qty" class="input-small text-filter" type="text" value="<?php echo $f_qty ?>">
+                <input id="f_qty" class="input-mini text-filter" type="text" value="<?php echo $f_qty ?>">
             </th>
             <th>
                 <select class="field-custom dropdown" id="status">
@@ -40,18 +39,20 @@
             <th>
                 <input id="term" class="input-small text-filter" type="text" value="<?php echo $term ?>">
             </th>
+            <th></th>
         </tr>
 
 
         <tr>
             <th style="display:none;">Request No.</th>
             <th>Image Name</th>
-            <th>Memory RAM (gb)</th>
+            <th>RAM (gb)</th>
             <th>Storage (gb)</th>
             <th>Number of VM</th>
             <th>Status</th>
             <th>Full Name</th>
             <th>Term</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -78,24 +79,24 @@
                 </select>
             </td>
             <td>
-                <input id="ram" name="ram" class="input-small" type="text" value="<?php echo $request->RAM ?>">
+                <input id="ram" name="ram" class="input-mini" type="text" value="<?php echo $request->RAM ?>">
             </td>
             <td>
-                <input id="hdd" name="hdd" class="input-small" type="text" value="<?php echo $request->storage ?>">
+                <input id="hdd" name="hdd" class="input-mini" type="text" value="<?php echo $request->storage ?>">
             </td>
             <td>
-                <input id="qty" name="qty" class="input-small" type="text" value="<?php echo $request->numb_vm ?>">
+                <input id="qty" name="qty" class="input-mini" type="text" value="<?php echo $request->numb_vm ?>">
             </td>
             <td>
                 <select class="field-custom" name="status">
                     <?php 
-                    $status = array(
+                    $sta = array(
                             'PENDING',
                             'APPROVED',
                             'DENIED'
                         );
                         
-                            foreach($status as $st){
+                            foreach($sta as $st){
                                 if($request->status == $st)
                                     echo'<option value ='.$st.' selected="selected">'.$st.'</option>';
                                 else{
@@ -111,6 +112,15 @@
             </td>
             <td>
                 <?php echo $request->term ?>
+            </td>
+            <td>
+                <?php
+                    $msg = "Are you sure you want to delete $request->OS VM request from $request->student_name ?";
+                    $url = "id=$request->id&image=$image&f_ram=$f_ram&storage=$storage&f_qty=$f_qty&status=$status&name=$name&term=$term";
+                    echo("<a data-toggle=\"tooltip\" title=\"Delete Request\" href=".base_url('./vm-requests?'.$url).
+                            " onclick=\"return confirm('$msg')\"> <img id=\"\" src=".
+                            base_url('img/deletered.png')." height=\"20\" width=\"20\" > </a>");
+                ?>
             </td>
         </tr>
         <?php endforeach;?>

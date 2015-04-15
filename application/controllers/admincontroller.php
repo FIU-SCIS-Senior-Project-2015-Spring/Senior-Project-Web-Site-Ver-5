@@ -730,7 +730,7 @@ class AdminController extends CI_Controller {
             die(json_encode(array("success"=> $success)));
         }
         if($user_id){
-            $this->deleteUser($user_id);
+            $this->deleteUser($user_id, $fn, $ln, $email, $status, $role);
         }
         if($fn || $ln || $email || $status || $role){
             $this->filterUsers($fn, $ln, $email, $status, $role);
@@ -809,8 +809,16 @@ class AdminController extends CI_Controller {
         $this->load->view('admin_user_management2',$data);
     }
     /*delete an user*/
-    public function deleteUser($user_id){
-        $this->spw_user_model->delete_user($user_id);
+    public function deleteUser($user_id, $fn, $ln, $email, $status, $role){
+        $msg = "";
+        if($this->spw_user_model->delete_user($user_id)){
+            $msg = "Succesfully deleted user ";
+        }else{
+            $msg = "Error deleting user";
+        }
+        setFlashMessage($this, $msg);
+        $parm = "fn=$fn&ln=$ln&email=$email&role=$role&status=$status";
+        redirect('userManagement?'.$parm);
     }
     
     /* added in SPW v5 bypass a user*/
