@@ -14,6 +14,20 @@ class ProjectController extends CI_Controller
         $this->load->model('SPW_Project_Details_View_Model');
         $this->load->model('spw_notification_model');
         $this->load->model('spw_vm_request_model');
+        $this->load->model('spw_user_model');
+    }
+    
+    /*added in SPW v5 to delete a VM request*/
+    public function deleteVMRequest($request_id,$image,$f_ram,$storage,$f_qty,$status,$name,$term){
+        $msg = "";
+        if($this->spw_vm_request_model->deleteVMRequest($request_id)){
+            $msg = "Succesfully deleted virtual machine request ";
+        }else{
+            $msg = "Error deleting virtual machine request";
+        }
+        setFlashMessage($this, $msg);
+        $parm = "image=$image&f_ram=$f_ram&storage=$storage&f_qty=$f_qty&status=$status&name=$name&term=$term";
+        redirect('vm-requests?'.$parm);
     }
     
     /*added in SPW v5 to filter vm requests*/
@@ -28,7 +42,7 @@ class ProjectController extends CI_Controller
         if($f_ram == ""){
             $f_ram = NULL;
         }
-        if($status == 'ALL STATUS'){
+        if($status == 'ALL STATUS' || $status == ""){
             $status = NULL;
         }
         if($storage == ""){
@@ -70,15 +84,15 @@ class ProjectController extends CI_Controller
         }
         if(isset($status)){
             if(strlen($where) >= 1)
-                $where .= " AND status = '$status' ";
+                $where .= " AND r.status = '$status' ";
             else
-                $where = "status = '$status' ";
+                $where = "r.status = '$status' ";
         }
         if(isset($name)){
             if(strlen($where) >= 1)
-                $where .= " AND student_name LIKE "."\"%".$name."%\"  ";
+                $where .= " AND (u.first_name LIKE "."\"%".$name."%\" OR u.last_name LIKE \"%$name%\") ";
             else
-                $where = "student_name LIKE "."\"%".$name."%\"  ";
+                $where = " u.first_name LIKE "."\"%".$name."%\" OR u.last_name LIKE \"%$name%\" ";
         }
         if(isset($term)){
             if(strlen($where) >= 1)
@@ -113,7 +127,7 @@ class ProjectController extends CI_Controller
         if($this->spw_user_model->isUserProfessor(getCurrentUserId($this))){
         
             $input = file_get_contents('php://input');
-            
+            /*filter variables*/
             $image = $this->input->get('image');
             $f_ram = $this->input->get('f_ram');
             $storage = $this->input->get('storage');
@@ -121,7 +135,12 @@ class ProjectController extends CI_Controller
             $status = $this->input->get('status');
             $name = $this->input->get('name');
             $term = $this->input->get('term');
+            /*request to be deleted*/
+            $delete_id = $this->input->get('id');
             
+            if($delete_id){
+                $this->deleteVMRequest($delete_id,$image,$f_ram,$storage,$f_qty,$status,$name,$term);
+            }
             if($status || $f_ram || $storage || $f_qty || $image || $name || $term){
                 $this->filterVMRequests($image,$f_ram,$storage,$f_qty,$status,$name,$term);
             }else if($input){
@@ -144,6 +163,7 @@ class ProjectController extends CI_Controller
                 }
                 
                 $success = $this->spw_vm_request_model->updateRequestsFromProject($inputForm);
+                if($success)setFlashMessage($this, "Succesfully updated VM request");
                 echo json_encode(array("success"=> $success));
                 
             }else{
@@ -161,7 +181,7 @@ class ProjectController extends CI_Controller
                 $data['f_ram'] = $f_ram;
                 $data['storage'] = $storage;
                 $data['f_qty'] = $f_qty;
-        
+                $data['status'] = $status;
                 $this->load->view('vm_requests2', $data);
             }
         }else{
@@ -206,37 +226,39 @@ class ProjectController extends CI_Controller
     }
     
     /* added in SPW v5 to delete an image in the system */
-    public function deleteImage($delete_image_name){
-
+    public function deleteImage($delete_image_name, $image, $status){
+        $message = "";
         /*if query succeed, show Successfully message*/
         if($this->spw_vm_request_model->deleteImage($delete_image_name)){
-//            $message = "Successfully deleted image $delete_image_name";
-//            setFlashMessage( $this, $message);
+            $message = "Successfully deleted image $delete_image_name";
         }/*if query does not succeed, show Error message*/
-//        else{
-//            $message = "Error deleting $delete_image_name";
-//            setFlashMessage( $this, $message);
-//        }
+        else{
+            $message = "Error deleting $delete_image_name";
+        }
+        setFlashMessage( $this, $message);
+        $parm = "status=$status&image=$image";
+        redirect('vm-images?'.$parm);
     }
     
     /* added in SPW v5 to change the status of an image in the system */
-    public function changeImageStatus($image_name, $status){
-
-        if($status == 'ACTIVE'){
-            $status = 'INACTIVE';
+    public function changeImageStatus($image_name, $change_status, $image, $status){
+        $message = "";
+        if($change_status == 'ACTIVE'){
+            $change_status = 'INACTIVE';
         }
         else{
-            $status = 'ACTIVE';
+            $change_status = 'ACTIVE';
         }
         /*if query succeed, show Successfully message*/
-        if($this->spw_vm_request_model->updateImageStatus($status,$image_name)){
-//            $message = "Successfully updated status of image $image_name to ". strtoupper($status);
-//            setFlashMessage( $this, $message);
+        if($this->spw_vm_request_model->updateImageStatus($change_status,$image_name)){
+            $message = "Successfully updated status of image $image_name to ". strtoupper($change_status);
         }/*if query does not succeed, show Error message*/
-//        else{
-//            $message = "Error updating status of image $image_name to ". strtoupper($status);
-//            setFlashMessage( $this, $message);
-//        }
+        else{
+            $message = "Error updating status of image $image_name to ". strtoupper($change_status);
+        }
+        setFlashMessage( $this, $message);
+        $parm = "status=$status&image=$image";
+        redirect('vm-images?'.$parm);
     }
     
     /* added in SPW v5 to filter images on the system */
@@ -287,21 +309,20 @@ class ProjectController extends CI_Controller
             $change_status = $this->input->get('change_status');
             $image_name = $this->input->get('image_name');
             $delete_image_name = $this->input->get('delete_image_name');
-            $message ="";
+            
             /*submit form*/
             if($input){
                 $inputForm = json_decode($input);
                 $success = $this->spw_vm_request_model->updateImageRequests($inputForm);
                 setFlashMessage( $this, "Successfully updated image(s)");
                 die(json_encode(array("success"=> $success)));
-            }/*change image status*/
-            
+            }
+            /*change image status*/
             if($change_status){
-                $this->changeImageStatus($image_name,$change_status);
-                $message = "Successfully updated status of image $image_name to ". $change_status;
+                $this->changeImageStatus($image_name,$change_status, $image, $status);
             }/*delete an image*/
             else if($delete_image_name){
-                $this->deleteImage($delete_image_name);
+                $this->deleteImage($delete_image_name, $image, $status);
             }
             /*filter images*/
             if($image || $status){
@@ -377,6 +398,8 @@ class ProjectController extends CI_Controller
                 }/* normal flow of events, current day is after deadline and student accesses*/
                 else{/*VM - Request page to create a virtual machine request */
                     $data['title'] = 'VM - Request';
+                    $data['picture'] = $this->spw_user_model->get_pic($user_id);
+                    $data['full_name'] = $this->spw_vm_request_model->getStudentName($user_id);
                     $data['requests'] = $this->spw_vm_request_model->getUserRequests($user_id);
                     $data['active_images'] = $this->spw_vm_request_model->getActiveImages();
                     $this->load->view('vm_request', $data);
