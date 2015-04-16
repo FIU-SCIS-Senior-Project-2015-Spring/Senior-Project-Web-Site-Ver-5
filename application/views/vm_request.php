@@ -3,7 +3,7 @@
 
 <h3> Virtual Machine Request </h3>
 <div>
-    <img onError="this.onerror=null;this.src='img/no-photo.jpeg';" src="<?php if($picture) echo $picture; else echo base_url( '/img/no-photo.jpeg' ); ?>" alt="" class="img-polaroid" height="80" width="80">
+    <img onError="this.onerror=null;this.src='img/no-photo.jpeg';" src="<?php if($picture) echo $picture; else echo base_url( getImage($user_id) ); ?>" alt="" class="img-polaroid" height="80" width="80">
     <p><?php echo $full_name; ?></p>
 </div>
 <br>
