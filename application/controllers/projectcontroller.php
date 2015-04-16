@@ -398,6 +398,7 @@ class ProjectController extends CI_Controller
                 }/* normal flow of events, current day is after deadline and student accesses*/
                 else{/*VM - Request page to create a virtual machine request */
                     $data['title'] = 'VM - Request';
+                    $data['user_id'] = $user_id;
                     $data['picture'] = $this->spw_user_model->get_pic($user_id);
                     $data['full_name'] = $this->spw_vm_request_model->getStudentName($user_id);
                     $data['requests'] = $this->spw_vm_request_model->getUserRequests($user_id);
