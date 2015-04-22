@@ -46,8 +46,8 @@
         <tr>
             <th style="display:none;">Request No.</th>
             <th>Image Name</th>
-            <th>RAM (gb)</th>
-            <th>Storage (gb)</th>
+            <th>RAM (mb)</th>
+            <th>Storage (mb)</th>
             <th>Number of VM</th>
             <th>Status</th>
             <th>Full Name</th>
