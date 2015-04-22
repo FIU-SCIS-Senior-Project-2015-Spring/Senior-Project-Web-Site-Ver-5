@@ -14,8 +14,8 @@
     <thead>
       <tr>
          <th>Image Name</th>
-         <th>Memory RAM (gb)</th>
-         <th>Storage (gb)</th>
+         <th>Memory RAM (mb)</th>
+         <th>Storage (mb)</th>
          <th>Number of VM</th>
       </tr>
    </thead>
