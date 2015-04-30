@@ -377,7 +377,7 @@ class ProjectController extends CI_Controller
                 $msg_memb = $this->projectMemberMessage($this->spw_vm_request_model->getStudentProjectMember($user_id));
                 /*create email message for student to notify professor*/
                 $requetUrl = base_url().'vm-requests';
-                $email = 'ypera006@fiu.edu';//'sadjadi@cs.fiu.edu';//$this->spw_vm_request_model->getHeadEmail();
+                $email = $this->spw_vm_request_model->getHeadEmail();
                 $message ="<html> 
                             <body>
                                  <p> Click <a href=\"$requetUrl\">here</a> to see request from:</P>
