@@ -498,6 +498,7 @@ class MatchController extends CI_Controller {
         $this->load->helper('project_summary_view_model');
         load_project_summary_models($this);
         $this->load->model('spw_match_model');
+        
     }
 
     public function index() {
@@ -682,7 +683,7 @@ class MatchController extends CI_Controller {
         }
         redirect('admin/admin_dashboard');
     }
-
+    
     public function prepareProjects() {
         $approvedProjects = $this->spw_match_model->getAllApprovedProjectIDs(); //array for approved project's id numbers
         $projectsMaxStudents = $this->spw_match_model->getAllProjectsMaxStudents(); //array for all projects max student that can joined ([id] gives number for id)

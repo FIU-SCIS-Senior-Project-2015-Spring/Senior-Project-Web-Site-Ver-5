@@ -33,6 +33,73 @@ class SPW_User_Model extends CI_Model
     {
         parent::__construct();
     }
+    
+    public function isUserStatusPending($user_id){
+        
+        $query = "SELECT status "
+               . "FROM spw_user "
+               . "WHERE id= $user_id ";
+        
+        $q = $this->db->query($query);
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                return $row->status;
+        return NULL;
+    }
+    
+    /*added in SPW v5to filter users*/
+    public function searchFilteredUsers($where){
+        if($where == ""){
+            $query = "SELECT id, first_name, last_name, email, picture, role, status, hash_pwd "
+                ."FROM spw_user ";
+        }else{
+        $query = "SELECT id, first_name, last_name, email, picture, role, status, hash_pwd "
+                ."FROM spw_user "
+                . "WHERE ".$where." ";
+        }
+        $q = $this->db->query($query);
+        
+        $results = array();
+        
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($results,$row);
+        
+        return $results;
+        
+    }
+    
+    /*added in SPW v5. to retrive all users*/
+    public function getAllUsers(){
+        
+        $q = $this->db->query("SELECT id, first_name, last_name, email, picture, role, status, hash_pwd "
+                            . "FROM spw_user ");
+        $requests = array();
+        if($q->num_rows() > 0)
+            foreach ($q->result() as $row)
+                array_push($requests,$row);
+        return $requests;
+    }
+    /*added in SPW v5 to update user*/
+    public function updateUsers($requests){
+        /* for each request update its settings */
+        foreach($requests as $request){
+            $id = $request->id;
+            $col_1 = $request->col_1;
+            $col_2 = $request->col_2;
+            $col_3 = $request->col_3;
+            $col_4 = $request->col_4;
+            $col_5 = $request->col_5;
+            
+            $query = "update spw_user "
+                    . "set first_name='$col_1',last_name='$col_2',email='$col_3',role='$col_4',status='$col_5' "
+                    . "where id = $id";
+            $q = $this->db->query($query);
+            if(!$q) return false;
+        }
+        return true;
+    }
 
     public function get_pwd($user_id)
     {
@@ -335,6 +402,22 @@ class SPW_User_Model extends CI_Model
             return false;
     
     }
+    
+    //Added in SPW V5.
+    //Function uses email address to check if user is active.
+    public function is_user_active($email_address)
+    {
+        $query = $this->db
+                      ->where('email', $email_address)
+                      ->where('status', 'ACTIVE')                       
+                      ->limit(1)
+                      ->get('spw_user');
+        if($query->num_rows() > 0)
+            return true;
+        else 
+            return false;
+    
+    }
 
 
     public function is_spw_registered($email_address)
@@ -361,6 +444,23 @@ class SPW_User_Model extends CI_Model
                        ->where('id',$spw_id)
                        ->get('spw_user');
 
+        if($query->num_rows() > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public function is_manually_created($spw_id)
+    {
+        $query = $this->db
+                ->where('id',$spw_id)
+                ->where('hash_pwd !=','')
+                ->get('spw_user');
+        
         if($query->num_rows() > 0)
         {
             return true;
@@ -446,7 +546,41 @@ class SPW_User_Model extends CI_Model
    		}
     
 		return implode( $pass );
-  }
+        }
+        
+        //Added in SPWS.V5 #449
+        public function store_token($token, $spw_id)
+        {
+            $updateData = array ('token' => $token);
+            $this->db->where('id', $spw_id);
+            $this->db->update('spw_user', $updateData);
+        }
+        
+        //Added in SPWS.V5 #449
+        public function verify_token($token, $spw_id)
+        {
+            $query = $this->db
+                ->where('id', $spw_id)
+                ->where('token', $token)
+                ->get('spw_user');
+        
+            if($query->num_rows() > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        //Added in SPWS.V5 #449
+        public function expire_token($spw_id)
+        {
+            $updateData = array ('token' => '');
+            $this->db->where('id', $spw_id);
+            $this->db->update('spw_user', $updateData);
+        }
   
   	/* Added to SPW v.3 for User Management System */
 	public function set_pwd( $id, $pwd )
@@ -1513,7 +1647,7 @@ class SPW_User_Model extends CI_Model
     {
         $sql = 'select id, first_name, last_name
                 from spw_user
-                where (spw_user.role = "STUDENT") and (spw_user.project IS NULL)
+                where (spw_user.role = "STUDENT") and (spw_user.project IS NULL) and (spw_user.status = "ACTIVE")
                 order by first_name ASC';
         
         $query = $this->db->query($sql);

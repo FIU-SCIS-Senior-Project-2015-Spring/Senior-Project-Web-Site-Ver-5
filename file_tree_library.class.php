@@ -77,11 +77,12 @@ class file_tree_library
     
     function writeJavascript()
     {
+        $base_url = $this->config->base_url();
         ?>
         <script type="text/javascript">
 
-        var plusNode = 'http://spws.cis.fiu.edu/senior-project-website-v4//img/plus_folder.png';
-        var minusNode = 'http://spws.cis.fiu.edu/senior-project-website-v4//img/minus_folder.png';
+        var plusNode = '<?php echo $$base_url; ?>' . '/img/plus_folder.png';
+        var minusNode = '<?php echo $$base_url; ?>' . '/img/minus_folder.png';
 
         var nameOfStorage = '<?php echo $this->nameOfStorage; ?>';
         <?php
@@ -220,10 +221,13 @@ class file_tree_library
         {
             $element['parentId'] = 0;
         }
+
+        $base_url = $this->config->base_url();
+        
         $element['code'] = isset($element['code']) ? $element['code'] : 'javascript:return false';
         $element['url'] = isset($element['url']) ? $element['url'] : 'javascript:return false';
         $element['target'] = isset($element['target']) ? $element['target'] : '';
-        $element['icon'] = isset($element['icon']) ? 'http://spws.cis.fiu.edu/senior-project-website-v4//img/empty_folder2.png': '';
+        $element['icon'] = isset($element['icon']) ? '' . $base_url . '/img/empty_folder2.png': '';
         $element['onclick'] = isset($element['onclick']) ? $element['onclick'] : 'javascript:return false';
         $element['category'] = isset($element['category']) ? $element['category'] : 'uncateg';
         $element['date'] = isset($element['date']) ? $element['date'] : '';
@@ -304,9 +308,11 @@ class file_tree_library
                         $this->odd = true;
                     }
                     
+                    $base_url = $this->config->base_url();
+                    
                     echo "<img class=\"tree_plusminus\" id=\"plusMinus"
                                         . $this->elementArray[$parentID][$no]['id']
-                                        . "\" src=\"http://spws.cis.fiu.edu/senior-project-website-v4//img/plus_folder.png\">"
+                                        . "\" src=\"" . $base_url . "/img/plus_folder.png\">"
                                         . "<img src=\"".$this->elementArray[$parentID][$no]['icon']."\">";
                     echo "<a class=\"tree_link\" $urlAdd$onclick style=\"width:350px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-o-text-overflow: ellipsis;display:inline-block\" >"
                                         . $this->elementArray[$parentID][$no]['title']."</a>";            
@@ -392,7 +398,7 @@ class file_tree_library
                     
                     echo "<img class=\"tree_plusminus\" id=\"plusMinus"
                                      . $this->elementArray[$parentID][$no]['id']
-                                     . "\" src=\"http://spws.cis.fiu.edu/senior-project-website-v4//img/plus_folder.png\">"
+                                     . "\" src=\"" . $base_url . "/img/plus_folder.png\">"
                                      . "<img src=\"".$this->elementArray[$parentID][$no]['icon']."\">";
                     
                     echo "<b><a class=\"tree_link\">"
@@ -425,7 +431,7 @@ class file_tree_library
                                                        . "border-bottom:none;\">";
                     echo "<img class=\"tree_plusminus\" id=\"plusMinus" 
                                     . $this->elementArray[$parentID][$no]['id'] 
-                                    . "\" src=\"http://spws.cis.fiu.edu/senior-project-website-v4//img/plus_folder.png\">"
+                                    . "\" src=\"" . $base_url . "/img/plus_folder.png\">"
                                     . "<img src=\"".$this->elementArray[$parentID][$no]['icon']."\">";                        
                     echo "<b><a class=\"tree_link\" style=\"width:600px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-o-text-overflow: ellipsis;display:inline-block\" >"
                                     . $this->elementArray[$parentID][$no]['title']."</a></b>";  
@@ -541,10 +547,12 @@ class file_tree_library
             
             echo "<li class=\"tree_node\" id=\"node_".$this->elementArray[0][$no]['id']."\">";
             
+            $base_url = $this->config->base_url();
+            
             echo "<img id=\"plusMinus"
                             . $this->elementArray[0][$no]['id']
                             . "\" class=\"tree_plusminus\" "
-                            . "src=\"http://spws.cis.fiu.edu/senior-project-website-v4//img/plus_folder.png\">";
+                            . "src=\"" . $base_url . "/img/plus_folder.png\">";
             echo "<img src=\"".$this->elementArray[0][$no]['icon']."\">";
             echo "<b><a class=\"tree_link\">"               
                             . $this->elementArray[0][$no]['title']."</a></b>";

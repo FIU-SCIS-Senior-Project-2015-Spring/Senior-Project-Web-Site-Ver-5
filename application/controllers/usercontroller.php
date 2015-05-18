@@ -404,11 +404,14 @@ class UserController extends CI_Controller
 
     public function linkedIn_initiate()
     {
+        
+        $base_url = $this->config->base_url();
+        
         // setup before redirecting to Linkedin for authentication.
          $linkedin_config = array(
-             'appKey'       => '1ky0pyoc0rpe',
-             'appSecret'    => '7WIPfrEkya3QT3LR',
-             'callbackUrl'  => 'http://spws.cis.fiu.edu/senior-project-website-v4/user/linkedIn_callback'
+             'appKey'       => $this->config->item('app_key'),
+             'appSecret'    => $this->config->item('app_secret'),
+             'callbackUrl'  => $base_url . $this->config->item('callback_uri_linkedin')
          );
         
         $this->load->library('linkedin', $linkedin_config);
@@ -419,7 +422,7 @@ class UserController extends CI_Controller
         $this->session->set_flashdata('oauth_request_token_secret',$token['linkedin']['oauth_token_secret']);
         $this->session->set_flashdata('oauth_request_token',$token['linkedin']['oauth_token']);
 
-        $link = "https://api.linkedin.com/uas/oauth/authorize?oauth_token=". $token['linkedin']['oauth_token']; 
+        $link = $this->config->item('api_linkedin_endpoint') . "?oauth_token=". $token['linkedin']['oauth_token']; 
 
         $this->session->set_flashdata('linkedIn_sync', 'false'); 
 
@@ -428,11 +431,14 @@ class UserController extends CI_Controller
 
     public function linkedIn_sync()
     {
+        
+        $base_url = $this->config->base_url();
+        
         // setup before redirecting to Linkedin for authentication.
          $linkedin_config = array(
-             'appKey'       => '1ky0pyoc0rpe',
-             'appSecret'    => '7WIPfrEkya3QT3LR',
-             'callbackUrl'  => 'http://spws.cis.fiu.edu/senior-project-website-v4/user/linkedIn_callback'
+             'appKey'       => $this->config->item('app_key'),
+             'appSecret'    => $this->config->item('app_secret'),
+             'callbackUrl'  => $base_url . $this->config->item('callback_uri_linkedin')
          );
         
         $this->load->library('linkedin', $linkedin_config);
@@ -442,7 +448,7 @@ class UserController extends CI_Controller
         $this->session->set_flashdata('oauth_request_token_secret',$token['linkedin']['oauth_token_secret']);
         $this->session->set_flashdata('oauth_request_token',$token['linkedin']['oauth_token']);
         
-        $link = "https://api.linkedin.com/uas/oauth/authorize?oauth_token=". $token['linkedin']['oauth_token'];  
+        $link = $this->config->item('api_linkedin_endpoint') . "?oauth_token=". $token['linkedin']['oauth_token'];  
 
         $this->session->set_flashdata('linkedIn_sync', 'true');
 
@@ -462,12 +468,15 @@ class UserController extends CI_Controller
     }
 
     public  function linkedIn_callback() {
+        
+        
+        $base_url = $this->config->base_url();
 
         $linkedin_config = array(
-                     'appKey'       => '1ky0pyoc0rpe',
-                     'appSecret'    => '7WIPfrEkya3QT3LR',
-                     'callbackUrl'  => 'http://spws.cis.fiu.edu/senior-project-website-v4/user/linkedIn_callback'
-                 );
+             'appKey'       => $this->config->item('app_key'),
+             'appSecret'    => $this->config->item('app_secret'),
+             'callbackUrl'  => $base_url . $this->config->item('callback_uri_linkedin')
+         );
                 
         $this->load->library('linkedin', $linkedin_config);
         $this->linkedin->setResponseFormat(LINKEDIN::_RESPONSE_JSON);
@@ -589,6 +598,14 @@ class UserController extends CI_Controller
                 $this->form_validation->set_rules('password_1', 'New Password','required|min_length[6]'); 
                 //$this->form_validation->set_rules('current-password', 'Current Password', 'callback_validateCurrentUserPassword');
 
+                $session_data = $this->session->userdata( 'logged_in' );
+                if( !isset( $session_data[ "head_professor" ] ) )
+                {
+                    $currentPassword = $this->input->post('current-password');
+                    $this->form_validation->set_rules('current-password', 'Current Password','required');
+                    $this->form_validation->set_rules('current-password', 'Current Password', 'callback_validateCurrentUserPassword');
+                }
+                
                 if ($this->form_validation->run() == FALSE)
                 {
                     $this->load->view('user_change_password');
@@ -915,7 +932,7 @@ class UserController extends CI_Controller
         }
         else
         {
-            return $this->spw_user_model->is_spw_registered_by_id($userId);
+            return $this->spw_user_model->is_manually_created($userId);
         }
     }
 }

@@ -27,35 +27,33 @@ class LoginController extends CI_Controller {
     }
 
     public function fiu_oauth2() {
-        $client = new OAuth2\Client(
-            '207722926532-i8n5hj9731ot64j05jmuqp8qrp2p1l37.apps.googleusercontent.com', '1MxV7y0MZWsV-2Y2wy_04xr5', 'http://'.$_SERVER['HTTP_HOST'].'/senior-project-website-v4/login/google_oauth2_callback'
-        );
+        
+        $base_url = $this->config->base_url();
+        
+        $client = new OAuth2\Client($this->config->item('client_id'), $this->config->item('client_secret'), $base_url . $this->config->item('callback_uri'));
 
-        $configuration = new OAuth2\Service\Configuration(
-                'https://accounts.google.com/o/oauth2/auth', 'https://accounts.google.com/o/oauth2/auth/token'
-        );
+        $configuration = new OAuth2\Service\Configuration($this->config->item('authorize_endpoint'), $this->config->item('access_token_endpoint'));
 
         $dataStore = new OAuth2\DataStore\Session();
 
-        $scope = "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email";
+        $scope = $this->config->item('scope');
 
-        $service = new OAuth2\Service($client, $configuration, $dataStore, $scope, 'fiu.edu');
+        $service = new OAuth2\Service($client, $configuration, $dataStore, $scope, $this->config->item('subdomain'));
 
         $service->authorize();
     }
 
     public function google_oauth2() {
-        $client = new OAuth2\Client(
-            '207722926532-i8n5hj9731ot64j05jmuqp8qrp2p1l37.apps.googleusercontent.com', '1MxV7y0MZWsV-2Y2wy_04xr5', 'http://'.$_SERVER['HTTP_HOST'].'/senior-project-website-v4/login/google_oauth2_callback'
-        );
+          
+        $base_url = $this->config->base_url();
+        
+        $client = new OAuth2\Client($this->config->item('client_id'), $this->config->item('client_secret'), $base_url . $this->config->item('callback_uri'));
 
-        $configuration = new OAuth2\Service\Configuration(
-                'https://accounts.google.com/o/oauth2/auth', 'https://accounts.google.com/o/oauth2/auth/token'
-        );
+        $configuration = new OAuth2\Service\Configuration($this->config->item('authorize_endpoint'), $this->config->item('access_token_endpoint'));
 
         $dataStore = new OAuth2\DataStore\Session();
 
-        $scope = "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email";
+        $scope = $this->config->item('scope');
 
         $service = new OAuth2\Service($client, $configuration, $dataStore, $scope);
 
@@ -63,19 +61,18 @@ class LoginController extends CI_Controller {
     }
 
     public function google_oauth2_callback() {
+        
+        $base_url = $this->config->base_url();
+        
         $code = $this->input->get("code");
 
-        $client = new OAuth2\Client(
-            '207722926532-i8n5hj9731ot64j05jmuqp8qrp2p1l37.apps.googleusercontent.com', '1MxV7y0MZWsV-2Y2wy_04xr5', 'http://'.$_SERVER['HTTP_HOST'].'/senior-project-website-v4/login/google_oauth2_callback'
-        );
+        $client = new OAuth2\Client($this->config->item('client_id'), $this->config->item('client_secret'), $base_url . $this->config->item('callback_uri'));
 
-        $configuration = new OAuth2\Service\Configuration(
-                'https://accounts.google.com/o/oauth2/auth', 'https://accounts.google.com/o/oauth2/token'
-        );
+        $configuration = new OAuth2\Service\Configuration($this->config->item('authorize_endpoint'), $this->config->item('access_token_endpoint_callback'));
 
         $dataStore = new OAuth2\DataStore\Session();
 
-        $scope = "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email";
+        $scope = $this->config->item('scope');
 
         $service = new OAuth2\Service($client, $configuration, $dataStore, $scope);
 
@@ -83,7 +80,7 @@ class LoginController extends CI_Controller {
 
         $token = $dataStore->retrieveAccessToken();
 
-        $userinfo = $service->callApiEndpoint('https://www.googleapis.com/oauth2/v1/userinfo');
+        $userinfo = $service->callApiEndpoint($this->config->item('api_endpoint'));
 
         /* Data format returned by Google
          * '{

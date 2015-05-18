@@ -13,6 +13,7 @@ class AdminController extends CI_Controller {
         $this->load->model('spw_user_model');
         $this->load->model('spw_term_model');
         $this->load->model('spw_match_model');
+        $this->load->model('spw_vm_request_model');
         $this->load->library('email');
         $this->load->library('unit_test');
     }
@@ -175,10 +176,13 @@ class AdminController extends CI_Controller {
   /* Added to SPW v.3 for User Management System */
   public function register_new_user( )
 	{
-		$this->load->library('form_validation');
+    $this->load->library('form_validation');
     $this->form_validation->set_rules('email_address', 'Email Address', 'required|valid_email');
     $this->form_validation->set_rules('role', 'Role', 'required');
     $data = array();
+    
+
+    $base_url = $this->config->base_url();
     
     if ($this->form_validation->run( ) !== false)
     {
@@ -193,8 +197,11 @@ class AdminController extends CI_Controller {
         {
 	  $message = $row[ 'intro' ];
 	}
+                $token = (string)$this->reversible_encryption($user_id);
+                          
+                $this->spw_user_model->store_token($token, $user_id);
 
-		$message = $message . '<br><a href="http://spws.cis.fiu.edu/senior-project-website-v4/admin/email_activation/' . $this->reversible_encryption( $user_id ) . '"> http://spws.cis.fiu.edu/senior-project-website-v4/admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>';    	
+		$message = $message . '<br><a href="' . $base_url . 'admin/email_activation/' . $token . '"> ' . $base_url . 'admin/email_activation/'. $this->reversible_encryption( $user_id ) . '</a>';    	
                 send_email($this, $this->input->post('email_address'), 'Senior Project Website Account', $message );
                 
                 $msg = 'Successfully created a user with the email: ' . $this->input->post('email_address') . '. 
@@ -326,6 +333,9 @@ class AdminController extends CI_Controller {
   {
 	  $this->load->library( 'form_validation' );
 	  $this->form_validation->set_rules( 'email_address', 'Email Address', 'required|valid_email' );
+          
+
+          $base_url = $this->config->base_url();
 	  
 	  if( $this->form_validation->run( ) != false )
 	  {
@@ -346,7 +356,7 @@ class AdminController extends CI_Controller {
         <p>We have created an account for you to access it.</p>
           <p> Please log in with your email address and this temporary password: ' .  $password . '</p>
           <p>Once you login, update your profile and refer to the User Guide on the "About" page for help.</p>
-            <p><a href="http://spws.cis.fiu.edu/senior-project-website-v4">Senior Project Website</a></p>
+            <p><a href="' . $base_url . '">Senior Project Website</a></p>
             </body>
             </html>';
             
@@ -366,12 +376,80 @@ class AdminController extends CI_Controller {
 	  redirect( 'admin/filters' );
   }
   
-  /* Added to SPW v. 3 */
-  public function activation( $hash_id = '' )
+  //Added in SPW v5
+  //Function verifies user's account and sends an email if the account exists and is active.
+  public function forgot_password( )
   {
-	  if( $hash_id !== '' )
+	  $this->load->library( 'form_validation' );
+	  $this->form_validation->set_rules( 'email_address', 'Email Address', 'required|valid_email' );
+          
+
+          $base_url = $this->config->base_url();
+	  
+	  if( $this->form_validation->run( ) != false )
 	  {
-		  $user_id = $this->decryption( $hash_id );
+		  $this->load->model( 'spw_user_model' );
+		  $res = $this->spw_user_model->is_spw_registered( $this->input->post( 'email_address' ) );
+                  $status = $this->spw_user_model->is_user_active( $this->input->post( 'email_address' ) );
+		  
+		  if( $res && $status )
+		  {
+                          $user_id = $this->spw_user_model->get_user_id($this->input->post( 'email_address' ));
+                          
+                          $token = (string)$this->reversible_encryption($user_id);
+                          
+                          $this->spw_user_model->store_token($token, $user_id);
+                          			  
+			  $message ='<html>
+        <head><title>Senior Project Website Account Password</title></head>
+        <body>
+        <p>Hello,</p>
+        
+        <p>Someone (hopefully you) has requested to change your password at the Senior Project Website. If you did not send this request, please ignore this message.</p>
+        
+        <p>To change your password, please visit the following page:</p>
+        
+        <br><a href="' . $base_url . 'admin/email_activation/' . $token .'"> ' . $base_url . 'admin/email_activation/'. $token . '</a>
+        </body>
+            </html>';
+            
+            send_email( $this, $this->input->post( 'email_address' ), 'Senior Project Website Account', $message );
+			  
+			  
+			  $msg = 'Message sent to: ' . $this->input->post( 'email_address' ) . '.';
+			  setFlashMessage( $this, $msg );
+		  }
+		  else if (!$res)
+		  {
+			  $msg = 'There are no associated accounts with address: ' . $this->input->post( 'email_address' ) . '.';
+			  setErrorFlashMessage( $this, $msg );
+		  }
+                  else
+                  {
+                          $msg = 'Account associated with: ' . $this->input->post( 'email_address' ) . ' is inactive. Contact your professor to resolve this issue.';
+			  setErrorFlashMessage( $this, $msg );
+                  }
+	  }
+	  
+	  redirect( 'login' );
+  }
+  
+  /* Added to SPW v. 3 */
+  public function activation( $token = '' )
+  {
+	  if( $token !== '' )
+	  {
+              
+		  $user_id = $this->decryption($token);
+                  
+                  if (!$this->spw_user_model->verify_token($token, $user_id))
+                  {
+                      $msg = 'Token expired; please create another request to change your password.';
+                      setErrorFlashMessage( $this, $msg );
+                      redirect('login');
+                      return;
+                  }
+                  
 		  $data = array( );
 		  
 		  $this->load->model( 'spw_user_model' );
@@ -429,9 +507,9 @@ class AdminController extends CI_Controller {
 		  $res = $this->spw_user_model->is_spw_registered( $this->input->post( 'email_address' ) );
 		  if( $res )
 		  {
-			  $this->spw_user_model->set_pwd( $this->input->post( 'id' ),
-			  											$this->input->post( 'password_1' ) );
+			  $this->spw_user_model->set_pwd( $this->input->post( 'id' ), $this->input->post( 'password_1' ) );
 			  $msg = 'Successfully updated status for user with the email: ' . $this->input->post( 'email_address' );
+                          $this->spw_user_model->expire_token($this->input->post( 'id' ));
 			  setFlashMessage( $this, $msg );
 		  }
 		  else
@@ -476,6 +554,9 @@ class AdminController extends CI_Controller {
         $this->form_validation->set_rules('password_1', 'Password', 'required|min_length[6]');
         $this->form_validation->set_rules('password_2', 'Password', 'required|min_length[6]');
         $data = array();
+        
+
+        $base_url = $this->config->base_url();
 
         if ($this->form_validation->run() !== false) {
             $this->load->model('spw_user_model');
@@ -488,7 +569,7 @@ class AdminController extends CI_Controller {
                                 <p>We have created an account for you to access it.</p>
                                 <p> Please log in with your email address and this temporary password:' . $this->input->post('password_1') . ' </p>
                                     <p>Once you login, please update your profile and refer to the User Guide on the About page for help.</p>
-                                <p><a href="http://spws.cis.fiu.edu/senior-project-website-v4">SeniorProjectWebsite</a></p>
+                                <p><a href="' . $base_url . '">SeniorProjectWebsite</a></p>
                             </body>
                             </html>';
 
@@ -593,6 +674,187 @@ class AdminController extends CI_Controller {
             setErrorFlashMessage($this, "There was an error on the API. Please verify the server.");
         }
         redirect('admin/admin_dashboard');
+    }
+    
+    /*added in SPW v5 to set default email notification*/
+    public function setDefafultEmail(){
+        
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('email_address', 'Email Address', 'valid_email');
+        
+        if ($this->form_validation->run( ) == true){
+            
+            $name = $this->input->post('full_name');
+            $default_email = $this->input->post('email_address');
+            $this->spw_vm_request_model->setEmailToDefault($name,$default_email);
+            setFlashMessage($this, "Succesfully set name $name and email $default_email");
+        }
+        redirect('admin/admin_dashboard');
+    }
+    
+    /*helper function to bypass user(s)*/
+    public function getActiveUsersAndByPassIfNeeded($input){
+        
+        foreach($input as $row){
+            /*if user on DB is pending and in User Management form was made active, bypass him/her*/
+            if($row->col_5 == 'ACTIVE' && $this->spw_user_model->isUserStatusPending($row->id) == 'PENDING'){
+                /*bypass the user*/
+                 $this->bypassActivation($row->id,$row->col_3);
+            }
+        }
+    }
+    
+    /*added in SPW v5 for user management*/
+    public function userManagement(){
+        
+        if(!isUserLoggedIn($this)){
+            redirect('login','refresh');
+        }
+        
+        $input = file_get_contents('php://input');
+        /*filter variables*/
+        $fn = $this->input->get('fn');
+        $ln = $this->input->get('ln');
+        $email = $this->input->get('email');
+        $status = $this->input->get('status');
+        $role = $this->input->get('role');
+        /*id to be deleted*/
+        $user_id = $this->input->get('id');
+        
+        if($input){/*input from User Management page*/
+            $inputForm = json_decode($input);
+            /*bupass a user(s) if need be*/
+            $this->getActiveUsersAndByPassIfNeeded($inputForm);
+            /*update user info*/
+            $success = $this->spw_user_model->updateUsers($inputForm);
+            if($success)setFlashMessage($this, "Succesfully updated user(s)");
+            die(json_encode(array("success"=> $success)));
+        }
+        if($user_id){
+            $this->deleteUser($user_id, $fn, $ln, $email, $status, $role);
+        }
+        if($fn || $ln || $email || $status || $role){
+            $this->filterUsers($fn, $ln, $email, $status, $role);
+        }else{
+            $data['title'] = 'User Management';
+            $data['requests'] = $this->spw_user_model->getAllUsers();
+            $data['fn'] = $fn;
+            $data['ln'] = $ln;
+            $data['email'] = $email;
+            $data['role'] = $role;
+            $data['status'] = $status;
+            $this->load->view('admin_user_management2',$data);
+        }
+    }
+    
+    /*added in SPW v5 to filter users by first & last name, email, role and status*/
+    public function filterUsers($fn, $ln, $email, $status, $role){
+        $data = array( );
+        $where = "";
+        
+        if($fn == ""){
+            $fn = NULL;
+        }
+        if($ln == ""){
+            $ln = NULL;
+        }
+        if($email == ""){
+            $email = NULL;
+        }
+        if($status == 'ALL STATUS' || $status == ""){
+            $status = NULL;
+        }
+        if($role == 'ALL ROLES' || $role == ""){
+            $role = NULL;
+        }
+        
+        if(isset($fn)){
+            if(strlen($where) >= 1)
+                $where .= " AND first_name LIKE "."\"%".$fn."%\"  ";
+            else
+                $where = "first_name LIKE "."\"%".$fn."%\"  ";
+        }
+        if(isset($ln)){
+            if(strlen($where) >= 1)
+                $where .= " AND last_name LIKE "."\"%".$ln."%\"  ";
+            else
+                $where = "last_name LIKE "."\"%".$ln."%\"  ";
+        }
+        if(isset($email)){
+            if(strlen($where) >= 1)
+                $where .= " AND email LIKE "."\"%".$email."%\"  ";
+            else
+                $where = "email LIKE "."\"%".$email."%\"  ";
+        }
+        if(isset($status)){
+            if(strlen($where) >= 1)
+                $where .= " AND status = '$status' ";
+            else
+                $where = "status = '$status' ";
+        }
+        if(isset($role)){
+            if(strlen($where) >= 1)
+                $where .= " AND role = '$role' ";
+            else
+                $where = "role = '$role' ";
+        }
+        
+//        echo $where;
+        $data['title'] = 'User Management';
+        $data['requests'] = $this->spw_user_model->searchFilteredUsers($where);
+        $data['fn'] = $fn;
+        $data['ln'] = $ln;
+        $data['email'] = $email;
+        $data['status'] = $status;
+        $data['role'] = $role;
+        $this->load->view('admin_user_management2',$data);
+    }
+    /*delete an user*/
+    public function deleteUser($user_id, $fn, $ln, $email, $status, $role){
+        $msg = "";
+        if($this->spw_user_model->delete_user($user_id)){
+            $msg = "Succesfully deleted user ";
+        }else{
+            $msg = "Error deleting user";
+        }
+        setFlashMessage($this, $msg);
+        $parm = "fn=$fn&ln=$ln&email=$email&role=$role&status=$status";
+        redirect('userManagement?'.$parm);
+    }
+    
+    /* added in SPW v5 bypass a user*/
+    public function bypassActivation($user_id, $email )
+    {
+        $base_url = $this->config->base_url();
+
+
+        if($this->spw_user_model->is_spw_registered( $email ) )
+        {
+            $password = $this->spw_user_model->generate_password( );
+            $hash_password = sha1( $password );
+            $this->spw_user_model->bypass_activation( $user_id, $hash_password );
+
+                            $message ='<html>
+          <head><title>Senior Project Website Account Password</title></head>
+          <body>
+          <h2>Welcome to the Senior Project Website !!</h2>
+
+          <p>We have created an account for you to access it.</p>
+            <p> Please log in with your email address and this temporary password: ' .  $password . '</p>
+            <p>Once you login, update your profile and refer to the User Guide on the "About" page for help.</p>
+              <p><a href="' . $base_url . '">Senior Project Website</a></p>
+              </body>
+              </html>';
+              
+            send_email( $this, $email, 'Senior Project Website Account', $message );
+            $msg = 'Successfully bypassed user PENDING status for user with the email: ' . $email;
+            setFlashMessage( $this, $msg );
+        }
+        else
+        {
+            $msg = 'Cannot bypass user PENDING status. An error was encountered for: ' . $email;
+            setErrorFlashMessage( $this, $msg );
+        }
     }
 
 }

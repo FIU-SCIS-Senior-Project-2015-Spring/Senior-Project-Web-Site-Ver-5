@@ -13,9 +13,38 @@
     } 
     else 
     {
-?>
+$spw_id = getCurrentUserId($this);
+        
+//check if the user has uploaded a picture already
+$file = checkUserUploadedPic($this, $spw_id);
 
-        <?php echo anchor('/user/linkedIn_sync', 'Sync with LinkedIn', array('class' => 'btn btn-primary btn-large pull-right'))  ?>
+if ($file != null)
+{
+        ?>
+        <button type="button" class="btn btn-large btn-primary pull-right" data-toggle="modal" data-target="#LinkedInModal">Sync with LinkedIn</button>
+                <!-- Modal -->
+                <div class="modal modal-narrow fade span4 center-text row-fluid" id="LinkedInModal" tabindex="-1" role="dialog" aria-labelledby="LinkedInModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h3 class="modal-title" id="LinkedInModalLabel">Replacing picture</h3>
+                      </div>
+                      <div class="modal-body">
+                          <p>Synchronization with LinkedIn will replace your current picture with LinkedIn picture.</p>
+                          <p>Would you like to proceed?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <?php echo form_open('/user/linkedIn_sync')?>
+                        <button class="btn btn-primary span6" type="submit">Yes</button>
+                        <button class="btn btn-default span6" data-dismiss="modal">No</button>
+                        <?php echo form_close()?>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+<?php }  else { echo anchor('/user/linkedIn_sync', 'Sync with LinkedIn', array('class' => 'btn btn-primary btn-large pull-right')); }?>
 
         <?php if(strcmp($userDetails->user->role ,"HEAD") == 0){ ?>
             <h2>Head Professor Profile</h2>
@@ -51,7 +80,32 @@
             <div>
                 <?php echo form_open_multipart('usercontroller/do_upload');?>
                 <input class="btn-small" type="file" name="userfile" size="20" style="margin-top: 10px; margin-bottom: 5px" />
-                <input class="btn-small btn-primary" type="submit" value="Upload Picture" />
+                
+                <?php if ($file != null) { ?>
+                
+                <button type="button" class="btn-small btn-primary" data-toggle="modal" data-target="#UploadModal">Upload Picture</button>
+                <!-- Modal -->
+                <div class="modal modal-narrow fade" id="UploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h3 class="modal-title" id="myModalLabel">Replacing picture</h3>
+                      </div>
+                      <div class="modal-body">
+                          <p>Uploading a new picture will replace your current one.</p>
+                          <p>Would you like to proceed?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <input class="btn btn-primary span6" type="submit" value="Yes">
+                        <input class="btn btn-default span6" data-dismiss="modal" value="No">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <?php }else { ?>
+                <input class="btn-small btn-primary" type="submit" value="Upload Picture">    
+                <?php } ?>
                 <?php echo form_close() ?>
             </div>
         </div>
@@ -100,7 +154,7 @@
             ?>
 
             <?php if (isset($canChangePassword) && $canChangePassword && 
-                    (strcmp($userDetails->user->role ,"PROFESSOR") == 0 || strcmp($userDetails->user->role ,"HEAD") == 0)) { ?>
+                    (strcmp($userDetails->user->role ,"PROFESSOR") == 0 || strcmp($userDetails->user->role ,"HEAD") == 0 || strcmp($userDetails->user->role ,"STUDENT") == 0)) { ?>
                 <p>
                     <?php echo anchor('change-password', 'Click to change password') ?>
                 </p>

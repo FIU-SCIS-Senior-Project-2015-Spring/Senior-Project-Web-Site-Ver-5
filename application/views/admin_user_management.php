@@ -37,6 +37,23 @@
           box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
+.frame {
+  padding: 8px;
+  margin-top: 240px;
+  margin-left: 4px;
+  width: 80px;
+  display:inline-block;
+  float: left;
+  background-color: #DCDCDC;
+  border: 1px solid #e3e3e3;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
 .subsection blockquote {
   border-color: #ddd;
   border-color: rgba(0, 0, 0, 0.15);
@@ -64,9 +81,9 @@
 ?>
 <h2>User Management</h2>
 <!-- Start Well for Head Professor Dashboard -->
- <div class="well" style="min-height: 200px;">
-  <div style="position: absolute; margin-top: 50px; margin-left: 400px;"> <h3> Filter Users </h3> </div>
+ <div class="well" style="min-height: 270px;">
 <div class="subsection">
+<div style="margin-top: -10px"> <h3> Filter Users </h3> </div>
 <?php
 	echo( "<div style='margin-left: -10px'>" );
 	echo form_checkbox( array(
@@ -134,6 +151,9 @@
 	echo form_close( );
 ?>
 </div>
+<div class="frame">
+ <input type="checkbox" id="selectall"/> Select All
+</div>
 <br>
 <?php echo form_open('admin/activate_deactive_users', array(
         'class' => '',
@@ -171,13 +191,17 @@
 	
 	foreach( $query->result_array( ) as $row )
 	{ 
+            //temporary fix for nested forms problem.
+            echo form_open();
+            echo form_close();
+            
 		echo( "<tr>" );
 			echo( "<table class=\"well\" style=\"width:99%;\">" );
 				echo( "<tr>" );
 					echo( "<td style=\"padding: 15px;\">" );
 						if( $row['picture'] == NULL )
-							echo( "<img src=\"" . base_url( '/img/no-photo.jpeg' ) . "\" height=\"80\" width=\"80\">" );
-						else
+							echo( "<img src=\"" . base_url( '' . getImage($row['id'])) . "\" height=\"80\" width=\"80\">" );
+                                                else
 							echo( "<img src=\"" . $row['picture'] . "\" height=\"80\" width=\"80\">" );
 					echo( "<br /><br />" );
 					echo form_open( 'admin/impersonate', array( 'id' => 'impersonate_form' ) );
@@ -282,14 +306,14 @@
                                         {
                                                 echo( "<td style=\"background-color: green;\"><center>" );
                                                         echo( "<label>Deactivate</label><br><br>" );
-                                                        echo( "<input type=\"checkbox\" name=\"users[]\" value=\"" . $row[ 'id' ] . "\">" );
+                                                        echo( "<input class=\"checkbox\" type=\"checkbox\" name=\"users[]\" value=\"" . $row[ 'id' ] . "\">" );
                                                 echo( "</center></td>" );
                                         }
                                         else if( $row[ 'status' ] === "INACTIVE" )
                                         {
                                                 echo( "<td style=\"background-color: red;\"><center>" );
                                                         echo( "<label>Activate&nbsp;&nbsp;&nbsp;&nbsp;</label><br><br>" );
-                                                        echo( "<input type=\"checkbox\" name=\"users[]\" value=\"" . $row[ 'id' ] . "\">" );
+                                                        echo( "<input class=\"checkbox\" type=\"checkbox\" name=\"users[]\" value=\"" . $row[ 'id' ] . "\">" );
                                                 echo( "</center></td>" );
                                         }
               echo( "</tr>" );
@@ -327,3 +351,20 @@
  
  
 <?php $this->load->view("template_footer"); ?>
+
+<script> 
+    $(document).ready(function() {
+    $('#selectall').click(function(event) {
+        if(this.checked) {
+            $('.checkbox').each(function() {
+                this.checked = true;              
+            });
+        }else{
+            $('.checkbox').each(function() {
+                this.checked = false;                     
+            });         
+        }
+    });
+    
+    });
+</script>
