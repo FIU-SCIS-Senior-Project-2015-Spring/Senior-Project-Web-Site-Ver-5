@@ -254,7 +254,11 @@ if ( ! function_exists('get_config'))
 			}
 		}
 
-		return $_config[0] =& $config;
+		//Source: https://github.com/bcit-ci/CodeIgniter/commit/69b02d0f0bc46e914bed1604cfbd9bf74286b2e3
+		//These two lines of code fixed the common core problem, if anything happens, switch these back
+		//return $_config[0] =& $config;
+		$_config[0] =& $config;
+		return $_config[0];
 	}
 }
 

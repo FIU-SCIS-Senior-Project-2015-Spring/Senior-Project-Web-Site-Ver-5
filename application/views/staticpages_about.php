@@ -27,6 +27,14 @@ $this->load->helper("nav_top");
     
     <lh><h5>Version 4.0 </h5></lh>
     <li>Julio Perez</li>
+	
+	<lh><h5>Version 5.0 </h5></lh>
+    <li>Jacek Kopczynski</li>
+	<li>Yamel Peraza</li>
+	
+	<lh><h5>Version 6.0 </h5></lh>
+    <li>Hernan Ceillan</li>
+	<li>Raul Carvajal</li>
 </ul>
 <ul>
 	<?php

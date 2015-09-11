@@ -117,7 +117,7 @@ class AdminController extends CI_Controller {
 		$role = $this->input->post( 'role' );
 		$id = $this->input->post( 'id' );
 
-		if( $role == 'STUDENT' )
+		if( $role == 'STUDENT' || $role == 'PROFESSOR')
 		{ 
 		  $sess_array = array( 
 			  'id' => $id,
@@ -669,7 +669,7 @@ class AdminController extends CI_Controller {
         $s_url = $this->config->item('fiu_api_refresh');
         $jason_return = file_get_contents($s_url);
         if ($jason_return == 'OK') {
-            setFlashMessage($this, "Succesfully update from API");
+            setFlashMessage($this, "Successfully update from API");
         } else {
             setErrorFlashMessage($this, "There was an error on the API. Please verify the server.");
         }
@@ -687,7 +687,7 @@ class AdminController extends CI_Controller {
             $name = $this->input->post('full_name');
             $default_email = $this->input->post('email_address');
             $this->spw_vm_request_model->setEmailToDefault($name,$default_email);
-            setFlashMessage($this, "Succesfully set name $name and email $default_email");
+            setFlashMessage($this, "Successfully set name $name and email $default_email");
         }
         redirect('admin/admin_dashboard');
     }
@@ -718,23 +718,25 @@ class AdminController extends CI_Controller {
         $email = $this->input->get('email');
         $status = $this->input->get('status');
         $role = $this->input->get('role');
+		$linkedIn = $this->input->get('linkedIn');
+		$rank = $this->input->get('rank');
         /*id to be deleted*/
         $user_id = $this->input->get('id');
         
         if($input){/*input from User Management page*/
             $inputForm = json_decode($input);
-            /*bupass a user(s) if need be*/
+            /*bypass a user(s) if need be*/
             $this->getActiveUsersAndByPassIfNeeded($inputForm);
             /*update user info*/
             $success = $this->spw_user_model->updateUsers($inputForm);
-            if($success)setFlashMessage($this, "Succesfully updated user(s)");
+            if($success)setFlashMessage($this, "Successfully updated user(s)");
             die(json_encode(array("success"=> $success)));
         }
         if($user_id){
-            $this->deleteUser($user_id, $fn, $ln, $email, $status, $role);
+            $this->deleteUser($user_id, $fn, $ln, $email, $status, $role, $linkedIn, $rank);
         }
-        if($fn || $ln || $email || $status || $role){
-            $this->filterUsers($fn, $ln, $email, $status, $role);
+        if($fn || $ln || $email || $status || $role || $linkedIn || $rank){
+            $this->filterUsers($fn, $ln, $email, $status, $role, $linkedIn, $rank);
         }else{
             $data['title'] = 'User Management';
             $data['requests'] = $this->spw_user_model->getAllUsers();
@@ -743,14 +745,18 @@ class AdminController extends CI_Controller {
             $data['email'] = $email;
             $data['role'] = $role;
             $data['status'] = $status;
+			$data['linkedIn'] = $linkedIn;
+			$data['rank'] = $rank;
             $this->load->view('admin_user_management2',$data);
         }
     }
     
-    /*added in SPW v5 to filter users by first & last name, email, role and status*/
-    public function filterUsers($fn, $ln, $email, $status, $role){
+    /*added in SPW v5 to filter users by first & last name, email, role and status
+	  added in SPW v6 to filter users if they have a picture, linkedIn, experience, skills, and ranks*/
+    public function filterUsers($fn, $ln, $email, $status, $role, $linkedIn, $rank){
         $data = array( );
         $where = "";
+		$having = "";
         
         if($fn == ""){
             $fn = NULL;
@@ -767,6 +773,12 @@ class AdminController extends CI_Controller {
         if($role == 'ALL ROLES' || $role == ""){
             $role = NULL;
         }
+		if($linkedIn == "ALL" || $linkedIn == ""){
+            $linkedIn = NULL;
+		}
+		if($rank == 'ALL' || $rank == ""){
+			$rank = NULL;
+		}
         
         if(isset($fn)){
             if(strlen($where) >= 1)
@@ -788,9 +800,9 @@ class AdminController extends CI_Controller {
         }
         if(isset($status)){
             if(strlen($where) >= 1)
-                $where .= " AND status = '$status' ";
+                $where .= " AND spw_user.status = '$status' ";
             else
-                $where = "status = '$status' ";
+                $where = "spw_user.status = '$status' ";
         }
         if(isset($role)){
             if(strlen($where) >= 1)
@@ -798,27 +810,84 @@ class AdminController extends CI_Controller {
             else
                 $where = "role = '$role' ";
         }
-        
-//        echo $where;
+		if(isset($linkedIn)){
+            if(strlen($where) >= 1){
+				if($linkedIn == 'YES')	
+					$where .= " AND CONCAT(headline_linkedIn, spw_experience.title, skill, picture) IS NOT NULL AND picture != '' ";
+				elseif($linkedIn == 'No Picture')
+					$where .= " AND (picture IS NULL OR picture = '') ";
+				elseif($linkedIn == 'No LinkedIn')
+					$where .= " AND headline_linkedIn IS NULL";
+				elseif($linkedIn == 'No Experience')
+					$where .= " AND spw_experience.title IS NULL ";
+				elseif($linkedIn == 'No Skills')
+					$where .= " AND skill IS NULL ";
+				else // case for NO
+					$where .= " AND (CONCAT(headline_linkedIn, spw_experience.title, skill, picture) is NULL OR picture = '') ";
+			}
+            else{
+                if($linkedIn == 'YES')	
+					$where .= "CONCAT(headline_linkedIn, spw_experience.title, skill, picture) IS NOT NULL AND picture != '' ";
+				elseif($linkedIn == 'No Picture')
+					$where .= "picture IS NULL OR picture = '' ";
+				elseif($linkedIn == 'No LinkedIn')
+					$where .= "headline_linkedIn IS NULL";
+				elseif($linkedIn == 'No Experience')
+					$where .= "spw_experience.title IS NULL ";
+				elseif($linkedIn == 'No Skills')
+					$where .= "skill IS NULL ";
+				else // case for NO
+					$where .= "(CONCAT(headline_linkedIn, spw_experience.title, skill, picture) is NULL OR picture = '') ";
+			}
+        }
+		
+		//Here is unique filter for ranked number of projects, 
+		// this is redundant code but was left for testing
+		if(isset($rank)){
+			$min = $this->spw_match_model->getMinimum();
+            if(strlen($having) >= 1){
+				if($rank == 'YES'){
+					//$where .= " AND rank is NOT NULL ";
+					$having .= " AND rank >= $min ";
+				}
+				else{
+					//$where .= " AND rank is NOT NULL ";
+					$having .= " AND rank < $min ";
+				}
+			}
+            else{
+                if($rank == 'YES'){
+					//$where .= " rank is NOT NULL ";
+					$having .= " rank >= $min ";
+				}
+				else{
+					//$where .= " rank is NOT NULL ";
+					$having .= " rank < $min ";
+				}
+			}
+		}
+//		echo $where . "<br>" . $rank;
         $data['title'] = 'User Management';
-        $data['requests'] = $this->spw_user_model->searchFilteredUsers($where);
+        $data['requests'] = $this->spw_user_model->searchFilteredUsers($where, $rank);
         $data['fn'] = $fn;
         $data['ln'] = $ln;
         $data['email'] = $email;
         $data['status'] = $status;
         $data['role'] = $role;
+		$data['linkedIn'] = $linkedIn;
+		$data['rank'] = $rank;
         $this->load->view('admin_user_management2',$data);
     }
     /*delete an user*/
-    public function deleteUser($user_id, $fn, $ln, $email, $status, $role){
+    public function deleteUser($user_id, $fn, $ln, $email, $status, $role, $linkedIn, $rank){
         $msg = "";
         if($this->spw_user_model->delete_user($user_id)){
-            $msg = "Succesfully deleted user ";
+            $msg = "Successfully deleted user ";
         }else{
             $msg = "Error deleting user";
         }
         setFlashMessage($this, $msg);
-        $parm = "fn=$fn&ln=$ln&email=$email&role=$role&status=$status";
+        $parm = "fn=$fn&ln=$ln&email=$email&role=$role&status=$status&linkedIn=$linkedIn&rank=$rank";
         redirect('userManagement?'.$parm);
     }
     
